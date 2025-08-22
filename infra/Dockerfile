@@ -1,32 +1,28 @@
-# --- ETAPA 1: El "Constructor" (El Chef) ---
-# Usamos una imagen de Node.js para tener las herramientas de compilación
-FROM node:18-alpine AS builder
-
-# Establecemos el directorio de trabajo dentro del contenedor
+# --- ETAPA 1: Build ---
+FROM node:20 AS builder
 WORKDIR /app
 
-# Copiamos los archivos de dependencias e instalamos
+# Copiamos dependencias e instalamos
 COPY package*.json ./
 RUN npm install
 
-# Copiamos todo el código fuente de tu proyecto
+# Copiamos el resto del código y construimos el frontend
 COPY . .
-
-# ¡El paso clave! Compilamos el proyecto.
-# Esto crea la carpeta /app/dist con los archivos optimizados.
 RUN npm run build
 
+# --- ETAPA 2: Runtime ---
+FROM node:20
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=8080
 
-# --- ETAPA 2: El "Servidor" (El Camarero) ---
-# Usamos una imagen de servidor web ligera como Nginx para servir los archivos
-FROM nginx:1.25-alpine
+# Copiamos el resultado del build
+COPY --from=builder /app ./
 
-# Copiamos SOLAMENTE el resultado de la compilación (la carpeta 'dist') 
-# desde la etapa anterior al directorio público de Nginx.
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Instalamos 'serve' para servir la carpeta dist
+RUN npm install -g serve
 
-# Exponemos el puerto 80, que es el puerto por defecto de Nginx
-EXPOSE 80
+# Exponemos el puerto 8080 (el que Cloud Run espera)
+EXPOSE 8080
 
-# El comando por defecto de la imagen de Nginx se encargará de iniciar el servidor
-CMD ["nginx", "-g", "daemon off;"]
+# Comando para
