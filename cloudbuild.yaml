@@ -5,7 +5,7 @@ options:
 substitutions:
   _REGION: "us-west1"
   _SERVICE: "next-chat"
-  _REPO: "app"
+  _REPO: "tangible-climate-aura-app-us"
   _RUNTIME_SA: "tangible-climate-aura@tangible-climate-aura.iam.gserviceaccount.com"
 
 steps:
