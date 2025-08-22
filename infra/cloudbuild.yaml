@@ -1,25 +1,20 @@
-# === Cloud Build config: build + push + deploy ===
-options:
-  logging: CLOUD_LOGGING_ONLY   # evita el error de logs
-
 substitutions:
   _REGION: "us-west1"
-  _SERVICE: "tangible-climate-aura-backend"
+  _SERVICE: "tangible-climate-aura-backend"   # << importante
   _REPO: "tangible-climate-aura-app-us"
   _RUNTIME_SA: "tangible-climate-aura@tangible-climate-aura.iam.gserviceaccount.com"
 
 steps:
-  # 1) Build de la imagen
   - name: "gcr.io/cloud-builders/docker"
     args:
-      ["build","-t","us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA","."]
-
-  # 2) Push a Artifact Registry
+      [
+        "build",
+        "-f","infra/Dockerfile",
+        "-t","us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA",
+        "."
+      ]
   - name: "gcr.io/cloud-builders/docker"
-    args:
-      ["push","us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"]
-
-  # 3) Deploy a Cloud Run en us-west1
+    args: ["push","us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"]
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
     args:
@@ -30,8 +25,10 @@ steps:
         "--allow-unauthenticated",
         "--service-account","${_RUNTIME_SA}",
         "--set-secrets","OPENAI_API_KEY=OPENAI_API_KEY:latest",
-        "--set-secrets","OPENAI_ASSISTANT_ID=OPENAI_ASSISTANT_ID:latest"
+        "--set-secrets","OPENAI_ASSISTANT_ID=OPENAI_ASSISTANT_ID:latest",
+        "--project","$PROJECT_ID",
+        "--quiet"
       ]
 
-images:
-  - "us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"
+options:
+  logging: CLOUD_LOGGING_ONLY
