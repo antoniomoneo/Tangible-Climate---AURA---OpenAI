@@ -1,0 +1,15 @@
+{
+  "name": "tangible-climate-aura-backend",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "vite build",
+    "start": "serve -s dist -l ${PORT:-8080}"
+  },
+  "dependencies": {
+    "serve": "^14.2.3"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}
