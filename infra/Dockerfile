@@ -1,28 +1,26 @@
-# --- ETAPA 1: Build ---
+# --- ETAPA 1: Build (usa el package.json de la raíz) ---
 FROM node:20 AS builder
 WORKDIR /app
 
-# Copiamos dependencias e instalamos
+# Usa las dependencias del proyecto (las que mantiene AI Studio)
 COPY package*.json ./
 RUN npm install
 
-# Copiamos el resto del código y construimos el frontend
+# Copia el código y compila con Vite
 COPY . .
 RUN npm run build
 
-# --- ETAPA 2: Runtime ---
+# --- ETAPA 2: Runtime (sirve dist con 'serve') ---
 FROM node:20
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Copiamos el resultado del build
-COPY --from=builder /app ./
+# Copiamos SOLO lo construido y lo necesario
+COPY --from=builder /app/dist ./dist
 
-# Instalamos 'serve' para servir la carpeta dist
+# Instala 'serve' globalmente (no toca tu package.json de la raíz)
 RUN npm install -g serve
 
-# Exponemos el puerto 8080 (el que Cloud Run espera)
 EXPOSE 8080
-
-# Comando para
+CMD ["serve", "-s", "dist", "-l", "8080"]
