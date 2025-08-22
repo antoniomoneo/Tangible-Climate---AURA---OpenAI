@@ -4,7 +4,7 @@ options:
 
 substitutions:
   _REGION: "us-west1"
-  _SERVICE: "tangible-climate-aura-openai"
+  _SERVICE: "tangible-climate-aura-backend"
   _REPO: "tangible-climate-aura-app-us"
   _RUNTIME_SA: "tangible-climate-aura@tangible-climate-aura.iam.gserviceaccount.com"
 
