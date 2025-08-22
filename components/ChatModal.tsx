@@ -18,6 +18,8 @@ interface ChatModalProps {
   context: string;
 }
 
+const AURA_TYPING_PLACEHOLDER = 'AURA_IS_TYPING_PLACEHOLDER';
+
 const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, context }) => {
   const t = locales[language];
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -59,12 +61,13 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
     setError(null);
 
     const userMessage: ChatMessage = { role: 'user', content: prompt };
-    setMessages(prev => [...prev, userMessage]);
+    const loadingMessage: ChatMessage = { role: 'assistant', content: AURA_TYPING_PLACEHOLDER };
+    
+    setMessages(prev => [...prev, userMessage, loadingMessage]);
     setInput('');
-    setMessages(prev => [...prev, { role: 'assistant', content: '...' }]);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30-second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60-second timeout for serverless cold starts
 
     try {
       const response = await fetch('/api/chat', {
@@ -94,11 +97,10 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
         localStorage.setItem('openai_thread_id', data.threadId);
       }
 
-      setMessages(prev => {
-          const newMessages = [...prev];
-          newMessages[newMessages.length - 1] = { role: 'assistant', content: data.response };
-          return newMessages;
-      });
+      setMessages(prev => [
+          ...prev.slice(0, -1), 
+          { role: 'assistant', content: data.response }
+      ]);
 
     } catch (e: any) {
         console.error('Chat error:', e);
@@ -107,7 +109,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
         } else {
             setError(e.message || t.chatError);
         }
-        setMessages(prev => prev.filter(msg => !(msg.role === 'assistant' && msg.content === '...')));
+        setMessages(prev => prev.filter(msg => msg.content !== AURA_TYPING_PLACEHOLDER));
     } finally {
         setIsSending(false);
     }
@@ -137,8 +139,11 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
                   </div>
                 )}
                 <div className={`max-w-md p-3 rounded-lg shadow ${msg.role === 'user' ? 'bg-gray-700' : 'bg-gray-700'}`}>
-                   {msg.role === 'assistant' && msg.content === '...' && isSending ? (
-                     <TypingIndicator />
+                   {msg.role === 'assistant' && msg.content === AURA_TYPING_PLACEHOLDER ? (
+                     <div className="flex items-center gap-2 text-gray-300">
+                        <TypingIndicator />
+                        <span>{t.chatLoading}</span>
+                     </div>
                    ) : (
                      <p className="text-white whitespace-pre-wrap">{msg.content}</p>
                    )}
