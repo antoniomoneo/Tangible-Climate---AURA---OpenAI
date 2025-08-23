@@ -1,0 +1,6 @@
+node_modules
+infra/*
+!infra/Dockerfile
+.git
+*.log
+

@@ -20,12 +20,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 
+# Copia package.json y package-lock para instalar dependencias de producción
+COPY package*.json ./
+RUN npm ci --omit=dev
+
 # Copiamos el servidor y (si existe) la SPA ya compilada
 COPY server.cjs ./server.cjs
 COPY --from=builder /app/dist ./dist
-
-# Instala SOLO lo necesario para el server (Express)
-RUN npm install express
 
 EXPOSE 8080
 
