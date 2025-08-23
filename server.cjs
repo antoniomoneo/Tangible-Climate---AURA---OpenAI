@@ -1,9 +1,31 @@
+// server.cjs
+const express = require("express");
+const path = require("path");
+
+const app = express();
+const PORT = process.env.PORT || 8080;
+
+// --- Configuración de CORS (ajusta ORIGIN a tu dominio en prod) ---
+const ORIGIN = process.env.ALLOWED_ORIGIN || "*";
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", ORIGIN);
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.status(204).end();
+  next();
+});
+
+app.use(express.json());
+
+// --- Endpoints básicos ---
+app.get("/healthz", (_req, res) => res.send("ok"));
+app.get("/api/test", (_req, res) => res.json({ msg: "Backend funcionando 🎉" }));
+
+// --- Endpoint /api/chat con OpenAI Assistants ---
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_ASSISTANT_ID = process.env.OPENAI_ASSISTANT_ID;
 const API = "https://api.openai.com/v1";
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-
-app.use(express.json());
 
 app.post("/api/chat", async (req, res) => {
   try {
@@ -21,7 +43,7 @@ app.post("/api/chat", async (req, res) => {
       "Content-Type": "application/json",
     };
 
-    // 1) thread
+    // 1) Crear thread si no hay
     let threadId = clientThreadId;
     if (!threadId) {
       const th = await fetch(`${API}/threads`, { method: "POST", headers, body: "{}" });
@@ -29,20 +51,20 @@ app.post("/api/chat", async (req, res) => {
       threadId = (await th.json()).id;
     }
 
-    // 2) user message
+    // 2) Mensaje de usuario
     const msg = await fetch(`${API}/threads/${threadId}/messages`, {
       method: "POST", headers, body: JSON.stringify({ role: "user", content: message }),
     });
     if (!msg.ok) throw new Error(await msg.text());
 
-    // 3) run
+    // 3) Ejecutar run
     const run = await fetch(`${API}/threads/${threadId}/runs`, {
       method: "POST", headers, body: JSON.stringify({ assistant_id: OPENAI_ASSISTANT_ID }),
     });
     if (!run.ok) throw new Error(await run.text());
     const { id: runId } = await run.json();
 
-    // 4) poll
+    // 4) Poll hasta que termine
     let finalText = null;
     for (let i = 0; i < 60; i++) {
       await sleep(1000);
@@ -68,4 +90,20 @@ app.post("/api/chat", async (req, res) => {
     console.error("Error /api/chat:", e);
     res.status(500).json({ error: "No se pudo procesar la solicitud." });
   }
+});
+
+// --- Servir SPA de Vite (si existe dist/) ---
+const distPath = path.join(__dirname, "dist");
+app.use(express.static(distPath));
+app.get("/*", (req, res) => {
+  try {
+    res.sendFile(path.join(distPath, "index.html"));
+  } catch {
+    res.status(200).send("Backend OK (sin dist)");
+  }
+});
+
+// --- Arrancar servidor ---
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ API escuchando en http://0.0.0.0:${PORT}`);
 });
