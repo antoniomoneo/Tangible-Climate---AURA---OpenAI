@@ -38,7 +38,7 @@ app.post("/api/chat", async (req, res) => {
     }
 
     const headers = {
-      "Authorization": `Bearer ${OPENAI_API_KEY}",
+      "Authorization": `Bearer ${OPENAI_API_KEY}`,
       "OpenAI-Beta": "assistants=v2",
       "Content-Type": "application/json",
     };
