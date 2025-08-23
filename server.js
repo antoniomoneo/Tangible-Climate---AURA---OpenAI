@@ -11,7 +11,7 @@ const API = "https://api.openai.com/v1";
 
 app.use(express.json());
 
-// CORS simple (ajusta ORIGIN a tu dominio cuando lo tengas)
+// CORS básico (ajusta ORIGIN cuando tengas dominio definitivo del frontend)
 const ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", ORIGIN);
@@ -21,12 +21,14 @@ app.use((req, res, next) => {
   next();
 });
 
+// Utilidad de espera
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
+// Endpoint /api/chat (Assistants v2)
 app.post("/api/chat", async (req, res) => {
   try {
     if (!OPENAI_API_KEY || !ASSISTANT_ID) {
-      return res.status(500).json({ error: "Faltan secretos OPENAI_API_KEY o OPENAI_ASSISTANT_ID" });
+      return res.status(500).json({ error: "Faltan secretos OPENAI_API_KEY / OPENAI_ASSISTANT_ID" });
     }
     const { message, threadId: clientThreadId } = req.body || {};
     if (!message || typeof message !== "string") {
@@ -39,60 +41,62 @@ app.post("/api/chat", async (req, res) => {
       "Content-Type": "application/json",
     };
 
-    // 1) thread (si no viene uno)
+    // 1) Thread (solo si no nos lo pasan)
     let threadId = clientThreadId;
     if (!threadId) {
       const th = await fetch(`${API}/threads`, { method: "POST", headers, body: "{}" });
       if (!th.ok) throw new Error(await th.text());
-      const thData = await th.json();
-      threadId = thData.id;
+      threadId = (await th.json()).id;
     }
 
-    // 2) message
-    const msg = await fetch(`${API}/threads/${threadId}/messages`, {
+    // 2) Mensaje de usuario
+    const m = await fetch(`${API}/threads/${threadId}/messages`, {
       method: "POST", headers, body: JSON.stringify({ role: "user", content: message }),
     });
-    if (!msg.ok) throw new Error(await msg.text());
+    if (!m.ok) throw new Error(await m.text());
 
-    // 3) run
+    // 3) Run
     const run = await fetch(`${API}/threads/${threadId}/runs`, {
       method: "POST", headers, body: JSON.stringify({ assistant_id: ASSISTANT_ID }),
     });
     if (!run.ok) throw new Error(await run.text());
     const runData = await run.json();
 
-    // 4) poll
+    // 4) Poll hasta completar
     let finalText = null;
     for (let i = 0; i < 60; i++) {
       await sleep(1000);
-      const r = await fetch(`${API}/threads/${threadId}/runs/${runData.id}`, { headers });
-      if (!r.ok) throw new Error(await r.text());
-      const rData = await r.json();
-      if (rData.status === "completed") {
-        const ms = await fetch(`${API}/threads/${threadId}/messages`, { headers });
-        if (!ms.ok) throw new Error(await ms.text());
-        const msData = await ms.json();
-        const assistantMsg = (msData.data || []).find(m => m.role === "assistant" && m.run_id === runData.id);
-        finalText = assistantMsg?.content?.[0]?.text?.value || "";
+      const st = await fetch(`${API}/threads/${threadId}/runs/${runData.id}`, { headers });
+      if (!st.ok) throw new Error(await st.text());
+      const sd = await st.json();
+
+      if (sd.status === "completed") {
+        const msgs = await fetch(`${API}/threads/${threadId}/messages`, { headers });
+        if (!msgs.ok) throw new Error(await msgs.text());
+        const md = await msgs.json();
+        const aMsg = (md.data || []).find(x => x.role === "assistant" && x.run_id === runData.id);
+        finalText = aMsg?.content?.[0]?.text?.value || "";
         break;
       }
-      if (["failed","cancelled","expired"].includes(rData.status)) {
-        throw new Error(`Run ${rData.status}: ${rData.last_error?.message || ""}`);
+      if (["failed","cancelled","expired"].includes(sd.status)) {
+        throw new Error(`Run ${sd.status}: ${sd.last_error?.message || ""}`);
       }
     }
-    if (!finalText) throw new Error("Timeout esperando respuesta del asistente.");
 
-    res.json({ threadId, message: finalText });
+    if (!finalText) throw new Error("Timeout esperando respuesta del asistente.");
+    return res.json({ threadId, message: finalText });
   } catch (e) {
     console.error("Error /api/chat:", e);
-    res.status(500).json({ error: "No se pudo procesar la solicitud." });
+    return res.status(500).json({ error: "No se pudo procesar la solicitud." });
   }
 });
 
-// servir la SPA de Vite si existe /dist
+// ---- Servir la SPA de Vite (si existe dist/) ----
 const distPath = path.join(__dirname, "dist");
 app.use(express.static(distPath));
-app.get("*", (req, res) => {
+
+// ⚠️ Express 5: usar "/*" en lugar de "*"
+app.get("/*", (req, res) => {
   try {
     res.sendFile(path.join(distPath, "index.html"));
   } catch {
