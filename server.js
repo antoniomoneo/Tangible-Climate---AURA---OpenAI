@@ -1,104 +1,105 @@
-// server.js (en la RAÍZ)
-import express from "express";
-import OpenAI from "openai";
+// server.js (RAÍZ)
+const express = require("express");
+const path = require("path");
 
-// --- Configuration & Startup Checks ---
-const { OPENAI_API_KEY, OPENAI_ASSISTANT_ID, PORT = 8080, ALLOWED_ORIGIN = "*" } = process.env;
-
-if (!OPENAI_API_KEY) {
-  throw new Error("The OPENAI_API_KEY environment variable is missing.");
-}
-if (!OPENAI_ASSISTANT_ID) {
-  throw new Error("The OPENAI_ASSISTANT_ID environment variable is missing.");
-}
-
-const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
-const assistantId = OPENAI_ASSISTANT_ID;
-
-// --- Express App Setup ---
 const app = express();
+const PORT = process.env.PORT || 8080;
+
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const ASSISTANT_ID   = process.env.OPENAI_ASSISTANT_ID;
+const API = "https://api.openai.com/v1";
+
 app.use(express.json());
 
-// --- CORS Middleware ---
+// CORS simple (ajusta ORIGIN a tu dominio cuando lo tengas)
+const ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Origin", ORIGIN);
+  res.setHeader("Access-Control-Allow-Methods", "POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") {
-    return res.status(204).end();
-  }
+  if (req.method === "OPTIONS") return res.status(204).end();
   next();
 });
 
-// --- Helper Functions ---
-const pollRunStatus = async (threadId, runId) => {
-    // The Assistants API is asynchronous. We need to poll for the result.
-    while (true) {
-        const run = await openai.beta.threads.runs.retrieve(threadId, runId);
-        if (["completed", "failed", "cancelled", "expired"].includes(run.status)) {
-            return run;
-        }
-        await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second
-    }
-};
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-// --- API Routes ---
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message, threadId: clientThreadId, context } = req.body;
-
-    if (!message) {
-      return res.status(400).json({ error: { message: "The 'message' field is required." } });
+    if (!OPENAI_API_KEY || !ASSISTANT_ID) {
+      return res.status(500).json({ error: "Faltan secretos OPENAI_API_KEY o OPENAI_ASSISTANT_ID" });
+    }
+    const { message, threadId: clientThreadId } = req.body || {};
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({ error: "Falta 'message' (string)" });
     }
 
-    // 1. Get or create a thread
+    const headers = {
+      "Authorization": `Bearer ${OPENAI_API_KEY}`,
+      "OpenAI-Beta": "assistants=v2",
+      "Content-Type": "application/json",
+    };
+
+    // 1) thread (si no viene uno)
     let threadId = clientThreadId;
     if (!threadId) {
-      const thread = await openai.beta.threads.create();
-      threadId = thread.id;
+      const th = await fetch(`${API}/threads`, { method: "POST", headers, body: "{}" });
+      if (!th.ok) throw new Error(await th.text());
+      const thData = await th.json();
+      threadId = thData.id;
     }
 
-    // 2. Add the user's message to the thread (including context)
-    await openai.beta.threads.messages.create(threadId, {
-      role: "user",
-      content: `Context: ${context}\n\nUser Question: ${message}`,
+    // 2) message
+    const msg = await fetch(`${API}/threads/${threadId}/messages`, {
+      method: "POST", headers, body: JSON.stringify({ role: "user", content: message }),
     });
+    if (!msg.ok) throw new Error(await msg.text());
 
-    // 3. Create a run to process the thread
-    const run = await openai.beta.threads.runs.create(threadId, {
-      assistant_id: assistantId,
+    // 3) run
+    const run = await fetch(`${API}/threads/${threadId}/runs`, {
+      method: "POST", headers, body: JSON.stringify({ assistant_id: ASSISTANT_ID }),
     });
+    if (!run.ok) throw new Error(await run.text());
+    const runData = await run.json();
 
-    // 4. Wait for the run to complete
-    const completedRun = await pollRunStatus(threadId, run.id);
-
-    if (completedRun.status !== "completed") {
-      const errorMessage = completedRun.last_error?.message || `Run finished with status: ${completedRun.status}`;
-      throw new Error(`Assistant run failed. ${errorMessage}`);
+    // 4) poll
+    let finalText = null;
+    for (let i = 0; i < 60; i++) {
+      await sleep(1000);
+      const r = await fetch(`${API}/threads/${threadId}/runs/${runData.id}`, { headers });
+      if (!r.ok) throw new Error(await r.text());
+      const rData = await r.json();
+      if (rData.status === "completed") {
+        const ms = await fetch(`${API}/threads/${threadId}/messages`, { headers });
+        if (!ms.ok) throw new Error(await ms.text());
+        const msData = await ms.json();
+        const assistantMsg = (msData.data || []).find(m => m.role === "assistant" && m.run_id === runData.id);
+        finalText = assistantMsg?.content?.[0]?.text?.value || "";
+        break;
+      }
+      if (["failed","cancelled","expired"].includes(rData.status)) {
+        throw new Error(`Run ${rData.status}: ${rData.last_error?.message || ""}`);
+      }
     }
+    if (!finalText) throw new Error("Timeout esperando respuesta del asistente.");
 
-    // 5. Retrieve the messages added by the assistant
-    const messages = await openai.beta.threads.messages.list(threadId, { limit: 10 });
-    const assistantMessage = messages.data.find(m => m.run_id === run.id && m.role === "assistant");
-
-    if (assistantMessage && assistantMessage.content[0].type === 'text') {
-      const responseText = assistantMessage.content[0].text.value;
-      // 6. Send response back to client, matching frontend expectations
-      res.json({ response: responseText, threadId });
-    } else {
-      throw new Error("No response was received from the assistant.");
-    }
-
+    res.json({ threadId, message: finalText });
   } catch (e) {
-    console.error("Error processing chat request:", e);
-    const errorMessage = e instanceof Error ? e.message : "An unknown error occurred.";
-    res.status(500).json({ error: { message: `Could not process the request. ${errorMessage}` } });
+    console.error("Error /api/chat:", e);
+    res.status(500).json({ error: "No se pudo procesar la solicitud." });
   }
 });
 
-app.get("/healthz", (_req, res) => res.send("ok"));
+// servir la SPA de Vite si existe /dist
+const distPath = path.join(__dirname, "dist");
+app.use(express.static(distPath));
+app.get("*", (req, res) => {
+  try {
+    res.sendFile(path.join(distPath, "index.html"));
+  } catch {
+    res.status(200).send("Backend OK");
+  }
+});
 
-// --- Server Start ---
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`API escuchando en http://0.0.0.0:${PORT}`);
 });
