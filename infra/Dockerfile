@@ -1,13 +1,13 @@
-# /infra/Dockerfile  (debug mínimo)
+# /infra/Dockerfile  (mínimo estable)
 FROM node:20
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Copiamos el server mínimo
+# copia el servidor
 COPY server.cjs ./server.cjs
 
-# Instalamos solo express
+# instala solo lo necesario
 RUN npm install express
 
 EXPOSE 8080
