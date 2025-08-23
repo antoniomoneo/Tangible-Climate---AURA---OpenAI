@@ -1,28 +1,24 @@
 # --- ETAPA 1: Build (Vite) ---
 FROM node:20 AS builder
 WORKDIR /app
-
-# Instalar dependencias
 COPY package*.json ./
 RUN npm install
-
-# Copiar código y compilar el frontend
 COPY . .
-RUN npm run build || echo "vite build falló, seguimos solo con API"
+# Si falla la build del frontend, seguimos con la API igualmente:
+RUN npm run build || echo "vite build falló; seguimos solo con API"
 
-# --- ETAPA 2: Runtime (Express API) ---
+# --- ETAPA 2: Runtime (Express) ---
 FROM node:20
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Copiar el API y el frontend compilado (si existe)
+# Copiamos API y, si existe, el frontend compilado
 COPY server.js ./server.js
 COPY --from=builder /app/dist ./dist
 
-# Instalar solo lo que necesita server.js
-RUN npm install express node-fetch
+# Instala solo lo necesario para server.js (Express)
+RUN npm install express
 
 EXPOSE 8080
-
 CMD ["node","server.js"]
