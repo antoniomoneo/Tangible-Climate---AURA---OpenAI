@@ -1,6 +1,10 @@
+# /infra/cloudbuild.yaml
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 substitutions:
   _REGION: "us-west1"
-  _SERVICE: "tangible-climate-aura-backend"   # << importante
+  _SERVICE: "tangible-climate-aura-backend"
   _REPO: "tangible-climate-aura-app-us"
   _RUNTIME_SA: "tangible-climate-aura@tangible-climate-aura.iam.gserviceaccount.com"
 
@@ -30,5 +34,5 @@ steps:
         "--quiet"
       ]
 
-options:
-  logging: CLOUD_LOGGING_ONLY
+images:
+  - "us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"
