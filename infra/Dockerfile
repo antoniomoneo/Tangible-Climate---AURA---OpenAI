@@ -2,28 +2,27 @@
 FROM node:20 AS builder
 WORKDIR /app
 
-# Usa package.json de la raíz (el de Vite/React)
+# Instalar dependencias
 COPY package*.json ./
 RUN npm install
 
+# Copiar código y compilar el frontend
 COPY . .
-# Si tu proyecto usa vite.config.ts con outDir distinto, igualmente compila aquí
-RUN npm run build
+RUN npm run build || echo "vite build falló, seguimos solo con API"
 
-# --- ETAPA 2: Runtime (sirve estáticos) ---
+# --- ETAPA 2: Runtime (Express API) ---
 FROM node:20
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Copiamos solo el resultado del build
-# ⚠️ Si tu outDir NO es "dist", cambia "dist" por tu carpeta (p. ej. "build")
+# Copiar el API y el frontend compilado (si existe)
+COPY server.js ./server.js
 COPY --from=builder /app/dist ./dist
 
-# Instala 'serve' globalmente
-RUN npm install -g serve
+# Instalar solo lo que necesita server.js
+RUN npm install express node-fetch
 
 EXPOSE 8080
 
-# Comando con trazas + escucha explícita en 0.0.0.0:PORT
-CMD ["sh","-lc","set -eux; ls -la dist || true; echo PORT=$PORT; which serve; serve -s dist -l tcp://0.0.0.0:${PORT}"]
+CMD ["node","server.js"]
