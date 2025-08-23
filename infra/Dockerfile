@@ -24,11 +24,11 @@ ENV PORT=8080
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-# Copiamos el servidor y (si existe) la SPA ya compilada
-COPY server.cjs ./server.cjs
+# Copiamos el servidor (ESM) y, si existe, la SPA ya compilada
+COPY server.js ./server.js
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 8080
 
 # Arranca la API (escucha en 0.0.0.0:$PORT para Cloud Run)
-CMD ["node", "server.cjs"]
+CMD ["node", "server.js"]
