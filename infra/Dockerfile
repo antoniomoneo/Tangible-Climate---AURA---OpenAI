@@ -1,29 +1,32 @@
+# syntax=docker/dockerfile:1
+
 # --- ETAPA 1: Build (Vite) ---
 FROM node:20 AS builder
 WORKDIR /app
 
-# Usa package.json de la raíz (el de Vite/React)
+# Instalar deps (incluye devDependencies para poder compilar)
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
+# Copiar el resto y construir
 COPY . .
-# Si tu proyecto usa vite.config.ts con outDir distinto, igualmente compila aquí
 RUN npm run build
 
-# --- ETAPA 2: Runtime (sirve estáticos) ---
-FROM node:20
+# --- ETAPA 2: Runtime (Express) ---
+FROM node:20-slim
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Copiamos solo el resultado del build
-# ⚠️ Si tu outDir NO es "dist", cambia "dist" por tu carpeta (p. ej. "build")
-COPY --from=builder /app/dist ./dist
+# Instalar solo deps de producción (Express, @google/genai, etc.)
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-# Instala 'serve' globalmente
-RUN npm install -g serve
+# Copiar servidor y build ya compilado
+COPY server.js ./
+COPY --from=builder /app/dist ./dist
 
 EXPOSE 8080
 
-# Comando con trazas + escucha explícita en 0.0.0.0:PORT
-CMD ["sh","-lc","set -eux; ls -la dist || true; echo PORT=$PORT; which serve; serve -s dist -l tcp://0.0.0.0:${PORT}"]
+# Arrancar tu API/SPA con Express (escucha en 0.0.0.0:8080)
+CMD ["node", "server.js"]
