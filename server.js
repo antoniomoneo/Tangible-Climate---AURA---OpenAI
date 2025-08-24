@@ -15,8 +15,8 @@ app.use(express.json());
 const ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", ORIGIN);
-  res.setHeader("Access-Control-Allow-Methods", "POST,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
   if (req.method === "OPTIONS") return res.status(204).end();
   next();
 });
@@ -96,7 +96,9 @@ app.post("/api/chat", async (req, res) => {
 // servir SPA
 const distPath = path.join(__dirname, "dist");
 app.use(express.static(distPath));
-app.get("/*", (req, res) => {
+
+// ✅ Catch-all SOLO para rutas que NO empiezan por /api
+app.get(/^\/(?!api).*/, (req, res) => {
   try {
     res.sendFile(path.join(distPath, "index.html"));
   } catch {
