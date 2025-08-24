@@ -7,7 +7,7 @@ import { GoogleGenAI } from "@google/genai";
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const API_KEY = process.env.GEMINI_API_KEY;
 
 app.use(express.json());
 
@@ -25,7 +25,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.post("/api/chat", async (req, res) => {
-  if (!GEMINI_API_KEY) {
+  if (!API_KEY) {
     return res.status(500).json({ error: { message: "Missing GEMINI_API_KEY environment variable." } });
   }
   const { history, message, context } = req.body || {};
@@ -66,7 +66,7 @@ app.post("/api/chat", async (req, res) => {
   // --- BACKGROUND STREAMING PHASE ---
   const streamGeminiResponse = async () => {
     try {
-      const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+      const ai = new GoogleGenAI({ apiKey: API_KEY });
       const stream = await ai.models.generateContentStream({
         model: geminiModel,
         contents: contents,
