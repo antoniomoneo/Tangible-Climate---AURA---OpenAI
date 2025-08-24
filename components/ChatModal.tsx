@@ -3,22 +3,12 @@ import type { Language, ChatMessage } from '../types';
 import { locales } from '../locales';
 import { AuraIcon, UserIcon } from './icons';
 
-const TypingIndicator: React.FC = () => (
-    <div className="flex items-center space-x-1 p-2">
-        <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse [animation-delay:-0.3s]"></span>
-        <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse [animation-delay:-0.15s]"></span>
-        <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
-    </div>
-);
-
 interface ChatModalProps {
   isOpen: boolean;
   onClose: () => void;
   language: Language;
   context: string;
 }
-
-const AURA_TYPING_PLACEHOLDER = 'AURA_IS_TYPING_PLACEHOLDER';
 
 const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, context }) => {
   const t = locales[language];
@@ -59,57 +49,68 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
 
     setIsSending(true);
     setError(null);
-
-    const userMessage: ChatMessage = { role: 'user', content: prompt };
-    const loadingMessage: ChatMessage = { role: 'assistant', content: AURA_TYPING_PLACEHOLDER };
-    
-    setMessages(prev => [...prev, userMessage, loadingMessage]);
     setInput('');
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60-second timeout for serverless cold starts
-
+    const userMessage: ChatMessage = { role: 'user', content: prompt };
+    setMessages(prev => [...prev, userMessage, { role: 'assistant', content: '' }]);
+    
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: prompt,
           threadId: threadId,
           context: `Current context: The user is viewing the scene described as: "${context}". System instruction: ${t.chatSystemInstruction}`,
         }),
-        signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({ error: { message: t.chatError }}));
-        throw new Error(errData.error?.message || t.chatError);
+      if (!response.ok || !response.body) {
+          const errData = await response.json().catch(() => ({ error: { message: t.chatError }}));
+          throw new Error(errData.error?.message || `HTTP error! status: ${response.status}`);
       }
-
-      const data = await response.json();
       
-      if (data.threadId && !threadId) {
-        setThreadId(data.threadId);
-        localStorage.setItem('openai_thread_id', data.threadId);
-      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-      setMessages(prev => [
-          ...prev.slice(0, -1), 
-          { role: 'assistant', content: data.response }
-      ]);
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() || '';
+
+        for (const part of parts) {
+            try {
+                const parsed = JSON.parse(part);
+                if (parsed.type === 'chunk') {
+                    setMessages(prev => {
+                        const lastMsg = prev[prev.length - 1];
+                        const updatedMsg = { ...lastMsg, content: lastMsg.content + parsed.payload };
+                        return [...prev.slice(0, -1), updatedMsg];
+                    });
+                } else if (parsed.type === 'done') {
+                    const finalThreadId = parsed.payload.threadId;
+                    if (finalThreadId) {
+                      setThreadId(finalThreadId);
+                      localStorage.setItem('openai_thread_id', finalThreadId);
+                    }
+                } else if (parsed.type === 'error') {
+                    throw new Error(parsed.payload.message || t.chatError);
+                }
+            } catch (e) {
+                console.error("Error parsing stream part:", part, e);
+            }
+        }
+      }
 
     } catch (e: any) {
         console.error('Chat error:', e);
-        if (e.name === 'AbortError') {
-            setError(`${t.chatError} (Request timed out)`);
-        } else {
-            setError(e.message || t.chatError);
-        }
-        setMessages(prev => prev.filter(msg => msg.content !== AURA_TYPING_PLACEHOLDER));
+        setError(e.message || t.chatError);
+        // Remove the empty assistant message if an error occurred
+        setMessages(prev => prev.filter(msg => msg.content !== '' || msg.role !== 'assistant'));
     } finally {
         setIsSending(false);
     }
@@ -139,14 +140,8 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
                   </div>
                 )}
                 <div className={`max-w-md p-3 rounded-lg shadow ${msg.role === 'user' ? 'bg-gray-700' : 'bg-gray-700'}`}>
-                   {msg.role === 'assistant' && msg.content === AURA_TYPING_PLACEHOLDER ? (
-                     <div className="flex items-center gap-2 text-gray-300">
-                        <TypingIndicator />
-                        <span>{t.chatLoading}</span>
-                     </div>
-                   ) : (
-                     <p className="text-white whitespace-pre-wrap">{msg.content}</p>
-                   )}
+                   <p className="text-white whitespace-pre-wrap">{msg.content}</p>
+                   {isSending && msg.role === 'assistant' && index === messages.length -1 && <span className="inline-block w-2 h-4 bg-white ml-1 animate-pulse"></span>}
                 </div>
                  {msg.role === 'user' && (
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">

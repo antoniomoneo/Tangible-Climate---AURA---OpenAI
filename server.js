@@ -2,6 +2,7 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import fetch from "node-fetch";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -25,68 +26,111 @@ app.use((req, res, next) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const handleOpenAIError = async (response) => {
+    const errorText = await response.text();
+    console.error(`OpenAI API Error (${response.status}): ${errorText}`);
+    let errorMessage = `OpenAI API Error: ${response.status}`;
+    try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.error?.message) {
+            errorMessage = errorJson.error.message;
+        }
+    } catch (e) {
+        errorMessage = errorText;
+    }
+    return new Error(errorMessage);
+};
 
 app.post("/api/chat", async (req, res) => {
+  if (!OPENAI_API_KEY || !OPENAI_ASSISTANT_ID) {
+    return res.status(500).json({ error: { message: "Faltan secretos OPENAI_API_KEY / OPENAI_ASSISTANT_ID" } });
+  }
+  const { message, threadId: clientThreadId, context } = req.body || {};
+  if (!message || typeof message !== "string") {
+    return res.status(400).json({ error: { message: "Falta 'message' (string)" } });
+  }
+
+  const headers = {
+    "Authorization": `Bearer ${OPENAI_API_KEY}`,
+    "OpenAI-Beta": "assistants=v2",
+    "Content-Type": "application/json",
+  };
+
   try {
-    if (!OPENAI_API_KEY || !OPENAI_ASSISTANT_ID) {
-      return res.status(500).json({ error: "Faltan secretos OPENAI_API_KEY / OPENAI_ASSISTANT_ID" });
-    }
-    const { message, threadId: clientThreadId } = req.body || {};
-    if (!message || typeof message !== "string") {
-      return res.status(400).json({ error: "Falta 'message' (string)" });
-    }
-
-    const headers = {
-      "Authorization": `Bearer ${OPENAI_API_KEY}",
-      "OpenAI-Beta": "assistants=v2",
-      "Content-Type": "application/json",
-    };
-
     let threadId = clientThreadId;
     if (!threadId) {
       const th = await fetch(`${API}/threads`, { method: "POST", headers, body: "{}" });
-      if (!th.ok) throw new Error(await th.text());
+      if (!th.ok) throw await handleOpenAIError(th);
       threadId = (await th.json()).id;
     }
 
     const m = await fetch(`${API}/threads/${threadId}/messages`, {
-      method: "POST", headers, body: JSON.stringify({ role: "user", content: message }),
+      method: "POST", headers, body: JSON.stringify({ role: "user", content: `${context}\n\nUser: ${message}` }),
     });
-    if (!m.ok) throw new Error(await m.text());
+    if (!m.ok) throw await handleOpenAIError(m);
 
-    const run = await fetch(`${API}/threads/${threadId}/runs`, {
-      method: "POST", headers, body: JSON.stringify({ assistant_id: OPENAI_ASSISTANT_ID }),
+    // Set headers for streaming
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    
+    const runResponse = await fetch(`${API}/threads/${threadId}/runs`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ assistant_id: OPENAI_ASSISTANT_ID, stream: true }),
     });
-    if (!run.ok) throw new Error(await run.text());
-    const runData = await run.json();
 
-    let finalText = null;
-    for (let i = 0; i < 60; i++) {
-      await sleep(1000);
-      const st = await fetch(`${API}/threads/${threadId}/runs/${runData.id}`, { headers });
-      if (!st.ok) throw new Error(await st.text());
-      const sd = await st.json();
-      if (sd.status === "completed") {
-        const msgs = await fetch(`${API}/threads/${threadId}/messages`, { headers });
-        if (!msgs.ok) throw new Error(await msgs.text());
-        const md = await msgs.json();
-        const aMsg = (md.data || []).find(x => x.role === "assistant" && x.run_id === runData.id);
-        finalText = aMsg?.content?.[0]?.text?.value || "";
-        break;
-      }
-      if (["failed","cancelled","expired"].includes(sd.status)) {
-        throw new Error(`Run ${sd.status}: ${sd.last_error?.message || ""}`);
-      }
+    if (!runResponse.ok || !runResponse.body) {
+        throw await handleOpenAIError(runResponse);
     }
+    
+    // Pipe the stream from OpenAI and process it
+    const reader = runResponse.body;
+    const decoder = new TextDecoder();
+    let buffer = '';
 
-    if (!finalText) throw new Error("Timeout esperando respuesta del asistente.");
-    res.json({ threadId, message: finalText });
+    for await (const chunk of reader) {
+        buffer += decoder.decode(chunk, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop() || ''; // Keep potential partial event
+
+        for (const event of events) {
+            if (event.trim() === '' || !event.startsWith('event:')) continue;
+            
+            const eventTypeLine = event.split('\n')[0];
+            const dataLine = event.split('\n')[1];
+
+            if (eventTypeLine === 'event: thread.message.delta' && dataLine && dataLine.startsWith('data: ')) {
+                const jsonData = dataLine.substring(6);
+                try {
+                    const parsed = JSON.parse(jsonData);
+                    const textChunk = parsed.delta?.content?.[0]?.text?.value;
+                    if (textChunk) {
+                        res.write(JSON.stringify({ type: 'chunk', payload: textChunk }) + '\n\n');
+                    }
+                } catch (e) {
+                    console.error('Error parsing OpenAI stream data:', jsonData);
+                }
+            }
+        }
+    }
+    
+    res.write(JSON.stringify({ type: 'done', payload: { threadId } }) + '\n\n');
+    res.end();
+
   } catch (e) {
-    console.error("Error /api/chat:", e);
-    res.status(500).json({ error: "No se pudo procesar la solicitud." });
+    console.error("Error /api/chat:", e.message);
+    // If headers are not sent, send a proper error response
+    if (!res.headersSent) {
+      res.status(500).json({ error: { message: e.message || "No se pudo procesar la solicitud." } });
+    } else {
+      // If stream has started, send an error chunk
+      res.write(JSON.stringify({ type: 'error', payload: { message: e.message } }) + '\n\n');
+      res.end();
+    }
   }
 });
+
 
 // servir SPA
 const distPath = path.join(__dirname, "dist");
@@ -100,5 +144,5 @@ app.get("/*", (req, res) => {
 });
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`API escuchando en http://0.0.0.0:${PORT}`);
+  console.log(`API escuchando en http://0.-0.0.0:${PORT}`);
 });
