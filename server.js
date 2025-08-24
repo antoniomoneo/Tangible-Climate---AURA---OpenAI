@@ -70,7 +70,7 @@ app.post("/api/chat", async (req, res) => {
     if (!m.ok) throw await handleOpenAIError(m);
 
     // Set headers for streaming
-    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     
@@ -144,5 +144,5 @@ app.get("/*", (req, res) => {
 });
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`API escuchando en http://0.-0.0.0:${PORT}`);
+  console.log(`API escuchando en http://0.0.0.0:${PORT}`);
 });
