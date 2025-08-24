@@ -8,15 +8,15 @@ interface ChatModalProps {
   onClose: () => void;
   language: Language;
   context: string;
+  onDebugEvent: (data: any) => void;
 }
 
-const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, context }) => {
+const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, context, onDebugEvent }) => {
   const t = locales[language];
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [threadId, setThreadId] = useState<string | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -32,11 +32,6 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
       setInput('');
       setError(null);
       setIsSending(false);
-      
-      const storedThreadId = localStorage.getItem('openai_thread_id');
-      if (storedThreadId) {
-        setThreadId(storedThreadId);
-      }
     }
   }, [isOpen]);
 
@@ -52,6 +47,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
     setInput('');
 
     const userMessage: ChatMessage = { role: 'user', content: prompt };
+    const historyForApi = [...messages];
     setMessages(prev => [...prev, userMessage, { role: 'assistant', content: '' }]);
     
     try {
@@ -59,8 +55,8 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          history: historyForApi,
           message: prompt,
-          threadId: threadId,
           context: `Current context: The user is viewing the scene described as: "${context}". System instruction: ${t.chatSystemInstruction}`,
         }),
       });
@@ -79,30 +75,38 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
         if (done) break;
         
         buffer += decoder.decode(value, { stream: true });
-        const parts = buffer.split('\n\n');
-        buffer = parts.pop() || '';
+        
+        let boundary = buffer.indexOf('\n\n');
+        while (boundary !== -1) {
+            const messageBlock = buffer.substring(0, boundary);
+            buffer = buffer.substring(boundary + 2);
 
-        for (const part of parts) {
-            try {
-                const parsed = JSON.parse(part);
-                if (parsed.type === 'chunk') {
-                    setMessages(prev => {
-                        const lastMsg = prev[prev.length - 1];
-                        const updatedMsg = { ...lastMsg, content: lastMsg.content + parsed.payload };
-                        return [...prev.slice(0, -1), updatedMsg];
-                    });
-                } else if (parsed.type === 'done') {
-                    const finalThreadId = parsed.payload.threadId;
-                    if (finalThreadId) {
-                      setThreadId(finalThreadId);
-                      localStorage.setItem('openai_thread_id', finalThreadId);
+            if (messageBlock.startsWith('data: ')) {
+                const jsonData = messageBlock.substring(6);
+                if (jsonData.trim()) {
+                    try {
+                        const parsed = JSON.parse(jsonData);
+                        
+                        if (parsed.type === 'chunk') {
+                            setMessages(prev => {
+                                const lastMsg = prev[prev.length - 1];
+                                const updatedMsg = { ...lastMsg, content: lastMsg.content + parsed.payload };
+                                return [...prev.slice(0, -1), updatedMsg];
+                            });
+                        } else if (parsed.type === 'debug') {
+                            onDebugEvent(parsed.payload);
+                        } else if (parsed.type === 'done') {
+                            // No action needed for 'done' in stateless model
+                        } else if (parsed.type === 'error') {
+                            throw new Error(parsed.payload.message || t.chatError);
+                        }
+
+                    } catch (e) {
+                        console.error("Error parsing stream part:", jsonData, e);
                     }
-                } else if (parsed.type === 'error') {
-                    throw new Error(parsed.payload.message || t.chatError);
                 }
-            } catch (e) {
-                console.error("Error parsing stream part:", part, e);
             }
+            boundary = buffer.indexOf('\n\n');
         }
       }
 

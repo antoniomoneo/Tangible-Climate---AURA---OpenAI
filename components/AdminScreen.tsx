@@ -58,12 +58,6 @@ const AdminLogin: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess }
 };
 
 const AdminPanel: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
-  
-  const handleClearThread = () => {
-    localStorage.removeItem('openai_thread_id');
-    alert('The user\'s conversation thread has been cleared. The next chat will start a new conversation.');
-  };
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <div className="w-full max-w-2xl p-8 space-y-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
@@ -77,16 +71,10 @@ const AdminPanel: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             </button>
         </div>
         <div className="space-y-4 pt-4 border-t border-gray-600">
-          <h2 className="text-lg font-semibold text-gray-300">Chat Management</h2>
+          <h2 className="text-lg font-semibold text-gray-300">System Status</h2>
           <p className="text-sm text-gray-400">
-            If a user's conversation with AURA becomes stuck or corrupted, you can clear their current session. This will force a new conversation thread to be created the next time they open the chat.
+            The AURA chat system is now running on the Google Gemini API. Conversation history is managed by the user's client, making it stateless from the server's perspective. No manual intervention is required.
           </p>
-           <button
-            onClick={handleClearThread}
-            className="px-6 py-2 font-bold text-white bg-amber-600 rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
-          >
-            Clear User Chat Thread
-          </button>
         </div>
       </div>
     </div>

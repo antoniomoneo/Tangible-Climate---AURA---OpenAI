@@ -15,7 +15,8 @@
     "express": "^5.1.0",
     "node-fetch": "^3.3.2",
     "path": "^0.12.7",
-    "url": "^0.11.4"
+    "url": "^0.11.4",
+    "@google/genai": "^1.15.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

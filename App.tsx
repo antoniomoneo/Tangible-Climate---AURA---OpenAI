@@ -7,6 +7,7 @@ import DashboardScreen from './components/DashboardScreen';
 import Header from './components/Header';
 import ChatModal from './components/ChatModal';
 import AdminScreen from './components/AdminScreen';
+import DebugPanel from './components/DebugPanel';
 import { locales, storyData } from './locales';
 import { TangibleDataLogo } from './components/icons';
 
@@ -50,7 +51,10 @@ const Game: React.FC = () => {
   const [language, setLanguage] = useState<Language>('en');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isDebugPanelOpen, setIsDebugPanelOpen] = useState(false);
+  const [debugEvents, setDebugEvents] = useState<any[]>([]);
 
+  const isAdmin = sessionStorage.getItem('isAdminAuthenticated') === 'true';
   const t = locales[language];
 
   const resetGame = () => {
@@ -102,6 +106,27 @@ const Game: React.FC = () => {
   const handleCloseDashboard = () => {
     setGameState(gameStateBeforeDashboard);
   };
+  
+  const handleOpenChat = () => {
+    setDebugEvents([]);
+    if (isAdmin) {
+      setIsDebugPanelOpen(true);
+    }
+    setIsChatOpen(true);
+  };
+
+  const handleCloseChat = () => {
+    setIsChatOpen(false);
+  };
+  
+  const handleDebugEvent = (eventData: any) => {
+    const eventWithTimestamp = {
+      timestamp: new Date().toISOString(),
+      payload: eventData,
+    };
+    setDebugEvents(prevEvents => [...prevEvents, eventWithTimestamp]);
+  };
+
 
   const renderContent = () => {
     switch (gameState) {
@@ -148,7 +173,7 @@ const Game: React.FC = () => {
           {showHeader && 
             <Header 
               onDashboardClick={handleOpenDashboard} 
-              onChatClick={() => setIsChatOpen(true)}
+              onChatClick={handleOpenChat}
               onAboutClick={() => setIsAboutOpen(true)}
               language={language} 
             />
@@ -159,15 +184,23 @@ const Game: React.FC = () => {
        </div>
        <ChatModal 
           isOpen={isChatOpen} 
-          onClose={() => setIsChatOpen(false)} 
+          onClose={handleCloseChat} 
           language={language}
           context={currentStory?.sceneDescription || 'General inquiry'}
+          onDebugEvent={handleDebugEvent}
        />
        <AboutModal 
           isOpen={isAboutOpen} 
           onClose={() => setIsAboutOpen(false)} 
           language={language}
        />
+       {isAdmin && (
+         <DebugPanel 
+            isOpen={isDebugPanelOpen}
+            events={debugEvents}
+            onClose={() => setIsDebugPanelOpen(false)}
+         />
+       )}
     </div>
   );
 };
