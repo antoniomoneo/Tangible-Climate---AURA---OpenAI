@@ -1,34 +1,29 @@
-# ===========================
-#   Etapa 1: Build (Vite)
-# ===========================
+# --- ETAPA 1: Build (Vite) ---
 FROM node:20 AS builder
 WORKDIR /app
 
-# Instala dependencias del proyecto (frontend + lo que haga falta para build)
+# Usa package.json de la raíz (el de Vite/React)
 COPY package*.json ./
 RUN npm install
 
-# Copia el código y construye la SPA (si falla, seguimos con solo API)
 COPY . .
-RUN npm run build || echo "⚠️ build de Vite falló; se desplegará solo la API"
+# Si tu proyecto usa vite.config.ts con outDir distinto, igualmente compila aquí
+RUN npm run build
 
-# ===========================
-#   Etapa 2: Runtime (API)
-# ===========================
+# --- ETAPA 2: Runtime (sirve estáticos) ---
 FROM node:20
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Copia package.json y package-lock para instalar dependencias de producción
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-# Copiamos el servidor (ESM) y, si existe, la SPA ya compilada
-COPY server.js ./server.js
+# Copiamos solo el resultado del build
+# ⚠️ Si tu outDir NO es "dist", cambia "dist" por tu carpeta (p. ej. "build")
 COPY --from=builder /app/dist ./dist
+
+# Instala 'serve' globalmente
+RUN npm install -g serve
 
 EXPOSE 8080
 
-# Arranca la API (escucha en 0.0.0.0:$PORT para Cloud Run)
-CMD ["node", "server.js"]
+# Comando con trazas + escucha explícita en 0.0.0.0:PORT
+CMD ["sh","-lc","set -eux; ls -la dist || true; echo PORT=$PORT; which serve; serve -s dist -l tcp://0.0.0.0:${PORT}"]

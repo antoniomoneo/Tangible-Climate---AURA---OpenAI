@@ -1,35 +1,34 @@
-options:
-  logging: CLOUD_LOGGING_ONLY
-
 substitutions:
   _REGION: "us-west1"
-  _SERVICE: "tangible-climate-aura-backend"
+  _SERVICE: "tangible-climate-aura-backend"   # << importante
   _REPO: "tangible-climate-aura-app-us"
   _RUNTIME_SA: "tangible-climate-aura@tangible-climate-aura.iam.gserviceaccount.com"
 
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    args: [
-      "build",
-      "-f","infra/Dockerfile",
-      "-t","us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA",
-      "."
-    ]
+    args:
+      [
+        "build",
+        "-f","infra/Dockerfile",
+        "-t","us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA",
+        "."
+      ]
   - name: "gcr.io/cloud-builders/docker"
     args: ["push","us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"]
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
-    args: [
-      "run","deploy","${_SERVICE}",
-      "--region","${_REGION}",
-      "--image","us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA",
-      "--allow-unauthenticated",
-      "--service-account","${_RUNTIME_SA}",
-      "--set-secrets","OPENAI_API_KEY=OPENAI_API_KEY:latest",
-      "--set-secrets","OPENAI_ASSISTANT_ID=OPENAI_ASSISTANT_ID:latest",
-      "--project","$PROJECT_ID",
-      "--quiet"
-    ]
+    args:
+      [
+        "run","deploy","${_SERVICE}",
+        "--region","${_REGION}",
+        "--image","us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA",
+        "--allow-unauthenticated",
+        "--service-account","${_RUNTIME_SA}",
+        "--set-secrets","OPENAI_API_KEY=OPENAI_API_KEY:latest",
+        "--set-secrets","OPENAI_ASSISTANT_ID=OPENAI_ASSISTANT_ID:latest",
+        "--project","$PROJECT_ID",
+        "--quiet"
+      ]
 
-images:
-  - "us-west1-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"
+options:
+  logging: CLOUD_LOGGING_ONLY
