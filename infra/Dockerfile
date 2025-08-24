@@ -4,9 +4,9 @@
 FROM node:20 AS builder
 WORKDIR /app
 
-# Instalar deps (incluye devDependencies para poder compilar)
+# Instalar deps para construir (incluye devDependencies)
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copiar el resto y construir
 COPY . .
@@ -18,15 +18,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Instalar solo deps de producción (Express, @google/genai, etc.)
+# Instalar SOLO deps de producción para runtime
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
-# Copiar servidor y build ya compilado
+# Copiar servidor y el build ya compilado
 COPY server.js ./
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 8080
-
-# Arrancar tu API/SPA con Express (escucha en 0.0.0.0:8080)
 CMD ["node", "server.js"]
