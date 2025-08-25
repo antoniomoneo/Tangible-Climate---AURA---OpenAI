@@ -8,9 +8,12 @@ import Header from './components/Header';
 import ChatModal from './components/ChatModal';
 import AdminScreen from './components/AdminScreen';
 import DebugPanel from './components/DebugPanel';
-import CalendarModal from './components/CalendarModal';
 import { locales, storyData } from './locales';
 import { TangibleDataLogo } from './components/icons';
+import SplashScreen from './components/SplashScreen';
+import InstructionsModal from './components/InstructionsModal';
+import CalendarModal from './components/CalendarModal';
+import LanguageSelectionScreen from './components/LanguageSelectionScreen';
 
 const AboutModal: React.FC<{
   isOpen: boolean;
@@ -44,7 +47,7 @@ const AboutModal: React.FC<{
 };
 
 const Game: React.FC = () => {
-  const [gameState, setGameState] = useState<GameState>(GameState.START);
+  const [gameState, setGameState] = useState<GameState>(GameState.LANGUAGE_SELECTION);
   const [gameStateBeforeDashboard, setGameStateBeforeDashboard] = useState<GameState>(GameState.START);
   const [currentStory, setCurrentStory] = useState<StorySegment | null>(null);
   const [storyHistory, setStoryHistory] = useState<StoryHistoryItem[]>([]);
@@ -52,6 +55,7 @@ const Game: React.FC = () => {
   const [language, setLanguage] = useState<Language>('en');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isDebugPanelOpen, setIsDebugPanelOpen] = useState(false);
   const [debugEvents, setDebugEvents] = useState<any[]>([]);
@@ -60,21 +64,25 @@ const Game: React.FC = () => {
   const t = locales[language];
 
   const resetGame = () => {
-    setGameState(GameState.START);
+    setGameState(GameState.LANGUAGE_SELECTION);
     setCurrentStory(null);
     setStoryHistory([]);
     setError(null);
   };
-  
-  const handleStartGame = useCallback((selectedLanguage: Language) => {
+
+  const handleLanguageSelection = (selectedLanguage: Language) => {
     setLanguage(selectedLanguage);
+    setGameState(GameState.SPLASH);
+  };
+  
+  const handleStartGame = useCallback(() => {
     setError(null);
-    const initialStory = storyData[selectedLanguage]['start'];
+    const initialStory = storyData[language]['start'];
     
     setCurrentStory(initialStory);
     setStoryHistory([{ scene: initialStory.sceneDescription, choice: "The analysis begins..." }]);
     setGameState(GameState.PLAYING);
-  }, []);
+  }, [language]);
 
   const handleChoice = useCallback((choice: Choice) => {
     setError(null);
@@ -129,11 +137,18 @@ const Game: React.FC = () => {
     setDebugEvents(prevEvents => [...prevEvents, eventWithTimestamp]);
   };
 
+  if (gameState === GameState.LANGUAGE_SELECTION) {
+    return <LanguageSelectionScreen onSelect={handleLanguageSelection} />;
+  }
+  
+  if (gameState === GameState.SPLASH) {
+    return <SplashScreen onFinished={() => setGameState(GameState.START)} language={language} />;
+  }
 
   const renderContent = () => {
     switch (gameState) {
       case GameState.START:
-        return <StartScreen onStart={handleStartGame} />;
+        return <StartScreen onStart={handleStartGame} language={language} />;
       case GameState.PLAYING:
         return currentStory ? (
           <GameScreen
@@ -177,6 +192,7 @@ const Game: React.FC = () => {
               onDashboardClick={handleOpenDashboard} 
               onChatClick={handleOpenChat}
               onAboutClick={() => setIsAboutOpen(true)}
+              onInstructionsClick={() => setIsInstructionsOpen(true)}
               onCalendarClick={() => setIsCalendarOpen(true)}
               language={language} 
             />
@@ -195,6 +211,11 @@ const Game: React.FC = () => {
        <AboutModal 
           isOpen={isAboutOpen} 
           onClose={() => setIsAboutOpen(false)} 
+          language={language}
+       />
+       <InstructionsModal
+          isOpen={isInstructionsOpen}
+          onClose={() => setIsInstructionsOpen(false)}
           language={language}
        />
        <CalendarModal

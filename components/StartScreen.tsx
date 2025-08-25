@@ -1,23 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { locales } from '../locales';
 import type { Language } from '../types';
-import { GlobeIcon } from './icons';
 
 interface StartScreenProps {
-  onStart: (language: Language) => void;
+  onStart: () => void;
+  language: Language;
 }
 
-const StartScreen: React.FC<StartScreenProps> = ({ onStart }) => {
-  const [language, setLanguage] = useState<Language>('en');
+const StartScreen: React.FC<StartScreenProps> = ({ onStart, language }) => {
   const t = locales[language];
-
-  const handleLanguageSelect = (lang: Language) => {
-    setLanguage(lang);
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onStart(language);
+    onStart();
   };
 
   return (
@@ -28,26 +23,6 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStart }) => {
         <p className="text-gray-300 mb-8 font-semibold">{t.objective}</p>
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="text-sm text-gray-400">
-            <p className="mb-2 flex items-center justify-center gap-2"><GlobeIcon /> {t.selectLang}</p>
-            <div className="flex justify-center gap-4">
-              <button 
-                type="button" 
-                onClick={() => handleLanguageSelect('en')}
-                className={`px-4 py-2 rounded-lg transition-colors ${language === 'en' ? 'bg-cyan-500 text-white' : 'bg-gray-700 hover:bg-gray-600'}`}
-              >
-                English
-              </button>
-              <button 
-                type="button" 
-                onClick={() => handleLanguageSelect('es')}
-                className={`px-4 py-2 rounded-lg transition-colors ${language === 'es' ? 'bg-cyan-500 text-white' : 'bg-gray-700 hover:bg-gray-600'}`}
-              >
-                Español
-              </button>
-            </div>
-          </div>
-          
           <button 
             type="submit"
             className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-lg shadow-lg"

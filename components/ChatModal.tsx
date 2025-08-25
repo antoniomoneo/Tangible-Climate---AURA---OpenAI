@@ -50,8 +50,10 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
     const historyForApi = [...messages];
     setMessages(prev => [...prev, userMessage, { role: 'assistant', content: '' }]);
     
+    const apiUrl = `/api/chat`;
+    
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

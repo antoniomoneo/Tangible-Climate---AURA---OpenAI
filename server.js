@@ -24,6 +24,25 @@ app.use((req, res, next) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.get("/api/calendar", async (req, res) => {
+  const calendarId = 'c_41592e57472725b685e2d4ffb20f05c12f117f9ea2a46431ea621ed686f870ff@group.calendar.google.com';
+  const calendarUrl = `https://calendar.google.com/calendar/ical/${calendarId}/public/basic.ics`;
+
+  try {
+    const response = await fetch(calendarUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch calendar data from Google: ${response.statusText}`);
+    }
+    const icsData = await response.text();
+    res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+    res.send(icsData);
+  } catch (error) {
+    console.error("Error fetching calendar:", error.message);
+    res.status(500).json({ error: { message: "Could not retrieve calendar events from the server." } });
+  }
+});
+
+
 app.post("/api/chat", async (req, res) => {
   if (!API_KEY) {
     return res.status(500).json({ error: { message: "Missing GEMINI_API_KEY environment variable." } });

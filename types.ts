@@ -1,6 +1,8 @@
 export type Language = 'en' | 'es';
 
 export enum GameState {
+  LANGUAGE_SELECTION,
+  SPLASH,
   START,
   PLAYING,
   GAME_OVER,
@@ -32,4 +34,12 @@ export interface StoryHistoryItem {
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+}
+
+export interface CalendarEvent {
+    summary: string;
+    description: string;
+    location: string;
+    start: Date;
+    end: Date;
 }
