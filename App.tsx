@@ -8,6 +8,7 @@ import Header from './components/Header';
 import ChatModal from './components/ChatModal';
 import AdminScreen from './components/AdminScreen';
 import DebugPanel from './components/DebugPanel';
+import CalendarModal from './components/CalendarModal';
 import { locales, storyData } from './locales';
 import { TangibleDataLogo } from './components/icons';
 
@@ -51,6 +52,7 @@ const Game: React.FC = () => {
   const [language, setLanguage] = useState<Language>('en');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isDebugPanelOpen, setIsDebugPanelOpen] = useState(false);
   const [debugEvents, setDebugEvents] = useState<any[]>([]);
 
@@ -175,6 +177,7 @@ const Game: React.FC = () => {
               onDashboardClick={handleOpenDashboard} 
               onChatClick={handleOpenChat}
               onAboutClick={() => setIsAboutOpen(true)}
+              onCalendarClick={() => setIsCalendarOpen(true)}
               language={language} 
             />
           }
@@ -192,6 +195,11 @@ const Game: React.FC = () => {
        <AboutModal 
           isOpen={isAboutOpen} 
           onClose={() => setIsAboutOpen(false)} 
+          language={language}
+       />
+       <CalendarModal
+          isOpen={isCalendarOpen}
+          onClose={() => setIsCalendarOpen(false)}
           language={language}
        />
        {isAdmin && (

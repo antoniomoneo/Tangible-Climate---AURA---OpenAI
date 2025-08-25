@@ -25,11 +25,14 @@ export const locales = {
     headerDashboardButton: "Dashboard",
     headerChatButton: "AURA",
     headerAboutButton: "About",
+    headerCalendarButton: "Calendar",
     dashboardTitle: "Full Data Series",
     dashboardDescription: "This chart shows the complete global temperature anomaly data from 1880 to 2024. You can see the full context of the climate change 'skeleton'.",
     dashboardBack: "Back to Analysis",
     aboutTitle: "About The Project",
     aboutCredit: "An interactive experience by",
+    calendarTitle: "Schedule of Activities",
+    calendarDescription: "Explore upcoming events and activities related to the sculpture.",
   },
   es: {
     title: "El Esqueleto del Cambio Climático",
@@ -52,11 +55,14 @@ export const locales = {
     headerDashboardButton: "Dashboard",
     headerChatButton: "AURA",
     headerAboutButton: "Acerca de",
+    headerCalendarButton: "Calendario",
     dashboardTitle: "Serie de Datos Completa",
     dashboardDescription: "Este gráfico muestra los datos completos de la anomalía de la temperatura global desde 1880 hasta 2024. Puedes ver el contexto completo del 'esqueleto' del cambio climático.",
     dashboardBack: "Volver al Análisis",
     aboutTitle: "Sobre el Proyecto",
     aboutCredit: "Una experiencia interactiva de",
+    calendarTitle: "Calendario de Actividades",
+    calendarDescription: "Explora los próximos eventos y actividades relacionadas con la escultura.",
   }
 };
 
