@@ -15,6 +15,15 @@ import InstructionsModal from './components/InstructionsModal';
 import CalendarModal from './components/CalendarModal';
 import LanguageSelectionScreen from './components/LanguageSelectionScreen';
 
+// Helper function to send GA events
+const trackEvent = (eventName: string, eventParams: { [key: string]: any }) => {
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', eventName, eventParams);
+  } else {
+    console.log(`GA Event (gtag not found): ${eventName}`, eventParams);
+  }
+};
+
 const AboutModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
@@ -71,12 +80,14 @@ const Game: React.FC = () => {
   };
 
   const handleLanguageSelection = (selectedLanguage: Language) => {
+    trackEvent('select_language', { language: selectedLanguage });
     setLanguage(selectedLanguage);
     setGameState(GameState.SPLASH);
   };
   
   const handleStartGame = useCallback(() => {
     setError(null);
+    trackEvent('start_game', { language });
     const initialStory = storyData[language]['start'];
     
     setCurrentStory(initialStory);
@@ -86,6 +97,12 @@ const Game: React.FC = () => {
 
   const handleChoice = useCallback((choice: Choice) => {
     setError(null);
+    
+    trackEvent('make_choice', { 
+      scene_id: currentStory?.id, 
+      choice_text: choice.text, 
+      next_scene_id: choice.nextSceneId 
+    });
 
     const newHistory: StoryHistoryItem[] = [...storyHistory, { scene: currentStory?.sceneDescription || '', choice: choice.text }];
     setStoryHistory(newHistory);
@@ -109,6 +126,7 @@ const Game: React.FC = () => {
   }, [storyHistory, currentStory, language]);
   
   const handleOpenDashboard = () => {
+    trackEvent('open_modal', { modal_name: 'dashboard' });
     setGameStateBeforeDashboard(gameState);
     setGameState(GameState.DASHBOARD);
   };
@@ -118,11 +136,27 @@ const Game: React.FC = () => {
   };
   
   const handleOpenChat = () => {
+    trackEvent('open_modal', { modal_name: 'chat' });
     setDebugEvents([]);
     if (isAdmin) {
       setIsDebugPanelOpen(true);
     }
     setIsChatOpen(true);
+  };
+  
+  const handleOpenAbout = () => {
+    trackEvent('open_modal', { modal_name: 'about' });
+    setIsAboutOpen(true);
+  };
+
+  const handleOpenInstructions = () => {
+    trackEvent('open_modal', { modal_name: 'instructions' });
+    setIsInstructionsOpen(true);
+  };
+  
+  const handleOpenCalendar = () => {
+    trackEvent('open_modal', { modal_name: 'calendar' });
+    setIsCalendarOpen(true);
   };
 
   const handleCloseChat = () => {
@@ -191,9 +225,9 @@ const Game: React.FC = () => {
             <Header 
               onDashboardClick={handleOpenDashboard} 
               onChatClick={handleOpenChat}
-              onAboutClick={() => setIsAboutOpen(true)}
-              onInstructionsClick={() => setIsInstructionsOpen(true)}
-              onCalendarClick={() => setIsCalendarOpen(true)}
+              onAboutClick={handleOpenAbout}
+              onInstructionsClick={handleOpenInstructions}
+              onCalendarClick={handleOpenCalendar}
               language={language} 
             />
           }
@@ -205,6 +239,7 @@ const Game: React.FC = () => {
           isOpen={isChatOpen} 
           onClose={handleCloseChat} 
           language={language}
+          sceneId={currentStory?.id || 'general_inquiry'}
           context={currentStory?.sceneDescription || 'General inquiry'}
           onDebugEvent={handleDebugEvent}
        />

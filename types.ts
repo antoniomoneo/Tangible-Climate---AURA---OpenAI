@@ -1,3 +1,9 @@
+declare global {
+  interface Window {
+    gtag: (command: string, eventName: string, eventParams?: { [key: string]: any }) => void;
+  }
+}
+
 export type Language = 'en' | 'es';
 
 export enum GameState {

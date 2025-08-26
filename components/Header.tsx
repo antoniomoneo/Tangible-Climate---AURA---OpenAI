@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ onDashboardClick, onChatClick, onAboutC
       <a href="https://www.tangibledata.xyz" target="_blank" rel="noopener noreferrer" aria-label="Tangible Data Website" className="flex-shrink-0">
         <TangibleDataLogo className="h-6 text-white hover:text-cyan-400 transition-colors" />
       </a>
-      <nav className="flex items-center justify-end flex-wrap gap-1 md:gap-2">
+      <nav className="flex items-center justify-end flex-nowrap gap-1 md:gap-2">
         <button
           onClick={onDashboardClick}
           title={t.headerDashboardButton}

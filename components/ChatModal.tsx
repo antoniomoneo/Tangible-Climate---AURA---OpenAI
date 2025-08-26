@@ -7,11 +7,12 @@ interface ChatModalProps {
   isOpen: boolean;
   onClose: () => void;
   language: Language;
+  sceneId: string;
   context: string;
   onDebugEvent: (data: any) => void;
 }
 
-const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, context, onDebugEvent }) => {
+const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, sceneId, context, onDebugEvent }) => {
   const t = locales[language];
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -40,6 +41,13 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, language, contex
     const prompt = input.trim();
     if (!prompt || isSending) {
       return;
+    }
+
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'send_chat_message', {
+        message_length: prompt.length,
+        context_scene_id: sceneId,
+      });
     }
 
     setIsSending(true);

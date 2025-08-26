@@ -16,6 +16,28 @@
         font-family: 'IBM Plex Mono', monospace;
       }
     </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-V5321P45JC"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-V5321P45JC', {
+        linker: {
+          domains: [
+            'tangibledata.xyz',
+            'www.tangibledata.xyz',
+            'clima.tangibledata.xyz',
+            'tangible-climate-aura-backend-229512356488.us-west1.run.app'
+          ]
+        },
+        cookie_domain: 'auto'
+      });
+
+      // Opcional: etiqueta para distinguir tráfico de tus apps AI Studio
+      gtag('set', 'user_properties', { site: 'ai-studio-app' });
+    </script>
   <script type="importmap">
 {
   "imports": {
