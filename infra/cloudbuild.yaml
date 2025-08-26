@@ -26,7 +26,6 @@ steps:
         "--service-account","${_RUNTIME_SA}",
         "--set-secrets","OPENAI_API_KEY=OPENAI_API_KEY:latest",
         "--set-secrets","OPENAI_ASSISTANT_ID=OPENAI_ASSISTANT_ID:latest",
-        "--set-secrets","GEMINI_API_KEY=GEMINI_API_KEY:latest", 
         "--project","$PROJECT_ID",
         "--quiet"
       ]
