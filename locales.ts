@@ -93,7 +93,7 @@ type StoryData = {
 const storyDataEn: StoryData = {
   'start': {
     id: 'start',
-    sceneDescription: "Welcome to the analysis. The document outlines five major historical phases in global temperature change, plus sections on data reliability and conclusions. Which period would you like to explore first?",
+    sceneDescription: "Hello! Our journey into the history of climate change begins now. We will visit five major historical phases to understand how climate change has evolved over the last 150 years. Which period would you like to explore first?",
     image: GRAPH_OVERVIEW_IMAGE,
     choices: [
       { text: "1880–1910: Late Pre-industrial Stability", nextSceneId: "period_1880" },
@@ -216,7 +216,7 @@ const storyDataEn: StoryData = {
 const storyDataEs: StoryData = {
   'start': {
     id: 'start',
-    sceneDescription: "Bienvenido al análisis. El documento describe cinco grandes fases históricas en el cambio de la temperatura global, además de secciones sobre la fiabilidad de los datos y conclusiones. ¿Qué período te gustaría explorar primero?",
+    sceneDescription: "¡Hola! Nuestro viaje a la historia del cambio climático empieza ahora. Visitaremos cinco grandes fases históricas para comprender cómo ha evolucionado el cambio climático a lo largo de los últimos 150 años. ¿Qué periodo te gustaría explorar primero?",
     image: GRAPH_OVERVIEW_IMAGE,
     choices: [
       { text: "1880–1910: Estabilidad inicial en la era preindustrial tardía", nextSceneId: "period_1880" },
