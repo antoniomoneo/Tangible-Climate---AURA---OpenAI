@@ -1,18 +1,15 @@
 import React from 'react';
 import type { Language } from '../types';
 import { locales } from '../locales';
-import { DashboardIcon, AuraIcon, InfoIcon, TangibleDataLogo, QuestionMarkIcon, CalendarIcon } from './icons';
+import { DashboardIcon, TangibleDataLogo, QuestionMarkIcon } from './icons';
 
 interface HeaderProps {
-  onDashboardClick: () => void;
-  onChatClick: () => void;
-  onAboutClick: () => void;
+  onAppHubClick: () => void;
   onInstructionsClick: () => void;
-  onCalendarClick: () => void;
   language: Language;
 }
 
-const Header: React.FC<HeaderProps> = ({ onDashboardClick, onChatClick, onAboutClick, onInstructionsClick, onCalendarClick, language }) => {
+const Header: React.FC<HeaderProps> = ({ onAppHubClick, onInstructionsClick, language }) => {
   const t = locales[language];
   
   return (
@@ -21,21 +18,13 @@ const Header: React.FC<HeaderProps> = ({ onDashboardClick, onChatClick, onAboutC
         <TangibleDataLogo className="h-6 text-white hover:text-cyan-400 transition-colors" />
       </a>
       <nav className="flex items-center justify-end flex-nowrap gap-1 md:gap-2">
-        <button
-          onClick={onDashboardClick}
-          title={t.headerDashboardButton}
+         <button
+          onClick={onAppHubClick}
+          title={t.headerAppHubButton}
           className="flex items-center gap-2 bg-gray-700 hover:bg-cyan-600 text-white font-semibold p-2 md:px-4 rounded-lg transition-colors"
         >
           <DashboardIcon />
-          <span className="hidden md:inline">{t.headerDashboardButton}</span>
-        </button>
-         <button
-          onClick={onChatClick}
-          title={t.headerChatButton}
-          className="flex items-center gap-2 bg-gray-700 hover:bg-cyan-600 text-white font-semibold p-2 md:px-4 rounded-lg transition-colors"
-        >
-          <AuraIcon className="h-5 w-5" />
-          <span className="hidden md:inline">{t.headerChatButton}</span>
+          <span className="hidden md:inline">{t.headerAppHubButton}</span>
         </button>
         <button
           onClick={onInstructionsClick}
@@ -44,22 +33,6 @@ const Header: React.FC<HeaderProps> = ({ onDashboardClick, onChatClick, onAboutC
         >
           <QuestionMarkIcon />
           <span className="hidden md:inline">{t.headerInstructionsButton}</span>
-        </button>
-        <button
-          onClick={onCalendarClick}
-          title={t.headerCalendarButton}
-          className="flex items-center gap-2 bg-gray-700 hover:bg-cyan-600 text-white font-semibold p-2 md:px-4 rounded-lg transition-colors"
-        >
-          <CalendarIcon />
-          <span className="hidden md:inline">{t.headerCalendarButton}</span>
-        </button>
-         <button
-          onClick={onAboutClick}
-          title={t.headerAboutButton}
-          className="flex items-center gap-2 bg-gray-700 hover:bg-cyan-600 text-white font-semibold p-2 md:px-4 rounded-lg transition-colors"
-        >
-          <InfoIcon />
-          <span className="hidden md:inline">{t.headerAboutButton}</span>
         </button>
       </nav>
     </header>

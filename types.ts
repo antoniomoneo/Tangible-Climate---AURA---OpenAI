@@ -10,6 +10,7 @@ export enum GameState {
   LANGUAGE_SELECTION,
   SPLASH,
   START,
+  APP_HUB,
   PLAYING,
   GAME_OVER,
   ERROR,

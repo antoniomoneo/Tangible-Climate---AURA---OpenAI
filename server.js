@@ -3,6 +3,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { GoogleGenAI } from "@google/genai";
+import fetch from "node-fetch";
 
 const app = express();
 const PORT = process.env.PORT || 8080;

@@ -14,6 +14,7 @@ import SplashScreen from './components/SplashScreen';
 import InstructionsModal from './components/InstructionsModal';
 import CalendarModal from './components/CalendarModal';
 import LanguageSelectionScreen from './components/LanguageSelectionScreen';
+import AppHubScreen from './components/AppHubScreen';
 
 // Helper function to send GA events
 const trackEvent = (eventName: string, eventParams: { [key: string]: any }) => {
@@ -73,6 +74,7 @@ const Game: React.FC = () => {
   const t = locales[language];
 
   const resetGame = () => {
+    trackEvent('reset_game', { language });
     setGameState(GameState.LANGUAGE_SELECTION);
     setCurrentStory(null);
     setStoryHistory([]);
@@ -85,6 +87,11 @@ const Game: React.FC = () => {
     setGameState(GameState.SPLASH);
   };
   
+  const handleShowAppHub = () => {
+    trackEvent('navigate_to_app_hub', { from_state: gameState });
+    setGameState(GameState.APP_HUB);
+  };
+
   const handleStartGame = useCallback(() => {
     setError(null);
     trackEvent('start_game', { language });
@@ -182,7 +189,17 @@ const Game: React.FC = () => {
   const renderContent = () => {
     switch (gameState) {
       case GameState.START:
-        return <StartScreen onStart={handleStartGame} language={language} />;
+        return <StartScreen onShowHub={handleShowAppHub} language={language} />;
+      case GameState.APP_HUB:
+        return <AppHubScreen 
+                  onStartGame={handleStartGame}
+                  onOpenDashboard={handleOpenDashboard}
+                  onOpenCalendar={handleOpenCalendar}
+                  onOpenChat={handleOpenChat}
+                  onOpenAbout={handleOpenAbout}
+                  onOpenInstructions={handleOpenInstructions}
+                  language={language}
+                />;
       case GameState.PLAYING:
         return currentStory ? (
           <GameScreen
@@ -223,11 +240,8 @@ const Game: React.FC = () => {
        <div className="w-full max-w-7xl mx-auto flex-grow flex flex-col">
           {showHeader && 
             <Header 
-              onDashboardClick={handleOpenDashboard} 
-              onChatClick={handleOpenChat}
-              onAboutClick={handleOpenAbout}
+              onAppHubClick={handleShowAppHub}
               onInstructionsClick={handleOpenInstructions}
-              onCalendarClick={handleOpenCalendar}
               language={language} 
             />
           }

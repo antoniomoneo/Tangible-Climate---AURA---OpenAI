@@ -54,6 +54,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinished, language }) => 
           </p>
         </div>
       </div>
+      <button
+        onClick={onFinished}
+        className="fixed bottom-6 right-6 bg-gray-800/60 hover:bg-gray-700/80 text-white font-semibold px-4 py-2 rounded-lg transition-all shadow-lg animate-fadeIn"
+        style={{ animationDelay: '1.5s' }}
+        aria-label={t.skipButton}
+      >
+        {t.skipButton}
+      </button>
     </div>
   );
 };
