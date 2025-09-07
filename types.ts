@@ -15,6 +15,7 @@ export enum GameState {
   GAME_OVER,
   ERROR,
   DASHBOARD,
+  KNOWLEDGE_BASE,
 }
 
 export interface Choice {
@@ -50,3 +51,8 @@ export interface CalendarEvent {
     start: Date;
     end: Date;
 }
+
+export type DataPoint = {
+  year: number;
+  anomaly: number;
+};

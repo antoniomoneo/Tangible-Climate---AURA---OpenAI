@@ -1,7 +1,19 @@
 import React from 'react';
 import type { Language } from '../types';
 import { locales } from '../locales';
-import { ChartBarIcon, CompassIcon, CalendarIcon, DashboardIcon, AuraIcon, InfoIcon, QuestionMarkIcon } from './icons';
+import { 
+  CalendarIcon, 
+  DashboardIcon, 
+  InfoIcon, 
+  QuestionMarkIcon,
+  BookOpenIcon,
+  DatabaseIcon,
+  LightBulbIcon,
+  UsersIcon,
+  ChatBubbleIcon,
+  AcademicCapIcon,
+  CompassIcon
+} from './icons';
 
 interface AppHubScreenProps {
   onStartGame: () => void;
@@ -10,39 +22,23 @@ interface AppHubScreenProps {
   onOpenChat: () => void;
   onOpenAbout: () => void;
   onOpenInstructions: () => void;
+  onOpenKnowledgeBase: () => void;
+  onOpenEducationalPack: () => void;
+  onOpenJoinUs: () => void;
+  onOpenScenarioLab: () => void;
+  onOpenGlossary: () => void;
   language: Language;
 }
 
-const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenAbout, onOpenInstructions, language }) => {
+const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenAbout, onOpenInstructions, onOpenKnowledgeBase, onOpenEducationalPack, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, language }) => {
   const t = locales[language];
 
   const apps = [
     {
-      title: t.appHubDataExplorationTitle,
-      description: t.appHubDataExplorationDesc,
-      icon: <ChartBarIcon />,
+      title: t.appHubDataExplorerTitle,
+      description: t.appHubDataExplorerDesc,
+      icon: <CompassIcon />,
       action: onStartGame,
-      enabled: true,
-    },
-    {
-      title: t.appHubDashboardTitle,
-      description: t.appHubDashboardDesc,
-      icon: <DashboardIcon />,
-      action: onOpenDashboard,
-      enabled: true,
-    },
-    {
-      title: t.appHubChatTitle,
-      description: t.appHubChatDesc,
-      icon: <AuraIcon className="h-5 w-5" />,
-      action: onOpenChat,
-      enabled: true,
-    },
-    {
-      title: t.appHubCalendarTitle,
-      description: t.appHubCalendarDesc,
-      icon: <CalendarIcon />,
-      action: onOpenCalendar,
       enabled: true,
     },
     {
@@ -53,27 +49,76 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       enabled: true,
     },
     {
+      title: t.appHubEducationalPackTitle,
+      description: t.appHubEducationalPackDesc,
+      icon: <AcademicCapIcon />,
+      action: onOpenEducationalPack,
+      enabled: true,
+    },
+    {
+      title: t.appHubKnowledgeBaseTitle,
+      description: t.appHubKnowledgeBaseDesc,
+      icon: <DatabaseIcon />,
+      action: onOpenKnowledgeBase,
+      enabled: true,
+    },
+     {
+      title: t.appHubChatTitle,
+      description: t.appHubChatDesc,
+      icon: <ChatBubbleIcon />,
+      action: onOpenChat,
+      enabled: true,
+    },
+    {
+      title: t.appHubDashboardTitle,
+      description: t.appHubDashboardDesc,
+      icon: <DashboardIcon />,
+      action: onOpenDashboard,
+      enabled: true,
+    },
+    {
+      title: t.appHubScenarioLabTitle,
+      description: t.appHubScenarioLabDesc,
+      icon: <LightBulbIcon />,
+      action: onOpenScenarioLab,
+      enabled: true,
+    },
+    {
+      title: t.appHubCalendarTitle,
+      description: t.appHubCalendarDesc,
+      icon: <CalendarIcon />,
+      action: onOpenCalendar,
+      enabled: true,
+    },
+    {
       title: t.appHubAboutTitle,
       description: t.appHubAboutDesc,
       icon: <InfoIcon />,
       action: onOpenAbout,
       enabled: true,
     },
+     {
+      title: t.appHubGlossaryTitle,
+      description: t.appHubGlossaryDesc,
+      icon: <BookOpenIcon />,
+      action: onOpenGlossary,
+      enabled: true,
+    },
     {
-      title: t.appHubDataTourTitle,
-      description: t.appHubDataTourDesc,
-      icon: <CompassIcon />,
-      action: () => {},
-      enabled: false,
+      title: t.appHubJoinUsTitle,
+      description: t.appHubJoinUsDesc,
+      icon: <UsersIcon />,
+      action: onOpenJoinUs,
+      enabled: true,
     },
   ];
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center animate-fadeIn p-4">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl">
         <h1 className="font-title text-4xl md:text-5xl text-cyan-400 mb-4">{t.appHubTitle}</h1>
         <p className="text-gray-300 text-lg mb-8">{t.appHubSubtitle}</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {apps.map((app, index) => (
             <button
               key={index}

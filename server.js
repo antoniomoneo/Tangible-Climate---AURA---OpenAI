@@ -2,7 +2,7 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import fetch from "node-fetch";
 
 const app = express();
@@ -110,6 +110,86 @@ app.post("/api/chat", async (req, res) => {
   };
 
   streamGeminiResponse();
+});
+
+app.post("/api/scenario", async (req, res) => {
+    if (!API_KEY) {
+        return res.status(500).json({ error: { message: "Missing GEMINI_API_KEY environment variable." } });
+    }
+    const { userInput, historicalData } = req.body;
+    if (!userInput || typeof userInput !== "string" || !historicalData || !Array.isArray(historicalData)) {
+        return res.status(400).json({ error: { message: "Request body must contain 'userInput' (string) and 'historicalData' (array)." } });
+    }
+
+    const lastDataPoint = historicalData[historicalData.length - 1];
+    const PROJECTION_YEARS = 50;
+
+    const prompt = `
+You are a climate science simulation expert. Your task is to generate a plausible future climate scenario based on historical data and a user's hypothesis.
+
+**Historical Data Summary:**
+The provided data shows global temperature anomalies from 1880 to ${lastDataPoint.year}.
+The last recorded anomaly in ${lastDataPoint.year} was ${lastDataPoint.anomaly.toFixed(2)}°C.
+The overall trend shows significant warming, especially since the 1970s.
+
+**User's Hypothesis:**
+"${userInput}"
+
+**Your Task:**
+1.  **Analyze the Hypothesis:** Interpret the user's scenario and its potential impact on global temperature trends.
+2.  **Project a New Trend:** Based on your analysis, project the annual temperature anomaly for the next ${PROJECTION_YEARS} years, starting from ${lastDataPoint.year + 1}. The projection should be a scientifically plausible continuation based on the user's premise.
+3.  **Provide a Rationale:** Write a concise explanation for your simulation. Justify the trend you've created by linking it to the user's hypothesis and established climate science principles (e.g., effects on GHG emissions, albedo, carbon cycle, etc.).
+
+**Output Format:**
+You MUST provide your response as a single, valid JSON object that adheres to the provided schema.
+`;
+
+    const responseSchema = {
+        type: Type.OBJECT,
+        properties: {
+            explanation: {
+                type: Type.STRING,
+                description: "A concise, scientific explanation for the simulated trend based on the user's hypothesis.",
+            },
+            simulatedData: {
+                type: Type.ARRAY,
+                description: `An array of data points for ${PROJECTION_YEARS} years, starting from ${lastDataPoint.year + 1}.`,
+                items: {
+                    type: Type.OBJECT,
+                    properties: {
+                        year: { type: Type.INTEGER },
+                        anomaly: { type: Type.NUMBER }
+                    },
+                    required: ["year", "anomaly"]
+                }
+            }
+        },
+        required: ["explanation", "simulatedData"]
+    };
+
+    try {
+        const ai = new GoogleGenAI({ apiKey: API_KEY });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: responseSchema,
+            },
+        });
+        
+        const jsonText = response.text.trim();
+        // Validate if the response is JSON before parsing
+        if (jsonText.startsWith('{') && jsonText.endsWith('}')) {
+             const jsonResponse = JSON.parse(jsonText);
+             res.json(jsonResponse);
+        } else {
+            throw new Error("AI returned a non-JSON response.");
+        }
+    } catch (e) {
+        console.error("Error in Gemini scenario generation:", e.message);
+        res.status(500).json({ error: { message: `AI scenario generation failed: ${e.message}` } });
+    }
 });
 
 

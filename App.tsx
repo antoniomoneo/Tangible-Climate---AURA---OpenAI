@@ -15,6 +15,13 @@ import InstructionsModal from './components/InstructionsModal';
 import CalendarModal from './components/CalendarModal';
 import LanguageSelectionScreen from './components/LanguageSelectionScreen';
 import AppHubScreen from './components/AppHubScreen';
+import KnowledgeBaseScreen from './components/KnowledgeBaseScreen';
+import { knowledgeBaseContent } from './data/knowledgeBaseContent';
+import EducationalPackModal from './components/EducationalPackModal';
+import JoinUsModal from './components/JoinUsModal';
+import ScenarioLabModal from './components/ScenarioLabModal';
+import GlossaryModal from './components/GlossaryModal';
+
 
 // Helper function to send GA events
 const trackEvent = (eventName: string, eventParams: { [key: string]: any }) => {
@@ -67,8 +74,14 @@ const Game: React.FC = () => {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isEducationalPackOpen, setIsEducationalPackOpen] = useState(false);
+  const [isJoinUsOpen, setIsJoinUsOpen] = useState(false);
+  const [isScenarioLabOpen, setIsScenarioLabOpen] = useState(false);
+  const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
   const [isDebugPanelOpen, setIsDebugPanelOpen] = useState(false);
   const [debugEvents, setDebugEvents] = useState<any[]>([]);
+  const [currentChatContext, setCurrentChatContext] = useState('');
+  const [currentSceneId, setCurrentSceneId] = useState('general_inquiry');
 
   const isAdmin = sessionStorage.getItem('isAdminAuthenticated') === 'true';
   const t = locales[language];
@@ -142,12 +155,26 @@ const Game: React.FC = () => {
     setGameState(gameStateBeforeDashboard);
   };
   
-  const handleOpenChat = () => {
+  const handleOpenGeneralChat = () => {
     trackEvent('open_modal', { modal_name: 'chat' });
+    setCurrentChatContext(t.chatSystemInstruction);
+    setCurrentSceneId('general_inquiry');
     setDebugEvents([]);
     if (isAdmin) {
       setIsDebugPanelOpen(true);
     }
+    setIsChatOpen(true);
+  };
+
+  const handleOpenKnowledgeBaseChat = () => {
+    trackEvent('open_modal', { modal_name: 'chat_knowledge_base' });
+    const reportText = knowledgeBaseContent[language].sections
+        .map(s => `## ${s.heading}\n${s.text.replace(/<[^>]*>/g, ' ')}`)
+        .join('\n\n');
+    const context = `${t.chatSystemInstructionReport}\n\n---BEGIN REPORT---\n${reportText}\n---END REPORT---`;
+
+    setCurrentChatContext(context);
+    setCurrentSceneId('knowledge_base_qna');
     setIsChatOpen(true);
   };
   
@@ -160,10 +187,35 @@ const Game: React.FC = () => {
     trackEvent('open_modal', { modal_name: 'instructions' });
     setIsInstructionsOpen(true);
   };
+
+  const handleOpenEducationalPack = () => {
+    trackEvent('open_modal', { modal_name: 'educational_pack' });
+    setIsEducationalPackOpen(true);
+  }
   
   const handleOpenCalendar = () => {
     trackEvent('open_modal', { modal_name: 'calendar' });
     setIsCalendarOpen(true);
+  };
+
+  const handleOpenKnowledgeBase = () => {
+    trackEvent('navigate_to_knowledge_base', { from_state: gameState });
+    setGameState(GameState.KNOWLEDGE_BASE);
+  };
+  
+  const handleOpenJoinUs = () => {
+    trackEvent('open_modal', { modal_name: 'join_us' });
+    setIsJoinUsOpen(true);
+  };
+
+  const handleOpenScenarioLab = () => {
+    trackEvent('open_modal', { modal_name: 'scenario_lab' });
+    setIsScenarioLabOpen(true);
+  };
+
+  const handleOpenGlossary = () => {
+    trackEvent('open_modal', { modal_name: 'glossary' });
+    setIsGlossaryOpen(true);
   };
 
   const handleCloseChat = () => {
@@ -195,11 +247,22 @@ const Game: React.FC = () => {
                   onStartGame={handleStartGame}
                   onOpenDashboard={handleOpenDashboard}
                   onOpenCalendar={handleOpenCalendar}
-                  onOpenChat={handleOpenChat}
+                  onOpenChat={handleOpenGeneralChat}
                   onOpenAbout={handleOpenAbout}
                   onOpenInstructions={handleOpenInstructions}
+                  onOpenKnowledgeBase={handleOpenKnowledgeBase}
+                  onOpenEducationalPack={handleOpenEducationalPack}
+                  onOpenJoinUs={handleOpenJoinUs}
+                  onOpenScenarioLab={handleOpenScenarioLab}
+                  onOpenGlossary={handleOpenGlossary}
                   language={language}
                 />;
+      case GameState.KNOWLEDGE_BASE:
+        return <KnowledgeBaseScreen
+            onBack={handleShowAppHub}
+            onOpenChat={handleOpenKnowledgeBaseChat}
+            language={language}
+        />;
       case GameState.PLAYING:
         return currentStory ? (
           <GameScreen
@@ -253,8 +316,8 @@ const Game: React.FC = () => {
           isOpen={isChatOpen} 
           onClose={handleCloseChat} 
           language={language}
-          sceneId={currentStory?.id || 'general_inquiry'}
-          context={currentStory?.sceneDescription || 'General inquiry'}
+          sceneId={currentSceneId}
+          context={currentChatContext}
           onDebugEvent={handleDebugEvent}
        />
        <AboutModal 
@@ -272,6 +335,26 @@ const Game: React.FC = () => {
           onClose={() => setIsCalendarOpen(false)}
           language={language}
        />
+       <EducationalPackModal
+          isOpen={isEducationalPackOpen}
+          onClose={() => setIsEducationalPackOpen(false)}
+          language={language}
+        />
+        <JoinUsModal
+          isOpen={isJoinUsOpen}
+          onClose={() => setIsJoinUsOpen(false)}
+          language={language}
+        />
+        <ScenarioLabModal
+            isOpen={isScenarioLabOpen}
+            onClose={() => setIsScenarioLabOpen(false)}
+            language={language}
+        />
+        <GlossaryModal
+          isOpen={isGlossaryOpen}
+          onClose={() => setIsGlossaryOpen(false)}
+          language={language}
+        />
        {isAdmin && (
          <DebugPanel 
             isOpen={isDebugPanelOpen}

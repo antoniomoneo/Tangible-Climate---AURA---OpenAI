@@ -1,18 +1,17 @@
-import {
-  GRAPH_OVERVIEW_IMAGE
-} from './assets';
-import { StorySegment } from './types';
+import type { StorySegment } from './types';
+import { GRAPH_OVERVIEW_IMAGE } from './assets';
 
 export const locales = {
   en: {
     title: "The Climate Change Skeleton",
-    intro: "This game is based on a real art installation from the National Museum of Natural Sciences in Spain, developed by Tangible Data. The sculpture represents climate change through a skeleton that reflects the evolution of global temperature.",
-    objective: "Your mission is to explore this data sculpture. With the help of a scientific guide, you will analyze the document 'Evolution of Global Temperature Anomalies (1880–2024)' to understand the history of climate change.",
+    intro: "Tangible Data is a creative studio specializing in data, sustainability communication, art, and digital manufacturing. We transform complex data into physical sculptures, a process called 'data physicalization'.",
+    objective: "Our mission is to make data tangible, intuitive, and emotionally resonant. By turning abstract numbers into art you can touch and feel, we aim to create a deeper connection to the information, foster greater engagement, and inspire meaningful action towards a sustainable future.",
     selectLang: "Select your language",
     start: "Enter the App Hub",
     auraStartMessage: "Hello! I am AURA, the artificial intelligence that will help you discover the meaning of this sculpture. This interactive adventure is based on a real art installation from the National Museum of Natural Sciences, developed by Tangible Data. The sculpture represents climate change through a skeleton that reflects the evolution of global temperature.\n\nYour mission is to explore this data sculpture. With the help of a scientific guide, you will analyze the document 'Evolution of Global Temperature Anomalies (1880–2024)' to understand the history of climate change.",
     auraSecondMessage: "To help you, I've prepared an application hub you can use to learn all about climate change. Shall we begin?",
     splashGretting: "presents",
+    splashCollaboration: "in collaboration with the National Museum of Natural Sciences of Spain",
     splashTitle: "The Climate Change Skeleton",
     splashSubtitle: "a generative adventure on the evolution of climate change",
     gameTitle: "Data Exploration",
@@ -26,13 +25,14 @@ export const locales = {
     chatSend: "Send",
     chatError: "AURA is currently unavailable. Please try again later.",
     chatSystemInstruction: "You are AURA, a helpful scientific AI assistant guiding users through climate change data. Your answers should be concise, informative, and related to science, climate, and the data presented in the experience. Keep your responses short and to the point.",
+    chatSystemInstructionReport: "You are AURA, a helpful scientific AI assistant. When answering, your primary source of information is the provided report on climate change evolution. Base your answers strictly on the report's content. If the user asks something outside the report's scope, state that the information is not available in the document.",
     chatLoading: "AURA is thinking...",
     headerAppHubButton: "Apps Hub",
     headerInstructionsButton: "Instructions",
     dashboardTitle: "Full Data Series",
     dashboardDescription: "This chart shows the complete global temperature anomaly data from 1880 to 2024. You can see the full context of the climate change 'skeleton'.",
     dashboardBack: "Back to Analysis",
-    aboutTitle: "About The Project",
+    aboutTitle: "About Tangible Data",
     aboutCredit: "An interactive experience by",
     instructionsTitle: "How to Play",
     instructionsContent1: "Welcome to 'The Climate Change Skeleton'! This is an interactive journey where you explore the history of global temperature changes.",
@@ -44,32 +44,94 @@ export const locales = {
     calendarNoEvents: "There are no upcoming events scheduled at this time.",
     appHubTitle: "Applications Hub",
     appHubSubtitle: "Select an experience to begin your exploration.",
-    appHubDataExplorationTitle: "Data Exploration",
-    appHubDataExplorationDesc: "The original interactive game. Navigate historical periods to build the climate skeleton.",
-    appHubDashboardTitle: "Full Dashboard",
+    appHubDataExplorerTitle: "Data Explorer",
+    appHubDataExplorerDesc: "An interactive adventure to understand the history of climate change.",
+    appHubDashboardTitle: "Data Dashboard",
     appHubDashboardDesc: "View the complete temperature anomaly data from 1880 to 2024 in a single chart.",
-    appHubChatTitle: "Chat with AURA",
-    appHubChatDesc: "Ask our AI assistant questions about climate science, the data, or historical context.",
     appHubCalendarTitle: "Events Calendar",
     appHubCalendarDesc: "See upcoming talks, exhibitions, and events related to the project.",
-    appHubDataTourTitle: "Data Tour",
-    appHubDataTourDesc: "A guided tour through the most significant events in the climate data timeline.",
     appHubInstructionsTitle: "Instructions",
-    appHubInstructionsDesc: "Learn how to navigate the data exploration and use the AURA assistant.",
-    appHubAboutTitle: "About Project",
+    appHubInstructionsDesc: "A quick guide on how to use the platform and interact with each module.",
+    appHubAboutTitle: "About Tangible Data",
     appHubAboutDesc: "Discover the story behind the art installation and this interactive experience.",
+    appHubGlossaryTitle: "Glossary",
+    appHubGlossaryDesc: "Key definitions for understanding climate change.",
+    appHubKnowledgeBaseTitle: "Knowledge Base",
+    appHubKnowledgeBaseDesc: "Consult the core project document on the evolution of climate change and ask AURA about it.",
+    appHubChatTitle: "Chat with AURA",
+    appHubChatDesc: "Ask our AI about the data, reports, and the history of climate change.",
+    appHubScenarioLabTitle: "Scenario Lab",
+    appHubScenarioLabDesc: "Explore 'what if' scenarios to understand potential climate futures.",
+    appHubJoinUsTitle: "Join Us",
+    appHubJoinUsDesc: "Join the Tangible Data community. Get involved and help drive change.",
     appHubComingSoon: "Coming Soon",
+    appHubEducationalPackTitle: "Educational Pack",
+    appHubEducationalPackDesc: "Learn about our educational methodology applied to the study of climate change.",
+    knowledgeBaseTitle: "Knowledge Base",
+    knowledgeBaseAskReport: "Ask the Report",
+    knowledgeBaseBack: "Back to App Hub",
     skipButton: "Skip",
+    educationalPackTitle: "Educational Pack",
+    educationalPackContent: `
+      <h2 class="font-title text-2xl text-cyan-400 mb-4">Applying the "from data to action" framework</h2>
+      <p class="mb-4">As part of our educational workshops, students analyze the evolution of climate change since 1880, using data from NASA as a source. They download the data, analyze it with common tools, and create a visualization. This sculpture represents that evolution.</p>
+      <p class="mb-6">In each project, Tangible Data aims to connect data with action. During the workshop sessions, various activities are carried out to explain this connection. In the end, students think about possible actions to mitigate climate change.</p>
+      
+      <h3 class="font-title text-xl text-white mb-3 border-t border-gray-600 pt-4">Session 1: Data helps us make... good and bad decisions</h3>
+      <p class="mb-4">Introduction to the difference between data, information, knowledge, and wisdom. Students work with everyday examples (temperature, Nutriscore labels, social media) and perform participatory activities to understand how data influences our daily decisions.</p>
+      
+      <h3 class="font-title text-xl text-white mb-3 border-t border-gray-600 pt-4">Session 2: Open data is free and available</h3>
+      <p class="mb-4">The objective is to enable students to locate and download a dataset from NASA, understand the structure of the downloaded files (CSV and metadata), and work collaboratively. After identifying the global temperature anomaly indicator on NASA's portal, students download the file and open it in spreadsheet software.</p>
+      
+      <h3 class="font-title text-xl text-white mb-3 border-t border-gray-600 pt-4">Session 3: We have free tools to analyze and visualize data</h3>
+      <p class="mb-4">This session focuses on filtering the dataset, calculating maximum, minimum, and average values using functions, and generating a time-series chart that serves as a basis for later interpretation.</p>
+      
+      <h3 class="font-title text-xl text-white mb-3 border-t border-gray-600 pt-4">Session 4: We interpret data through all the senses</h3>
+      <p class="mb-4">The purpose is for teams to synthesize qualitative conclusions based on the analyzed values, write meaningful titles for their charts, and experience two tangibilization techniques—sculpture and sonification—to communicate the results. A physical sculpture based on the data is presented, which students explore tactilely, and the session closes with the sonification of the dataset, turning the time series into a musical sequence.</p>
+      
+      <h3 class="font-title text-xl text-white mb-3 border-t border-gray-600 pt-4">Building the Action</h3>
+      <p class="mb-4">To conclude, students generate their own conclusions about the data and formulate recommendations based on these interpretations.</p>
+      <ul class="list-disc list-inside space-y-2 mb-4">
+          <li><strong>Data-based Conclusions:</strong> Global temperatures have risen dramatically, especially in recent decades, now approaching 1.5°C above pre-industrial levels. The rate of warming is accelerating.</li>
+          <li><strong>Interpretations and Recommendations:</strong> Although this is a global problem, local actions are essential. It's crucial to continue working to reduce emissions to zero. Promoting renewable energy, changing consumption patterns, and demanding political action are necessary steps.</li>
+      </ul>
+      <div class="mt-8 pt-6 border-t border-cyan-800 text-center">
+        <p class="text-lg font-semibold text-white mb-2">Interested in bringing this to your school?</p>
+        <p class="mb-4">If you want to run these sessions at a school, contact us!</p>
+        <a href="https://tangibledata.xyz/2025-colegio-madrid/" target="_blank" rel="noopener noreferrer" class="inline-block bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+            See our latest workshop
+        </a>
+      </div>
+    `,
+    joinUsModalTitle: "Join the Movement",
+    joinUsModalContent: "Tangible Data is a movement. If you are passionate about data, digital fabrication, sustainability, and education, and want to join Tangible Data, don't hesitate to contact us.",
+    joinUsModalWebsiteButton: "Visit Tangible Data",
+    joinUsModalEmailLink: "Or write to us at",
+    scenarioLabTitle: "Scenario Lab",
+    scenarioLabSelectPreset: "1. Explore a predefined scenario",
+    scenarioLabCustomAi: "2. Create your own scenario (AI)",
+    scenarioLabCustomAiDesc: "Describe a hypothetical situation and our AI will generate a simulation. Be creative!",
+    scenarioLabCustomAiPlaceholder: "e.g., What if fusion energy became available in 2030?",
+    scenarioLabGenerateButton: "Generate with AI",
+    scenarioLabGeneratingButton: "Generating...",
+    scenarioLabAiError: "The AI could not generate the scenario.",
+    scenarioLabChartTitle: "Global Temperature Anomaly Evolution",
+    scenarioLabChartYAxis: "Anomaly (°C)",
+    scenarioLabChartReal: "Historical Reality",
+    scenarioLabAiLogic: "AI's Logic",
+    scenarioLabPresetLogic: "Simulation Logic",
+    glossaryTitle: "Glossary",
   },
   es: {
     title: "El Esqueleto del Cambio Climático",
-    intro: "Este juego está basado en una instalación artística real del Museo Nacional de Ciencias Naturales, desarrollada por Tangible Data. La escultura representa el cambio climático mediante un esqueleto que refleja la evolución de la temperatura global.",
-    objective: "Tu misión es explorar esta escultura de datos. Con la ayuda de una guía científica, analizarás el documento 'Evolución de las anomalías de temperatura global (1880–2024)' para comprender la historia del cambio climático.",
+    intro: "Tangible Data es un estudio creativo especializado en datos, comunicación de la sostenibilidad, arte y fabricación digital. Transformamos datos complejos en esculturas físicas, un proceso llamado 'fisicalización de datos'.",
+    objective: "Nuestra misión es hacer que los datos sean tangibles, intuitivos y emocionalmente resonantes. Al convertir números abstractos en arte que se puede tocar y sentir, buscamos crear una conexión más profunda con la información, fomentar una mayor participación e inspirar acciones significativas hacia un futuro sostenible.",
     selectLang: "Selecciona tu idioma",
     start: "Entrar al Centro de Apps",
     auraStartMessage: "¡Hola! Soy AURA, la inteligencia artificial que te ayudará a descubrir el significado de esta escultura. Esta aventura interactiva está basada en una instalación artística real del Museo Nacional de Ciencias Naturales, desarrollada por Tangible Data. La escultura representa el cambio climático mediante un esqueleto que refleja la evolución de la temperatura global.\n\nTu misión es explorar esta escultura de datos. Con la ayuda de una guía científica, analizarás el documento 'Evolución de las anomalías de temperatura global (1880–2024)' para comprender la historia del cambio climático.",
     auraSecondMessage: "Para ayudarte, he preparado un centro de aplicaciones que podrás usar para conocer todo sobre el cambio climático. ¿Comenzamos?",
     splashGretting: "presenta",
+    splashCollaboration: "en colaboración con el Museo Nacional de Ciencias Naturales de España",
     splashTitle: "El esqueleto del cambio climático",
     splashSubtitle: "una aventura generativa sobre la evolución del cambio climático",
     gameTitle: "Exploración de Datos",
@@ -83,13 +145,14 @@ export const locales = {
     chatSend: "Enviar",
     chatError: "AURA no está disponible en este momento. Por favor, inténtalo de nuevo más tarde.",
     chatSystemInstruction: "Eres AURA, una asistente científica de IA que guía a los usuarios a través de los datos del cambio climático. Tus respuestas deben ser concisas, informativas y relacionadas con la ciencia, el clima y los datos presentados en la experiencia. Mantén tus respuestas breves y al grano.",
+    chatSystemInstructionReport: "Eres AURA, una útil asistente científica de IA. Al responder, tu fuente principal de información es el informe proporcionado sobre la evolución del cambio climático. Basa tus respuestas estrictamente en el contenido del informe. Si el usuario pregunta algo fuera del alcance del informe, indica que la información no está disponible en el documento.",
     chatLoading: "AURA está pensando...",
     headerAppHubButton: "Centro de Apps",
     headerInstructionsButton: "Instrucciones",
     dashboardTitle: "Serie de Datos Completa",
     dashboardDescription: "Este gráfico muestra los datos completos de la anomalía de la temperatura global desde 1880 hasta 2024. Puedes ver el contexto completo del 'esqueleto' del cambio climático.",
     dashboardBack: "Volver al Análisis",
-    aboutTitle: "Sobre el Proyecto",
+    aboutTitle: "Sobre Tangible Data",
     aboutCredit: "Una experiencia interactiva de",
     instructionsTitle: "Cómo Jugar",
     instructionsContent1: "¡Bienvenido a 'El Esqueleto del Cambio Climático'! Este es un viaje interactivo donde explorarás la historia de los cambios en la temperatura global.",
@@ -101,22 +164,83 @@ export const locales = {
     calendarNoEvents: "No hay eventos próximos programados en este momento.",
     appHubTitle: "Centro de Aplicaciones",
     appHubSubtitle: "Selecciona una experiencia para comenzar tu exploración.",
-    appHubDataExplorationTitle: "Exploración de Datos",
-    appHubDataExplorationDesc: "El juego interactivo original. Navega por períodos históricos para construir el esqueleto climático.",
-    appHubDashboardTitle: "Dashboard Completo",
+    appHubDataExplorerTitle: "Explorador de Datos",
+    appHubDataExplorerDesc: "Una aventura interactiva para comprender la historia del cambio climático.",
+    appHubDashboardTitle: "Dashboard de Datos",
     appHubDashboardDesc: "Visualiza los datos completos de la anomalía de la temperatura de 1880 a 2024 en un solo gráfico.",
-    appHubChatTitle: "Chatear con AURA",
-    appHubChatDesc: "Haz preguntas a nuestra asistente de IA sobre ciencia climática, los datos o el contexto histórico.",
     appHubCalendarTitle: "Calendario de Eventos",
     appHubCalendarDesc: "Consulta las próximas charlas, exposiciones y eventos relacionados con el proyecto.",
-    appHubDataTourTitle: "Tour de Datos",
-    appHubDataTourDesc: "Un recorrido guiado por los eventos más significativos en la línea de tiempo de los datos climáticos.",
     appHubInstructionsTitle: "Instrucciones",
-    appHubInstructionsDesc: "Aprende a navegar la exploración de datos y a usar el asistente AURA.",
-    appHubAboutTitle: "Sobre el Proyecto",
+    appHubInstructionsDesc: "Breve guía de uso: cómo moverse por la plataforma y cómo interactuar con cada módulo.",
+    appHubAboutTitle: "Sobre Tangible Data",
     appHubAboutDesc: "Descubre la historia detrás de la instalación artística y esta experiencia interactiva.",
+    appHubGlossaryTitle: "Glosario",
+    appHubGlossaryDesc: "Definiciones clave para entender el cambio climático.",
+    appHubKnowledgeBaseTitle: "Base de Conocimiento",
+    appHubKnowledgeBaseDesc: "Consulta el documento central del proyecto sobre la evolución del cambio climático y pregúntale a AURA.",
+    appHubChatTitle: "Chatea con AURA",
+    appHubChatDesc: "Pregúntale a nuestra IA sobre los datos, informes y la historia del cambio climático.",
+    appHubScenarioLabTitle: "Laboratorio de Escenarios",
+    appHubScenarioLabDesc: "Explora scenarios 'qué pasaría si...' para entender los posibles futuros climáticos.",
+    appHubJoinUsTitle: "Súmate",
+    appHubJoinUsDesc: "Únete a la comunidad de Tangible Data. Participa y ayuda a impulsar el cambio.",
     appHubComingSoon: "Próximamente",
+    appHubEducationalPackTitle: "Pack Educativo",
+    appHubEducationalPackDesc: "Conoce nuestra metodología educativa aplicada al estudio del cambio climático.",
+    knowledgeBaseTitle: "Base de Conocimiento",
+    knowledgeBaseAskReport: "Pregúntale al informe",
+    knowledgeBaseBack: "Volver al Centro de Apps",
     skipButton: "Saltar",
+    educationalPackTitle: "Pack Educativo",
+    educationalPackContent: `
+      <h2 class="font-title text-2xl text-cyan-400 mb-4">Aplicando el marco "de los datos a la acción"</h2>
+      <p class="mb-4">Como parte de nuestros talleres educativos, los alumnos realizan un análisis de la evolución del cambio climático desde 1880 hasta la actualidad, utilizando como fuente los datos de la NASA. Descargan los datos, los analizan con herramientas comunes y crean una visualización. Esta escultura representa esa evolución.</p>
+      <p class="mb-6">Como en cada proyecto, Tangible Data trata de conectar los datos con la acción. Durante las sesiones del taller se realizan varias actividades para explicar esta conexión. Al final, los estudiantes piensan en posibles acciones para mitigar el cambio climático.</p>
+      
+      <h3 class="font-title text-xl text-white mb-3 border-t border-gray-600 pt-4">Sesión 1: Los datos nos ayudan a tomar decisiones... buenas y malas</h3>
+      <p class="mb-4">Introducción a la diferencia entre dato, información, conocimiento y sabiduría. Los alumnos trabajan con ejemplos cotidianos (temperatura, etiquetas Nutriscore, redes sociales) y realizan dinámicas participativas para entender cómo los datos influyen en nuestras decisiones diarias.</p>
+      
+      <h3 class="font-title text-xl text-white mb-3 border-t border-gray-600 pt-4">Sesión 2: Los datos abiertos son gratuitos y están disponibles</h3>
+      <p class="mb-4">El objetivo es capacitar al alumnado para localizar y descargar un dataset de la NASA, comprender la estructura de los archivos descargados (CSV y metadatos) y trabajar colaborativamente. Tras identificar el indicador de la anomalía de la temperatura global en el portal de la NASA, los estudiantes descargan el archivo y lo abren en software de hojas de cálculo.</p>
+      
+      <h3 class="font-title text-xl text-white mb-3 border-t border-gray-600 pt-4">Sesión 3: Disponemos de herramientas gratuitas para analizar y visualizar los datos</h3>
+      <p class="mb-4">La sesión se centra en filtrar el dataset, calcular valores máximos, mínimos y promedio mediante funciones, y generar un gráfico temporal que sirva de base para la interpretación posterior.</p>
+      
+      <h3 class="font-title text-xl text-white mb-3 border-t border-gray-600 pt-4">Sesión 4: Interpretamos los datos a través de todos los sentidos</h3>
+      <p class="mb-4">El propósito es que los equipos sinteticen conclusiones cualitativas basadas en los valores analizados, redacten títulos significativos para sus gráficos y experimenten dos técnicas de tangibilización —escultura y sonificación— para comunicar los resultados. Se presenta una escultura física basada en los datos, que los alumnos exploran de forma táctil, y se cierra la sesión con la sonificación del dataset, convirtiendo la serie temporal en una secuencia musical.</p>
+      
+      <h3 class="font-title text-xl text-white mb-3 border-t border-gray-600 pt-4">Construir la acción</h3>
+      <p class="mb-4">Para finalizar, los estudiantes generan sus propias conclusiones sobre los datos y formulan recomendaciones basadas en estas interpretaciones.</p>
+      <ul class="list-disc list-inside space-y-2 mb-4">
+          <li><strong>Conclusiones basadas en datos:</strong> La temperatura global ha aumentado drásticamente, sobre todo en las últimas décadas, acercándose ya a 1,5°C sobre el nivel preindustrial. El ritmo de calentamiento se está acelerando.</li>
+          <li><strong>Interpretaciones y recomendaciones:</strong> Aunque es un problema global, las acciones locales son fundamentales. Es crucial seguir trabajando hasta reducir las emisiones a cero. Fomentar energías renovables, cambiar patrones de consumo y exigir acción política son pasos necesarios.</li>
+      </ul>
+      <div class="mt-8 pt-6 border-t border-cyan-800 text-center">
+        <p class="text-lg font-semibold text-white mb-2">¿Interesado en llevar esto a tu centro educativo?</p>
+        <p class="mb-4">Si quieres impartir estas sesiones en un colegio, ¡contáctanos!</p>
+        <a href="https://tangibledata.xyz/2025-colegio-madrid/" target="_blank" rel="noopener noreferrer" class="inline-block bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+            Mira nuestro último taller
+        </a>
+      </div>
+    `,
+    joinUsModalTitle: "Únete al Movimiento",
+    joinUsModalContent: "Tangible Data es un movimiento. Si te apasionan los datos, la fabricación digital, la sostenibilidad, la educación y quieres sumarte a Tangible Data, no dudes en contactarnos.",
+    joinUsModalWebsiteButton: "Visita Tangible Data",
+    joinUsModalEmailLink: "O escríbenos a",
+    scenarioLabTitle: "Laboratorio de Escenarios",
+    scenarioLabSelectPreset: "1. Explora un escenario predefinido",
+    scenarioLabCustomAi: "2. Crea tu propio escenario (IA)",
+    scenarioLabCustomAiDesc: "Describe una situación hipotética y nuestra IA generará una simulación. ¡Sé creativo!",
+    scenarioLabCustomAiPlaceholder: "Ej: ¿Y si la energía de fusión estuviera disponible en 2030?",
+    scenarioLabGenerateButton: "Generar con IA",
+    scenarioLabGeneratingButton: "Generando...",
+    scenarioLabAiError: "La IA no pudo generar el escenario.",
+    scenarioLabChartTitle: "Evolución de la Anomalía de Temperatura Global",
+    scenarioLabChartYAxis: "Anomalía (°C)",
+    scenarioLabChartReal: "Realidad Histórica",
+    scenarioLabAiLogic: "Lógica de la IA",
+    scenarioLabPresetLogic: "Lógica de la Simulación",
+    glossaryTitle: "Glosario",
   }
 };
 
@@ -250,29 +374,29 @@ const storyDataEn: StoryData = {
 const storyDataEs: StoryData = {
   'start': {
     id: 'start',
-    sceneDescription: "¡Hola! Nuestro viaje a la historia del cambio climático empieza ahora. Visitaremos cinco grandes fases históricas para comprender cómo ha evolucionado el cambio climático a lo largo de los últimos 150 años. ¿Qué periodo te gustaría explorar primero?",
+    sceneDescription: "¡Hola! Nuestro viaje a la historia del cambio climático comienza ahora. Visitaremos cinco grandes fases históricas para entender cómo ha evolucionado el cambio climático en los últimos 150 años. ¿Qué período te gustaría explorar primero?",
     image: GRAPH_OVERVIEW_IMAGE,
     choices: [
-      { text: "1880–1910: Estabilidad inicial en la era preindustrial tardía", nextSceneId: "period_1880" },
-      { text: "1910–1945: Primer calentamiento del siglo XX", nextSceneId: "period_1910" },
-      { text: "1945–1975: Meseta de mediados de siglo y ligero enfriamiento", nextSceneId: "period_1945" },
-      { text: "1975–2000: Reanudación del calentamiento global moderno", nextSceneId: "period_1975" },
-      { text: "2000–2024: El calentamiento del siglo XXI y récords contemporáneos", nextSceneId: "period_2000" },
+      { text: "1880–1910: Estabilidad preindustrial tardía", nextSceneId: "period_1880" },
+      { text: "1910–1945: Calentamiento de principios del siglo XX", nextSceneId: "period_1910" },
+      { text: "1945–1975: Meseta de mediados de siglo", nextSceneId: "period_1945" },
+      { text: "1975–2000: Se reanuda el calentamiento moderno", nextSceneId: "period_1975" },
+      { text: "2000–2024: Aceleración del siglo XXI", nextSceneId: "period_2000" },
     ],
   },
   'period_1880': {
     id: 'period_1880',
-    sceneDescription: "Esta era mostró temperaturas relativamente estables o en ligero descenso. Los factores naturales tuvieron una influencia notable, especialmente grandes erupciones volcánicas como la del Krakatoa (1883), que causaron un enfriamiento temporal al reflejar la radiación solar. El calentamiento inducido por el hombre era aún incipiente.",
+    sceneDescription: "Esta era mostró temperaturas relativamente estables o ligeramente decrecientes. Los factores naturales fueron influencias significativas, especialmente las grandes erupciones volcánicas como la del Krakatoa (1883), que causaron un enfriamiento temporal al reflejar la radiación solar. El calentamiento inducido por el hombre todavía estaba en sus primeras etapas.",
     chartConfig: { startYear: 1880, endYear: 1910 },
     choices: [
       { text: "Cuéntame más sobre los volcanes.", nextSceneId: "period_1880_volcanoes" },
-      { text: "¿Son fiables los datos de este período inicial?", nextSceneId: "data_reliability" },
+      { text: "¿Qué tan confiables son los datos de este período inicial?", nextSceneId: "data_reliability" },
       { text: "Volver a los temas principales.", nextSceneId: "start" },
     ],
   },
   'period_1880_volcanoes': {
     id: 'period_1880_volcanoes',
-    sceneDescription: "Volcanes como el Krakatoa (1883) y Santa María (1902) inyectaron enormes cantidades de aerosoles de sulfato en la estratosfera. Estas partículas crean una neblina reflectante que puede enfriar el planeta durante 1-3 años al bloquear la luz solar, lo que explica las anomalías frías vistas en años como 1884–1888.",
+    sceneDescription: "Volcanes como el Krakatoa (1883) y Santa María (1902) inyectaron cantidades masivas de aerosoles de sulfato en la estratosfera. Estas partículas crean una neblina reflectante que puede enfriar el planeta durante 1-3 años al bloquear la luz solar, lo que explica las anomalías frías observadas en años como 1884–1888.",
     chartConfig: { startYear: 1880, endYear: 1910 },
     choices: [
        { text: "Explorar otro período.", nextSceneId: "start" },
@@ -281,34 +405,34 @@ const storyDataEs: StoryData = {
   },
   'period_1910': {
     id: 'period_1910',
-    sceneDescription: "Desde aproximadamente 1910 hasta 1945, el planeta se calentó unos 0,3-0,4°C. Este 'calentamiento de principios del siglo XX' fue impulsado por una combinación de crecientes emisiones de gases de efecto invernadero por la industrialización, una actividad solar ligeramente mayor y una relativa falta de grandes erupciones volcánicas.",
+    sceneDescription: "Desde alrededor de 1910 hasta 1945, el planeta se calentó entre 0.3 y 0.4°C. Este 'calentamiento de principios del siglo XX' fue impulsado por una combinación de crecientes emisiones de gases de efecto invernadero por la industrialización, una actividad solar ligeramente mayor y una relativa falta de grandes erupciones volcánicas.",
     chartConfig: { startYear: 1910, endYear: 1945 },
     choices: [
-      { text: "¿Afectaron la I Guerra Mundial o la Gran Depresión?", nextSceneId: "period_1910_events" },
+      { text: "¿Afectaron a esto la Primera Guerra Mundial o la Gran Depresión?", nextSceneId: "period_1910_events" },
       { text: "Volver a los temas principales.", nextSceneId: "start" },
     ],
   },
   'period_1910_events': {
     id: 'period_1910_events',
-    sceneDescription: "Aunque eventos históricos importantes como la Primera Guerra Mundial y la Gran Depresión causaron caídas temporales en la actividad industrial y las emisiones en algunas regions, no fueron lo suficientemente significativos como para detener la tendencia general de calentamiento impulsada por el crecimiento industrial a largo plazo.",
+    sceneDescription: "Aunque grandes eventos históricos como la Primera Guerra Mundial y la Gran Depresión causaron caídas temporales en la actividad industrial y las emisiones en algunas regiones, no fueron lo suficientemente significativos como para detener la tendencia general de calentamiento impulsada por el crecimiento industrial a largo plazo.",
     chartConfig: { startYear: 1910, endYear: 1945 },
     choices: [
        { text: "Explorar otro período.", nextSceneId: "start" },
        { text: "Finalizar el análisis.", nextSceneId: "conclusion" },
     ],
   },
-  'period_1945': {
+   'period_1945': {
     id: 'period_1945',
-    sceneDescription: "Entre 1945 y 1975, la tendencia de calentamiento se detuvo, e incluso hubo un ligero enfriamiento. La causa principal fue un aumento masivo de la contaminación industrial por aerosoles (como los sulfatos) debido al auge económico de la posguerra. Estas partículas reflejaban la luz solar, contrarrestando temporalmente el efecto de calentamiento del aumento de los niveles de CO2.",
+    sceneDescription: "Entre 1945 y 1975, la tendencia al calentamiento se detuvo e incluso hubo un ligero enfriamiento. La causa principal fue un aumento masivo de la contaminación industrial por aerosoles (como los sulfatos) del auge económico de la posguerra. Estas partículas reflejaban la luz solar, contrarrestando temporalmente el efecto de calentamiento del aumento de los niveles de CO2.",
     chartConfig: { startYear: 1945, endYear: 1975 },
     choices: [
-       { text: "¿Entonces, la contaminación causó enfriamiento?", nextSceneId: "period_1945_aerosols" },
+       { text: "Entonces, ¿la contaminación causó enfriamiento?", nextSceneId: "period_1945_aerosols" },
        { text: "Volver a los temas principales.", nextSceneId: "start" },
     ],
   },
    'period_1945_aerosols': {
     id: 'period_1945_aerosols',
-    sceneDescription: "Exacto. El efecto de 'oscurecimiento global' de los aerosoles enmascaró el calentamiento subyacente de los gases de efecto invernadero. Sin embargo, a medida que los países aprobaron leyes de 'Aire Limpio' para reducir el smog y la lluvia ácida, el efecto de enfriamiento de los aerosoles disminuyó, permitiendo que el calentamiento impulsado por los gases de efecto invernadero volviera a ser dominante después de la década de 1970.",
+    sceneDescription: "Exactamente. El efecto de 'oscurecimiento global' de los aerosoles enmascaró el calentamiento subyacente de los gases de efecto invernadero. Sin embargo, a medida que los países aprobaron leyes de 'Aire Limpio' para reducir el smog y la lluvia ácida, el efecto de enfriamiento de los aerosoles disminuyó, permitiendo que el calentamiento impulsado por los gases de efecto invernadero volviera a ser dominante después de la década de 1970.",
     chartConfig: { startYear: 1945, endYear: 1975 },
     choices: [
        { text: "Explorar otro período.", nextSceneId: "start" },
@@ -317,26 +441,26 @@ const storyDataEs: StoryData = {
   },
   'period_1975': {
     id: 'period_1975',
-    sceneDescription: "A partir de 1975 aproximadamente, comenzó un período de calentamiento rápido y sostenido, a un ritmo aproximadamente el doble que el de principios del siglo XX. Esto se atribuye al efecto dominante del aumento de los gases de efecto invernadero, ya que el efecto de enfriamiento de los aerosoles se redujo gracias a las regulaciones medioambientales en muchas naciones industrializadas.",
+    sceneDescription: "A partir de 1975 aproximadamente, comenzó un período de calentamiento rápido y sostenido, a un ritmo aproximadamente el doble que el de principios del siglo XX. Esto se atribuye al efecto dominante del aumento de los gases de efecto invernadero, ya que el efecto de enfriamiento de los aerosoles se redujo por las regulaciones ambientales en muchas naciones industrializadas.",
     chartConfig: { startYear: 1975, endYear: 2000 },
     choices: [
-       { text: "¿Qué pasa con el agujero de ozono?", nextSceneId: "period_1975_ozone" },
+       { text: "Qué pasa con el agujero de ozono?", nextSceneId: "period_1975_ozone" },
        { text: "¿Cómo saben los científicos que no son ciclos naturales?", nextSceneId: "data_reliability" },
        { text: "Volver a los temas principales.", nextSceneId: "start" },
     ],
   },
   'period_1975_ozone': {
     id: 'period_1975_ozone',
-    sceneDescription: "El agujero de la capa de ozono y el calentamiento global son cuestiones relacionadas pero distintas. Los CFC que destruyeron el ozono también son potentes gases de efecto invernadero. El Protocolo de Montreal (1987) eliminó con éxito los CFC para sanar la capa de ozono, lo que también tuvo un efecto secundario positivo, aunque menor, de mitigar parte del calentamiento.",
+    sceneDescription: "El agujero de ozono y el calentamiento global son problemas relacionados pero distintos. Los CFC que destruyeron el ozono también son potentes gases de efecto invernadero. El Protocolo de Montreal (1987) eliminó con éxito los CFC para sanar la capa de ozono, lo que también tuvo un efecto secundario positivo, aunque menor, de mitigar parte del calentamiento.",
     chartConfig: { startYear: 1975, endYear: 2000 },
     choices: [
-       { text: "Explore another period.", nextSceneId: "start" },
-       { text: "End the analysis.", nextSceneId: "conclusion" },
+       { text: "Explorar otro período.", nextSceneId: "start" },
+       { text: "Finalizar el análisis.", nextSceneId: "conclusion" },
     ],
   },
   'period_2000': {
     id: 'period_2000',
-    sceneDescription: "El siglo XXI ha visto una aceleración del calentamiento. Los 10 años más recientes son los 10 más cálidos registrados. Para 2024, la temperatura global estaba aproximadamente 1.47°C por encima del promedio preindustrial, impulsada por concentraciones récord de CO2. Este período está marcado por un aumento en la frecuencia e intensidad de los eventos climáticos extremos.",
+    sceneDescription: "El siglo XXI ha visto una aceleración del calentamiento. Los 10 años más recientes son los 10 más cálidos registrados. Para 2024, la temperatura global era aproximadamente 1.47°C por encima del promedio preindustrial, impulsada por concentraciones récord de CO2. Este período está marcado por un aumento en la frecuencia e intensidad de los eventos climáticos extremos.",
     chartConfig: { startYear: 2000, endYear: 2024 },
     choices: [
       { text: "¿Qué fue el 'hiato del calentamiento'?", nextSceneId: "period_2000_hiatus" },
@@ -355,7 +479,7 @@ const storyDataEs: StoryData = {
   },
   'data_reliability': {
     id: 'data_reliability',
-    sceneDescription: "Los científicos utilizan múltiples conjuntos de datos independientes (de la NASA, NOAA, etc.) que muestran una tendencia de calentamiento constante. Los primeros datos de 1880 tenían menos cobertura geográfica, pero los investigadores aplican correcciones estadísticas rigurosas para cosas como cambios en las técnicas de medición y el efecto de 'isla de calor urbana' para garantizar que los datos sean fiables.",
+    sceneDescription: "Los científicos utilizan múltiples conjuntos de datos independientes (de la NASA, NOAA, etc.) que muestran una tendencia de calentamiento consistente. Los primeros datos de 1880 tenían menos cobertura geográfica, pero los investigadores aplican correcciones estadísticas rigurosas para cosas como cambios en las técnicas de medición y el efecto de 'isla de calor urbana' para garantizar que los datos sean confiables.",
     chartConfig: { startYear: 1880, endYear: 2024 },
     choices: [
       { text: "Volver a los temas principales.", nextSceneId: "start" },
@@ -364,7 +488,7 @@ const storyDataEs: StoryData = {
   },
   'conclusion': {
     id: 'conclusion',
-    sceneDescription: "Los datos muestran una tendencia innegable de calentamiento desde 1880, que se ha acelerado significativamente después de 1975. Este análisis científico, basado en una gran cantidad de evidencia, forma la base para comprender el clima cambiante de nuestro planeta y la necesidad urgente de actuar. Tu exploración ha finalizado.",
+    sceneDescription: "Los datos muestran una tendencia innegable al calentamiento desde 1880, que se acelera significativamente después de 1975. Este análisis científico, basado en un vasto cuerpo de evidencia, forma la base para comprender el clima cambiante de nuestro planeta y la urgente necesidad de actuar. Tu exploración ha finalizado.",
     image: GRAPH_OVERVIEW_IMAGE,
     choices: [],
   },

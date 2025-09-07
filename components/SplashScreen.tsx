@@ -38,6 +38,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinished, language }) => 
         >
           <TangibleDataLogo className="h-10 mx-auto mb-4" />
           <p className="text-2xl text-gray-300">{t.splashGretting}</p>
+          <p className="text-base text-gray-400 mt-2 px-4">{t.splashCollaboration}</p>
         </div>
 
         {/* Phase 1: Title and Subtitle */}
