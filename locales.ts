@@ -11,7 +11,8 @@ export const locales = {
     auraStartMessage: "Hello! I am AURA, the artificial intelligence that will help you discover the meaning of this sculpture. This interactive adventure is based on a real art installation from the National Museum of Natural Sciences, developed by Tangible Data. The sculpture represents climate change through a skeleton that reflects the evolution of global temperature.\n\nYour mission is to explore this data sculpture. With the help of a scientific guide, you will analyze the document 'Evolution of Global Temperature Anomalies (1880–2024)' to understand the history of climate change.",
     auraSecondMessage: "To help you, I've prepared an application hub you can use to learn all about climate change. Shall we begin?",
     splashGretting: "presents",
-    splashCollaboration: "in collaboration with the National Museum of Natural Sciences of Spain",
+    splashCollabIntro: "in collaboration with",
+    splashCollabPartner: "the National Museum of Natural Sciences of Spain",
     splashTitle: "The Climate Change Skeleton",
     splashSubtitle: "a generative adventure on the evolution of climate change",
     gameTitle: "Data Exploration",
@@ -133,7 +134,8 @@ export const locales = {
     auraStartMessage: "¡Hola! Soy AURA, la inteligencia artificial que te ayudará a descubrir el significado de esta escultura. Esta aventura interactiva está basada en una instalación artística real del Museo Nacional de Ciencias Naturales, desarrollada por Tangible Data. La escultura representa el cambio climático mediante un esqueleto que refleja la evolución de la temperatura global.\n\nTu misión es explorar esta escultura de datos. Con la ayuda de una guía científica, analizarás el documento 'Evolución de las anomalías de temperatura global (1880–2024)' para comprender la historia del cambio climático.",
     auraSecondMessage: "Para ayudarte, he preparado un centro de aplicaciones que podrás usar para conocer todo sobre el cambio climático. ¿Comenzamos?",
     splashGretting: "presenta",
-    splashCollaboration: "en colaboración con el Museo Nacional de Ciencias Naturales de España",
+    splashCollabIntro: "en colaboración con",
+    splashCollabPartner: "el Museo Nacional de Ciencias Naturales de España",
     splashTitle: "El esqueleto del cambio climático",
     splashSubtitle: "una aventura generativa sobre la evolución del cambio climático",
     gameTitle: "Exploración de Datos",
@@ -256,7 +258,7 @@ const storyDataEn: StoryData = {
   'start': {
     id: 'start',
     sceneDescription: "Hello! Our journey into the history of climate change begins now. We will visit five major historical phases to understand how climate change has evolved over the last 150 years. Which period would you like to explore first?",
-    image: MUSEUM_EXTERIOR_IMAGE,
+    image: GRAPH_OVERVIEW_IMAGE,
     choices: [
       { text: "1880–1910: Late Pre-industrial Stability", nextSceneId: "period_1880" },
       { text: "1910–1945: Early 20th Century Warming", nextSceneId: "period_1910" },
@@ -379,7 +381,7 @@ const storyDataEs: StoryData = {
   'start': {
     id: 'start',
     sceneDescription: "¡Hola! Nuestro viaje a la historia del cambio climático comienza ahora. Visitaremos cinco grandes fases históricas para entender cómo ha evolucionado el cambio climático en los últimos 150 años. ¿Qué período te gustaría explorar primero?",
-    image: MUSEUM_EXTERIOR_IMAGE,
+    image: GRAPH_OVERVIEW_IMAGE,
     choices: [
       { text: "1880–1910: Estabilidad preindustrial tardía", nextSceneId: "period_1880" },
       { text: "1910–1945: Calentamiento de principios del siglo XX", nextSceneId: "period_1910" },

@@ -32,13 +32,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinished, language }) => 
       <div className="relative text-center w-full max-w-3xl mx-auto px-4 h-48 flex items-center justify-center">
         {/* Phase 0: Logo */}
         <div
-          className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-1000 ${
+          className={`absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-1000 ${
             phase === 0 ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          <TangibleDataLogo className="h-10 mx-auto mb-4" />
-          <p className="text-2xl text-gray-300">{t.splashGretting}</p>
-          <p className="text-base text-gray-400 mt-2 px-4">{t.splashCollaboration}</p>
+          <TangibleDataLogo className="h-10" />
+          <p className="text-2xl text-gray-300 mt-4">{t.splashGretting}</p>
+          <p className="text-sm text-gray-400 mt-6">{t.splashCollabIntro}</p>
+          <p className="text-base text-gray-300 mt-1">{t.splashCollabPartner}</p>
         </div>
 
         {/* Phase 1: Title and Subtitle */}
