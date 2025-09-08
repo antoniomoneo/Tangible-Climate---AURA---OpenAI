@@ -1,15 +1,16 @@
 import React from 'react';
 import type { Language } from '../types';
 import { locales } from '../locales';
-import { DashboardIcon, TangibleDataLogo, QuestionMarkIcon } from './icons';
+import { DashboardIcon, TangibleDataLogo, QuestionMarkIcon, InfoIcon } from './icons';
 
 interface HeaderProps {
   onAppHubClick: () => void;
   onInstructionsClick: () => void;
+  onAboutClick: () => void;
   language: Language;
 }
 
-const Header: React.FC<HeaderProps> = ({ onAppHubClick, onInstructionsClick, language }) => {
+const Header: React.FC<HeaderProps> = ({ onAppHubClick, onInstructionsClick, onAboutClick, language }) => {
   const t = locales[language];
   
   return (
@@ -33,6 +34,14 @@ const Header: React.FC<HeaderProps> = ({ onAppHubClick, onInstructionsClick, lan
         >
           <QuestionMarkIcon />
           <span className="hidden md:inline">{t.headerInstructionsButton}</span>
+        </button>
+        <button
+          onClick={onAboutClick}
+          title={t.appHubAboutTitle}
+          className="flex items-center gap-2 bg-gray-700 hover:bg-cyan-600 text-white font-semibold p-2 md:px-4 rounded-lg transition-colors"
+        >
+          <InfoIcon />
+          <span className="hidden md:inline">{t.appHubAboutTitle}</span>
         </button>
       </nav>
     </header>

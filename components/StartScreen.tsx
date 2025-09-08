@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { locales } from '../locales';
 import type { Language } from '../types';
 import { AuraIcon } from './icons';
+import TextToSpeechButton from './TextToSpeechButton';
 
 interface StartScreenProps {
   onShowHub: () => void;
@@ -15,6 +16,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onShowHub, language }) => {
 
   const firstFullText = (t as any).auraStartMessage || '';
   const secondFullText = (t as any).auraSecondMessage || '';
+  const fullTextToSpeak = `${firstFullText}\n\n${secondFullText}`;
 
   const isFirstDone = displayedFirst.length === firstFullText.length;
   const isSecondDone = displayedSecond.length === secondFullText.length;
@@ -60,11 +62,14 @@ const StartScreen: React.FC<StartScreenProps> = ({ onShowHub, language }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen animate-fadeIn">
+    <div className="flex flex-col items-center justify-center w-full h-full animate-fadeIn">
       <div className="bg-gray-800 bg-opacity-75 p-6 md:p-8 rounded-xl shadow-2xl border border-gray-700 w-full max-w-3xl">
         <div className="flex items-start gap-4 text-left">
-          <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-cyan-500 flex items-center justify-center mt-2">
-            <AuraIcon className="h-6 w-6 md:h-7 md:w-7 text-white" />
+          <div className="flex-shrink-0 flex flex-col items-center gap-4 mt-2">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-cyan-500 flex items-center justify-center">
+              <AuraIcon className="h-6 w-6 md:h-7 md:w-7 text-white" />
+            </div>
+            <TextToSpeechButton textToSpeak={fullTextToSpeak} language={language} />
           </div>
           <div className="bg-gray-700 p-4 rounded-lg shadow w-full min-h-[320px] md:min-h-[280px]">
             <p className="text-gray-200 whitespace-pre-wrap text-base md:text-lg leading-relaxed">

@@ -3,6 +3,7 @@ import type { StorySegment, Language, Choice } from '../types';
 import { ChartBarIcon } from './icons';
 import { locales } from '../locales';
 import SkeletonChart from './SkeletonChart';
+import TextToSpeechButton from './TextToSpeechButton';
 
 interface GameScreenProps {
   story: StorySegment;
@@ -38,7 +39,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ story, onChoice, isLoading, lan
       {/* Story Column */}
       <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg shadow-lg border border-gray-700 flex flex-col h-full">
         <div className="flex-grow mb-6">
-            <h2 className="font-title text-3xl text-cyan-400 mb-4">{t.gameTitle}</h2>
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h2 className="font-title text-3xl text-cyan-400">{t.gameTitle}</h2>
+              <TextToSpeechButton textToSpeak={story.sceneDescription} language={language} />
+            </div>
             <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed text-lg">
                 <p key={story.sceneDescription} className="animate-fadeIn">
                     {story.sceneDescription}

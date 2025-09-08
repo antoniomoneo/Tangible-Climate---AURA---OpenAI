@@ -118,8 +118,9 @@ const ScenarioLabModal: React.FC<ScenarioLabModalProps> = ({ isOpen, onClose, la
         </div>
 
         <div className="flex-1 flex flex-col lg:flex-row gap-6 min-h-0 pt-4">
-          <div className="lg:w-1/3 xl:w-2/5 space-y-6 overflow-y-auto pr-4 lg:pr-6 lg:-mr-4 pb-4 flex-shrink-0">
-            <section>
+          {/* Left Column (25%) - Controls */}
+          <div className="lg:w-1/4 space-y-6 overflow-y-auto pr-2 pb-4 flex-shrink-0">
+             <section>
               <label htmlFor="scenario-select" className="text-lg font-bold text-gray-300">{t.scenarioLabSelectPreset}</label>
               <select
                 id="scenario-select"
@@ -161,9 +162,9 @@ const ScenarioLabModal: React.FC<ScenarioLabModalProps> = ({ isOpen, onClose, la
             </section>
           </div>
 
-          <div className="flex-1 min-h-0 flex flex-col min-h-[50vh]">
-            <div className="flex-grow min-h-0 flex flex-col">
-              <h3 className="text-center font-title text-cyan-200 mb-4 flex-shrink-0 text-lg">
+          {/* Center Column (50%) - Chart */}
+          <div className="lg:w-1/2 flex-1 flex flex-col min-h-[50vh] lg:min-h-full">
+             <h3 className="text-center font-title text-cyan-200 mb-4 flex-shrink-0 text-lg">
                 {t.scenarioLabChartTitle}
               </h3>
               <div className="flex-grow min-h-0">
@@ -179,9 +180,11 @@ const ScenarioLabModal: React.FC<ScenarioLabModalProps> = ({ isOpen, onClose, la
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            </div>
-            <div className="flex-shrink-0 mt-4 h-32 overflow-y-auto p-1">
-              {aiExplanation ? (
+          </div>
+
+          {/* Right Column (25%) - Explanation */}
+          <div className="lg:w-1/4 lg:h-full lg:overflow-y-auto p-1">
+             {aiExplanation ? (
                 <div className="p-4 bg-gray-900/70 border-l-4 border-green-400 rounded-r-lg animate-fadeIn">
                   <h4 className="font-bold text-green-300">{t.scenarioLabAiLogic}</h4>
                   <p className="text-sm text-gray-300 mt-1">{aiExplanation}</p>
@@ -195,8 +198,8 @@ const ScenarioLabModal: React.FC<ScenarioLabModalProps> = ({ isOpen, onClose, la
                   </p>
                 </div>
               )}
-            </div>
           </div>
+
         </div>
       </div>
     </div>

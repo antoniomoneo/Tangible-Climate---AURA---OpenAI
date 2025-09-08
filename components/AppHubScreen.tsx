@@ -4,7 +4,6 @@ import { locales } from '../locales';
 import { 
   CalendarIcon, 
   DashboardIcon, 
-  InfoIcon, 
   QuestionMarkIcon,
   BookOpenIcon,
   DatabaseIcon,
@@ -20,7 +19,6 @@ interface AppHubScreenProps {
   onOpenDashboard: () => void;
   onOpenCalendar: () => void;
   onOpenChat: () => void;
-  onOpenAbout: () => void;
   onOpenInstructions: () => void;
   onOpenKnowledgeBase: () => void;
   onOpenEducationalPack: () => void;
@@ -30,39 +28,11 @@ interface AppHubScreenProps {
   language: Language;
 }
 
-const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenAbout, onOpenInstructions, onOpenKnowledgeBase, onOpenEducationalPack, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, language }) => {
+const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenInstructions, onOpenKnowledgeBase, onOpenEducationalPack, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, language }) => {
   const t = locales[language];
 
   const apps = [
     {
-      title: t.appHubDataExplorerTitle,
-      description: t.appHubDataExplorerDesc,
-      icon: <CompassIcon />,
-      action: onStartGame,
-      enabled: true,
-    },
-    {
-      title: t.appHubInstructionsTitle,
-      description: t.appHubInstructionsDesc,
-      icon: <QuestionMarkIcon />,
-      action: onOpenInstructions,
-      enabled: true,
-    },
-    {
-      title: t.appHubEducationalPackTitle,
-      description: t.appHubEducationalPackDesc,
-      icon: <AcademicCapIcon />,
-      action: onOpenEducationalPack,
-      enabled: true,
-    },
-    {
-      title: t.appHubKnowledgeBaseTitle,
-      description: t.appHubKnowledgeBaseDesc,
-      icon: <DatabaseIcon />,
-      action: onOpenKnowledgeBase,
-      enabled: true,
-    },
-     {
       title: t.appHubChatTitle,
       description: t.appHubChatDesc,
       icon: <ChatBubbleIcon />,
@@ -70,10 +40,10 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       enabled: true,
     },
     {
-      title: t.appHubDashboardTitle,
-      description: t.appHubDashboardDesc,
-      icon: <DashboardIcon />,
-      action: onOpenDashboard,
+      title: t.appHubDataExplorerTitle,
+      description: t.appHubDataExplorerDesc,
+      icon: <CompassIcon />,
+      action: onStartGame,
       enabled: true,
     },
     {
@@ -84,6 +54,34 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       enabled: true,
     },
     {
+      title: t.appHubKnowledgeBaseTitle,
+      description: t.appHubKnowledgeBaseDesc,
+      icon: <DatabaseIcon />,
+      action: onOpenKnowledgeBase,
+      enabled: true,
+    },
+    {
+      title: t.appHubGlossaryTitle,
+      description: t.appHubGlossaryDesc,
+      icon: <BookOpenIcon />,
+      action: onOpenGlossary,
+      enabled: true,
+    },
+    {
+      title: t.appHubEducationalPackTitle,
+      description: t.appHubEducationalPackDesc,
+      icon: <AcademicCapIcon />,
+      action: onOpenEducationalPack,
+      enabled: true,
+    },
+    {
+      title: t.appHubDashboardTitle,
+      description: t.appHubDashboardDesc,
+      icon: <DashboardIcon />,
+      action: onOpenDashboard,
+      enabled: true,
+    },
+    {
       title: t.appHubCalendarTitle,
       description: t.appHubCalendarDesc,
       icon: <CalendarIcon />,
@@ -91,17 +89,10 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       enabled: true,
     },
     {
-      title: t.appHubAboutTitle,
-      description: t.appHubAboutDesc,
-      icon: <InfoIcon />,
-      action: onOpenAbout,
-      enabled: true,
-    },
-     {
-      title: t.appHubGlossaryTitle,
-      description: t.appHubGlossaryDesc,
-      icon: <BookOpenIcon />,
-      action: onOpenGlossary,
+      title: t.appHubInstructionsTitle,
+      description: t.appHubInstructionsDesc,
+      icon: <QuestionMarkIcon />,
+      action: onOpenInstructions,
       enabled: true,
     },
     {
@@ -114,7 +105,7 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-center animate-fadeIn p-4">
+    <div className="flex flex-col items-center justify-center w-full h-full text-center animate-fadeIn">
       <div className="w-full max-w-5xl">
         <h1 className="font-title text-4xl md:text-5xl text-cyan-400 mb-4">{t.appHubTitle}</h1>
         <p className="text-gray-300 text-lg mb-8">{t.appHubSubtitle}</p>
@@ -144,6 +135,13 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
               )}
             </button>
           ))}
+            <a
+              href="mailto:hello@tangibledata.xyz"
+              className="group relative flex flex-col items-center justify-center text-center bg-gray-800/50 p-6 rounded-lg shadow-lg border-2 border-dashed border-gray-600 transition-all duration-300 hover:border-cyan-500 hover:bg-gray-700/50 hover:-translate-y-1"
+            >
+              <h2 className="text-lg font-bold text-white mb-2">{t.appHubAddYourAppTitle}</h2>
+              <p className="text-gray-400 text-sm group-hover:text-cyan-400 transition-colors">{t.appHubAddYourAppDesc}</p>
+            </a>
         </div>
       </div>
     </div>

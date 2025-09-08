@@ -30,7 +30,11 @@ app.get("/api/calendar", async (req, res) => {
   const calendarUrl = `https://calendar.google.com/calendar/ical/${calendarId}/public/basic.ics`;
 
   try {
-    const response = await fetch(calendarUrl);
+    const response = await fetch(calendarUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
+      }
+    });
     if (!response.ok) {
       throw new Error(`Failed to fetch calendar data from Google: ${response.statusText}`);
     }
@@ -40,6 +44,53 @@ app.get("/api/calendar", async (req, res) => {
   } catch (error) {
     console.error("Error fetching calendar:", error.message);
     res.status(500).json({ error: { message: "Could not retrieve calendar events from the server." } });
+  }
+});
+
+app.post("/api/tts", async (req, res) => {
+  if (!API_KEY) {
+    return res.status(500).json({ error: { message: "Missing Google Cloud API key on the server." } });
+  }
+
+  const { text, language } = req.body;
+  if (!text || typeof text !== 'string' || text.trim().length === 0) {
+    return res.status(400).json({ error: { message: "Request body must contain 'text' (string)." } });
+  }
+  if (!language || (language !== 'en' && language !== 'es')) {
+    return res.status(400).json({ error: { message: "Request body must contain 'language' ('en' or 'es')." } });
+  }
+
+  const ttsUrl = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${API_KEY}`;
+  
+  const voiceConfig = language === 'en' 
+    ? { languageCode: 'en-GB', name: 'en-GB-Wavenet-D' } // Mature, male, narrative voice (similar to David Attenborough)
+    : { languageCode: 'es-ES', name: 'es-ES-Wavenet-B' }; // High-quality male Spanish voice
+
+  const requestBody = {
+    input: { text },
+    voice: voiceConfig,
+    audioConfig: { audioEncoding: 'MP3' }
+  };
+
+  try {
+    const ttsResponse = await fetch(ttsUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!ttsResponse.ok) {
+      const errorData = await ttsResponse.json();
+      console.error("Google TTS API Error:", errorData);
+      throw new Error(errorData.error.message || `TTS API request failed with status ${ttsResponse.status}`);
+    }
+
+    const data = await ttsResponse.json();
+    res.status(200).json(data);
+
+  } catch (error) {
+    console.error('Error contacting Google TTS API:', error.message);
+    res.status(500).json({ error: { message: 'Failed to synthesize speech.' } });
   }
 });
 

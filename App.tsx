@@ -248,7 +248,6 @@ const Game: React.FC = () => {
                   onOpenDashboard={handleOpenDashboard}
                   onOpenCalendar={handleOpenCalendar}
                   onOpenChat={handleOpenGeneralChat}
-                  onOpenAbout={handleOpenAbout}
                   onOpenInstructions={handleOpenInstructions}
                   onOpenKnowledgeBase={handleOpenKnowledgeBase}
                   onOpenEducationalPack={handleOpenEducationalPack}
@@ -296,7 +295,7 @@ const Game: React.FC = () => {
     }
   };
 
-  const showHeader = gameState === GameState.PLAYING || gameState === GameState.GAME_OVER || gameState === GameState.DASHBOARD;
+  const showHeader = ![GameState.LANGUAGE_SELECTION, GameState.SPLASH, GameState.ERROR].includes(gameState);
 
   return (
     <div className="bg-gray-900 text-gray-200 min-h-screen flex flex-col items-center justify-center p-4 relative">
@@ -305,6 +304,7 @@ const Game: React.FC = () => {
             <Header 
               onAppHubClick={handleShowAppHub}
               onInstructionsClick={handleOpenInstructions}
+              onAboutClick={handleOpenAbout}
               language={language} 
             />
           }

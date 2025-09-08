@@ -1,5 +1,5 @@
 import type { StorySegment } from './types';
-import { GRAPH_OVERVIEW_IMAGE } from './assets';
+import { GRAPH_OVERVIEW_IMAGE, MUSEUM_EXTERIOR_IMAGE } from './assets';
 
 export const locales = {
   en: {
@@ -67,6 +67,8 @@ export const locales = {
     appHubComingSoon: "Coming Soon",
     appHubEducationalPackTitle: "Educational Pack",
     appHubEducationalPackDesc: "Learn about our educational methodology applied to the study of climate change.",
+    appHubAddYourAppTitle: "Want to add your app here?",
+    appHubAddYourAppDesc: "Write to us at hello@tangibledata.xyz",
     knowledgeBaseTitle: "Knowledge Base",
     knowledgeBaseAskReport: "Ask the Report",
     knowledgeBaseBack: "Back to App Hub",
@@ -187,6 +189,8 @@ export const locales = {
     appHubComingSoon: "Próximamente",
     appHubEducationalPackTitle: "Pack Educativo",
     appHubEducationalPackDesc: "Conoce nuestra metodología educativa aplicada al estudio del cambio climático.",
+    appHubAddYourAppTitle: "¿Quieres añadir aquí tu app?",
+    appHubAddYourAppDesc: "Escríbenos a hello@tangibledata.xyz",
     knowledgeBaseTitle: "Base de Conocimiento",
     knowledgeBaseAskReport: "Pregúntale al informe",
     knowledgeBaseBack: "Volver al Centro de Apps",
@@ -252,7 +256,7 @@ const storyDataEn: StoryData = {
   'start': {
     id: 'start',
     sceneDescription: "Hello! Our journey into the history of climate change begins now. We will visit five major historical phases to understand how climate change has evolved over the last 150 years. Which period would you like to explore first?",
-    image: GRAPH_OVERVIEW_IMAGE,
+    image: MUSEUM_EXTERIOR_IMAGE,
     choices: [
       { text: "1880–1910: Late Pre-industrial Stability", nextSceneId: "period_1880" },
       { text: "1910–1945: Early 20th Century Warming", nextSceneId: "period_1910" },
@@ -375,7 +379,7 @@ const storyDataEs: StoryData = {
   'start': {
     id: 'start',
     sceneDescription: "¡Hola! Nuestro viaje a la historia del cambio climático comienza ahora. Visitaremos cinco grandes fases históricas para entender cómo ha evolucionado el cambio climático en los últimos 150 años. ¿Qué período te gustaría explorar primero?",
-    image: GRAPH_OVERVIEW_IMAGE,
+    image: MUSEUM_EXTERIOR_IMAGE,
     choices: [
       { text: "1880–1910: Estabilidad preindustrial tardía", nextSceneId: "period_1880" },
       { text: "1910–1945: Calentamiento de principios del siglo XX", nextSceneId: "period_1910" },

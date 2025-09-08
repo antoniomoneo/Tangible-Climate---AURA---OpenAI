@@ -9,40 +9,70 @@ interface CalendarModalProps {
   language: Language;
 }
 
-// Simple iCal parser
-const parseICalDate = (dateString: string): Date => {
+const parseICalDate = (dateString: string): Date | null => {
+  if (!dateString || (dateString.length !== 8 && dateString.length < 15)) return null;
+
   const year = parseInt(dateString.substring(0, 4), 10);
   const month = parseInt(dateString.substring(4, 6), 10) - 1;
   const day = parseInt(dateString.substring(6, 8), 10);
-  const hour = parseInt(dateString.substring(9, 11), 10);
-  const minute = parseInt(dateString.substring(11, 13), 10);
-  const second = parseInt(dateString.substring(13, 15), 10);
-  return new Date(Date.UTC(year, month, day, hour, minute, second));
+
+  if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
+
+  if (dateString.includes('T')) {
+    const hour = parseInt(dateString.substring(9, 11), 10) || 0;
+    const minute = parseInt(dateString.substring(11, 13), 10) || 0;
+    const second = parseInt(dateString.substring(13, 15), 10) || 0;
+    return new Date(Date.UTC(year, month, day, hour, minute, second));
+  } else {
+    return new Date(Date.UTC(year, month, day));
+  }
 };
+
 
 const parseICS = (icsString: string): CalendarEvent[] => {
     const events: CalendarEvent[] = [];
-    // Unfold multi-line properties
+    // Unfold multi-line properties (e.g., DESCRIPTION)
     const unfoldedIcs = icsString.replace(/\r\n\s/g, '');
+    // Split the whole string into individual VEVENT blocks
     const eventBlocks = unfoldedIcs.split('BEGIN:VEVENT');
   
     for (const block of eventBlocks.slice(1)) {
+        // Ensure the block is a complete event
+        if (!block.includes('END:VEVENT')) continue;
+        
         const lines = block.split(/\r?\n/);
         const eventData: any = {};
 
         lines.forEach(line => {
-            const [key, ...valueParts] = line.split(':');
-            const value = valueParts.join(':');
+            if (!line.includes(':')) return;
+            const [keyWithParams, ...valueParts] = line.split(':');
+            const value = valueParts.join(':').trim();
+            // Remove parameters from the key (e.g., "DTSTART;TZID=...")
+            const key = keyWithParams.split(';')[0];
 
-            if (key.startsWith('SUMMARY')) eventData.summary = value;
-            if (key.startsWith('DTSTART')) eventData.start = parseICalDate(value);
-            if (key.startsWith('DTEND')) eventData.end = parseICalDate(value);
-            if (key.startsWith('DESCRIPTION')) eventData.description = value.replace(/\\n/g, '\n');
-            if (key.startsWith('LOCATION')) eventData.location = value;
+            if (key === 'SUMMARY') eventData.summary = value;
+            if (key === 'DTSTART') eventData.start = parseICalDate(value);
+            if (key === 'DTEND') eventData.end = parseICalDate(value);
+            if (key === 'DESCRIPTION') eventData.description = value.replace(/\\n/g, '\n').replace(/\\,/g, ',');
+            if (key === 'LOCATION') eventData.location = value;
         });
 
-        if (eventData.summary && eventData.start && eventData.end) {
-            events.push(eventData as CalendarEvent);
+        // Ensure we have the minimum required data
+        if (eventData.summary && eventData.start) {
+            // Handle missing DTEND by setting a sensible default
+            if (!eventData.end) {
+                // If DTSTART is a date (all-day event), duration is 1 day. DTEND is exclusive.
+                if (eventData.start.getUTCHours() === 0 && eventData.start.getUTCMinutes() === 0 && eventData.start.getUTCSeconds() === 0) {
+                     eventData.end = new Date(eventData.start.getTime() + 24 * 60 * 60 * 1000);
+                } else { // For timed events, assume a default 1-hour duration.
+                     eventData.end = new Date(eventData.start.getTime() + 60 * 60 * 1000);
+                }
+            }
+            
+            // Only push if the end date is valid
+            if (eventData.end && !isNaN(eventData.end.getTime())) {
+                events.push(eventData as CalendarEvent);
+            }
         }
     }
     return events;
@@ -95,14 +125,20 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ isOpen, onClose, language
         year: 'numeric',
         month: 'long',
         day: 'numeric',
+        timeZone: 'UTC' // Display in UTC since dates were parsed as UTC
     });
   };
 
   const formatTime = (date: Date) => {
+      // Don't show time for all-day events
+      if (date.getUTCHours() === 0 && date.getUTCMinutes() === 0 && date.getUTCSeconds() === 0) {
+          return null;
+      }
       return date.toLocaleTimeString(language, {
           hour: '2-digit',
           minute: '2-digit',
           hour12: true,
+          timeZone: 'UTC'
       });
   };
 
@@ -124,15 +160,21 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ isOpen, onClose, language
             {!isLoading && !error && events.length === 0 && <p className="text-center">{t.calendarNoEvents}</p>}
             
             <div className="space-y-6">
-                {events.map((event, index) => (
-                    <div key={index} className="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
-                        <p className="text-lg font-bold text-cyan-400">{event.summary}</p>
-                        <p className="text-sm text-gray-400 mt-1">{formatDate(event.start)}</p>
-                        <p className="text-sm text-gray-400">{`${formatTime(event.start)} - ${formatTime(event.end)}`}</p>
-                        {event.location && <p className="text-sm text-gray-400 mt-2"><strong>Location:</strong> {event.location}</p>}
-                        {event.description && <p className="text-gray-300 mt-3 whitespace-pre-wrap">{event.description}</p>}
-                    </div>
-                ))}
+                {events.map((event, index) => {
+                    const startTime = formatTime(event.start);
+                    const endTime = formatTime(event.end);
+                    return (
+                        <div key={index} className="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
+                            <p className="text-lg font-bold text-cyan-400">{event.summary}</p>
+                            <p className="text-sm text-gray-400 mt-1">{formatDate(event.start)}</p>
+                            {startTime && endTime && (
+                                <p className="text-sm text-gray-400">{`${startTime} - ${endTime}`}</p>
+                            )}
+                            {event.location && <p className="text-sm text-gray-400 mt-2"><strong>Location:</strong> {event.location}</p>}
+                            {event.description && <p className="text-gray-300 mt-3 whitespace-pre-wrap">{event.description}</p>}
+                        </div>
+                    );
+                })}
             </div>
         </div>
       </div>
