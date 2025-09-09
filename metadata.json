@@ -1,5 +1,7 @@
 {
   "name": "Tangible Climate - AURA - OPENAI",
   "description": "An interactive educational game exploring the history of climate change through a mysterious data sculpture, guided by a scientific AI.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "camera"
+  ]
 }

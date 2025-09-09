@@ -1,6 +1,7 @@
 import React from 'react';
 import useTextToSpeech from './useTextToSpeech';
 import { SpeakerOnIcon, SpeakerOffIcon, LoadingSpinnerIcon } from './icons';
+// FIX: Fix import paths to be relative.
 import type { Language } from '../types';
 
 interface TextToSpeechButtonProps {

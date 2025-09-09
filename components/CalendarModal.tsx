@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+// FIX: Fix import paths to be relative.
 import type { Language, CalendarEvent } from '../types';
+// FIX: Fix import paths to be relative.
 import { locales } from '../locales';
 import { CalendarIcon } from './icons';
 

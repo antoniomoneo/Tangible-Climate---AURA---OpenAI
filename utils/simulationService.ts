@@ -1,4 +1,5 @@
 import { temperatureData } from '../data/temperatureData';
+// FIX: Fix import paths to be relative.
 import type { DataPoint } from '../types';
 
 export type ScenarioId = 'NO_AEROSOL_COOLING' | 'EARLY_ACTION' | 'ACCELERATED_WARMING';

@@ -1,6 +1,8 @@
 import React from 'react';
+// FIX: Fix import paths to be relative.
 import type { StorySegment, Language, Choice } from '../types';
 import { ChartBarIcon } from './icons';
+// FIX: Fix import paths to be relative.
 import { locales } from '../locales';
 import SkeletonChart from './SkeletonChart';
 import TextToSpeechButton from './TextToSpeechButton';

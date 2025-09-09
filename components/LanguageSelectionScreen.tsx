@@ -1,5 +1,6 @@
 import React from 'react';
 import { GlobeIcon, TangibleDataLogo } from './icons';
+// FIX: Fix import paths to be relative.
 import type { Language } from '../types';
 
 interface LanguageSelectionScreenProps {

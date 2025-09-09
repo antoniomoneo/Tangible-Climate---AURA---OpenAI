@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { GameState, StorySegment, StoryHistoryItem, Language, Choice } from './types';
+// FIX: Fix import paths to be relative.
+import { GameState, StorySegment, StoryHistoryItem, Language, Choice, GlossaryTerm } from './types';
 import StartScreen from './components/StartScreen';
 import GameScreen from './components/GameScreen';
 import GameOverScreen from './components/GameOverScreen';
@@ -8,6 +9,7 @@ import Header from './components/Header';
 import ChatModal from './components/ChatModal';
 import AdminScreen from './components/AdminScreen';
 import DebugPanel from './components/DebugPanel';
+// FIX: Fix import paths to be relative.
 import { locales, storyData } from './locales';
 import { TangibleDataLogo } from './components/icons';
 import SplashScreen from './components/SplashScreen';
@@ -20,8 +22,17 @@ import { knowledgeBaseContent } from './data/knowledgeBaseContent';
 import EducationalPackModal from './components/EducationalPackModal';
 import JoinUsModal from './components/JoinUsModal';
 import ScenarioLabModal from './components/ScenarioLabModal';
+// FIX: Fix import paths to be relative.
 import GlossaryModal from './components/GlossaryModal';
+import AuraChatButton from './components/AuraChatButton';
+import ARModeScreen from './components/ARModeScreen';
 
+// FIX: Add a global declaration for window.gtag to resolve TypeScript errors.
+declare global {
+  interface Window {
+    gtag: (command: 'event', eventName: string, eventParams: { [key: string]: any }) => void;
+  }
+}
 
 // Helper function to send GA events
 const trackEvent = (eventName: string, eventParams: { [key: string]: any }) => {
@@ -218,6 +229,26 @@ const Game: React.FC = () => {
     setIsGlossaryOpen(true);
   };
 
+  const handleOpenARMode = () => {
+    trackEvent('navigate_to_ar_mode', { from_state: gameState });
+    setGameState(GameState.AR_MODE);
+  };
+  
+  const handleCloseARMode = () => {
+    setGameState(GameState.APP_HUB);
+  };
+
+  const handleAskAuraInGlossary = (term: GlossaryTerm) => {
+    trackEvent('open_modal', { modal_name: 'chat_glossary', term: term.name });
+    const systemInstruction = t.chatExplainTermSystemInstruction
+      .replace('{term}', term.name)
+      .replace('{definition}', term.definition);
+    
+    setCurrentChatContext(systemInstruction);
+    setCurrentSceneId(`glossary_term_${term.name.replace(/\s+/g, '_')}`);
+    setIsChatOpen(true);
+  };
+
   const handleCloseChat = () => {
     setIsChatOpen(false);
   };
@@ -254,6 +285,7 @@ const Game: React.FC = () => {
                   onOpenJoinUs={handleOpenJoinUs}
                   onOpenScenarioLab={handleOpenScenarioLab}
                   onOpenGlossary={handleOpenGlossary}
+                  onOpenARMode={handleOpenARMode}
                   language={language}
                 />;
       case GameState.KNOWLEDGE_BASE:
@@ -277,6 +309,8 @@ const Game: React.FC = () => {
          ) : null;
       case GameState.DASHBOARD:
         return <DashboardScreen onBack={handleCloseDashboard} language={language} />;
+      case GameState.AR_MODE:
+        return <ARModeScreen onBack={handleCloseARMode} language={language} />;
       case GameState.ERROR:
         return (
           <div className="text-center text-red-400">
@@ -295,7 +329,8 @@ const Game: React.FC = () => {
     }
   };
 
-  const showHeader = ![GameState.LANGUAGE_SELECTION, GameState.SPLASH, GameState.ERROR].includes(gameState);
+  const showHeader = ![GameState.LANGUAGE_SELECTION, GameState.SPLASH, GameState.ERROR, GameState.AR_MODE].includes(gameState);
+  const showChatButton = ![GameState.LANGUAGE_SELECTION, GameState.SPLASH, GameState.ERROR, GameState.AR_MODE].includes(gameState);
 
   return (
     <div className="bg-gray-900 text-gray-200 min-h-screen flex flex-col items-center justify-center p-4 relative">
@@ -312,6 +347,9 @@ const Game: React.FC = () => {
             {renderContent()}
           </main>
        </div>
+
+       {showChatButton && <AuraChatButton onClick={handleOpenGeneralChat} language={language} />}
+
        <ChatModal 
           isOpen={isChatOpen} 
           onClose={handleCloseChat} 
@@ -354,6 +392,7 @@ const Game: React.FC = () => {
           isOpen={isGlossaryOpen}
           onClose={() => setIsGlossaryOpen(false)}
           language={language}
+          onAskAura={handleAskAuraInGlossary}
         />
        {isAdmin && (
          <DebugPanel 

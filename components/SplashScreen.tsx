@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { TangibleDataLogo } from './icons';
+// FIX: Fix import paths to be relative.
 import type { Language } from '../types';
+// FIX: Fix import paths to be relative.
 import { locales } from '../locales';
 
 interface SplashScreenProps {

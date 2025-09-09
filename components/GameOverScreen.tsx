@@ -1,5 +1,7 @@
 import React from 'react';
+// FIX: Fix import paths to be relative.
 import type { StorySegment, Language } from '../types';
+// FIX: Fix import paths to be relative.
 import { locales } from '../locales';
 import TextToSpeechButton from './TextToSpeechButton';
 

@@ -1,7 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { temperatureData } from '../data/temperatureData';
+// FIX: Fix import paths to be relative.
 import type { Language, DataPoint } from '../types';
+// FIX: Fix import paths to be relative.
 import { locales } from '../locales';
 import { generateSimulation, getScenarios, SCENARIO_JUSTIFICATIONS } from '../utils/simulationService';
 import type { ScenarioId } from '../utils/simulationService';

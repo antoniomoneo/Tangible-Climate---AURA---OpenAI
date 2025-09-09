@@ -1,5 +1,7 @@
 import React from 'react';
+// FIX: Fix import paths to be relative.
 import type { Language } from '../types';
+// FIX: Fix import paths to be relative.
 import { locales } from '../locales';
 import { 
   CalendarIcon, 
@@ -11,7 +13,8 @@ import {
   UsersIcon,
   ChatBubbleIcon,
   AcademicCapIcon,
-  CompassIcon
+  CompassIcon,
+  ViewfinderIcon
 } from './icons';
 
 interface AppHubScreenProps {
@@ -25,10 +28,11 @@ interface AppHubScreenProps {
   onOpenJoinUs: () => void;
   onOpenScenarioLab: () => void;
   onOpenGlossary: () => void;
+  onOpenARMode: () => void;
   language: Language;
 }
 
-const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenInstructions, onOpenKnowledgeBase, onOpenEducationalPack, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, language }) => {
+const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenInstructions, onOpenKnowledgeBase, onOpenEducationalPack, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, onOpenARMode, language }) => {
   const t = locales[language];
 
   const apps = [
@@ -65,6 +69,13 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       description: t.appHubGlossaryDesc,
       icon: <BookOpenIcon />,
       action: onOpenGlossary,
+      enabled: true,
+    },
+    {
+      title: t.appHubARTitle,
+      description: t.appHubARDesc,
+      icon: <ViewfinderIcon />,
+      action: onOpenARMode,
       enabled: true,
     },
     {

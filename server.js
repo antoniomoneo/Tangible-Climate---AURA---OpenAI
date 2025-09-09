@@ -8,7 +8,8 @@ import fetch from "node-fetch";
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-const API_KEY = process.env.GEMINI_API_KEY;
+// FIX: Use API_KEY as per the guidelines
+const API_KEY = process.env.API_KEY;
 
 app.use(express.json());
 
@@ -97,7 +98,8 @@ app.post("/api/tts", async (req, res) => {
 
 app.post("/api/chat", async (req, res) => {
   if (!API_KEY) {
-    return res.status(500).json({ error: { message: "Missing GEMINI_API_KEY environment variable." } });
+    // FIX: Update error message to reference API_KEY
+    return res.status(500).json({ error: { message: "Missing API_KEY environment variable." } });
   }
   const { history, message, context } = req.body || {};
   if (!message || typeof message !== "string") {
@@ -165,7 +167,8 @@ app.post("/api/chat", async (req, res) => {
 
 app.post("/api/scenario", async (req, res) => {
     if (!API_KEY) {
-        return res.status(500).json({ error: { message: "Missing GEMINI_API_KEY environment variable." } });
+        // FIX: Update error message to reference API_KEY
+        return res.status(500).json({ error: { message: "Missing API_KEY environment variable." } });
     }
     const { userInput, historicalData } = req.body;
     if (!userInput || typeof userInput !== "string" || !historicalData || !Array.isArray(historicalData)) {

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+// FIX: Fix import paths to be relative.
 import { locales } from '../locales';
+// FIX: Fix import paths to be relative.
 import type { Language } from '../types';
 import { AuraIcon } from './icons';
 import TextToSpeechButton from './TextToSpeechButton';
@@ -14,8 +16,10 @@ const StartScreen: React.FC<StartScreenProps> = ({ onShowHub, language }) => {
   const [displayedFirst, setDisplayedFirst] = useState('');
   const [displayedSecond, setDisplayedSecond] = useState('');
 
-  const firstFullText = (t as any).auraStartMessage || '';
-  const secondFullText = (t as any).auraSecondMessage || '';
+  // FIX: Removed `as any` cast due to stricter types in `locales.ts`.
+  const firstFullText = t.auraStartMessage || '';
+  // FIX: Removed `as any` cast due to stricter types in `locales.ts`.
+  const secondFullText = t.auraSecondMessage || '';
   const fullTextToSpeak = `${firstFullText}\n\n${secondFullText}`;
 
   const isFirstDone = displayedFirst.length === firstFullText.length;
