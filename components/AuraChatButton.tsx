@@ -14,7 +14,7 @@ const AuraChatButton: React.FC<AuraChatButtonProps> = ({ onClick, language }) =>
   const tooltipText = t.appHubChatTitle;
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 group">
+    <div className="fixed bottom-16 right-6 z-40 group">
       <button
         onClick={onClick}
         className="relative w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-cyan-400/50 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-cyan-400 focus:ring-opacity-50"

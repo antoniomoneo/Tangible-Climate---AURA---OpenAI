@@ -26,6 +26,7 @@ import ScenarioLabModal from './components/ScenarioLabModal';
 import GlossaryModal from './components/GlossaryModal';
 import AuraChatButton from './components/AuraChatButton';
 import ARModeScreen from './components/ARModeScreen';
+import Footer from './components/Footer';
 
 // FIX: Add a global declaration for window.gtag to resolve TypeScript errors.
 declare global {
@@ -331,9 +332,10 @@ const Game: React.FC = () => {
 
   const showHeader = ![GameState.LANGUAGE_SELECTION, GameState.SPLASH, GameState.ERROR, GameState.AR_MODE].includes(gameState);
   const showChatButton = ![GameState.LANGUAGE_SELECTION, GameState.SPLASH, GameState.ERROR, GameState.AR_MODE].includes(gameState);
+  const showFooter = ![GameState.LANGUAGE_SELECTION, GameState.SPLASH, GameState.ERROR, GameState.AR_MODE].includes(gameState);
 
   return (
-    <div className="bg-gray-900 text-gray-200 min-h-screen flex flex-col items-center justify-center p-4 relative">
+    <div className="bg-gray-900 text-gray-200 min-h-screen flex flex-col items-center justify-center p-4 relative pb-14">
        <div className="w-full max-w-7xl mx-auto flex-grow flex flex-col">
           {showHeader && 
             <Header 
@@ -349,6 +351,8 @@ const Game: React.FC = () => {
        </div>
 
        {showChatButton && <AuraChatButton onClick={handleOpenGeneralChat} language={language} />}
+
+       {showFooter && <Footer />}
 
        <ChatModal 
           isOpen={isChatOpen} 
