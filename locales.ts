@@ -346,18 +346,28 @@ export const storyData: Record<Language, Record<string, StorySegment>> = {
       sceneDescription: "The analysis begins. The data forms a skeletal structure, representing global temperature anomalies from 1880 to 2024. The initial view shows the full timeline. Where should we focus our investigation?",
       image: GRAPH_OVERVIEW_IMAGE,
       choices: [
-        { text: "Examine the early industrial era (1880-1945)", nextSceneId: "era_industrial" },
-        { text: "Analyze the post-war 'Great Acceleration' (1945-1975)", nextSceneId: "era_acceleration" },
-        { text: "Investigate the recent period of rapid warming (1975-2024)", nextSceneId: "era_modern" }
+        { text: "Era 1: Relative Stability (1880-1910)", nextSceneId: "era_stability" },
+        { text: "Era 2: Early Warming (1910-1945)", nextSceneId: "era_early_warming" },
+        { text: "Era 3: The 'Cooling' Hiatus (1945-1975)", nextSceneId: "era_acceleration" },
+        { text: "Era 4: Accelerated Warming (1975-2024)", nextSceneId: "era_modern" }
       ]
     },
-    era_industrial: {
-        id: 'era_industrial',
-        sceneDescription: "From 1880 to 1945, we observe initial fluctuations but a clear, albeit slow, warming trend begins to emerge after 1910. This period marks the rise of industrial economies powered by coal.",
-        chartConfig: { startYear: 1880, endYear: 1945 },
+    era_stability: {
+        id: 'era_stability',
+        sceneDescription: "Between 1880 and 1910, temperatures show natural fluctuations but no significant trend. This period represents the climate baseline just before the widespread impact of industrial CO2 emissions began to take hold.",
+        chartConfig: { startYear: 1880, endYear: 1910 },
         choices: [
+            { text: "Continue to the next period (1910-1945)", nextSceneId: "era_early_warming" },
+            { text: "Return to era selection", nextSceneId: "start" },
+        ]
+    },
+    era_early_warming: {
+        id: 'era_early_warming',
+        sceneDescription: "From 1910 to 1945, a clear, albeit slow, warming trend emerges. This marks the rise of industrial economies powered by coal and the first discernible, sustained signs of human impact on the climate.",
+        chartConfig: { startYear: 1910, endYear: 1945 },
+        choices: [
+            { text: "Review the prior period (1880-1910)", nextSceneId: "era_stability" },
             { text: "Continue to the next period (1945-1975)", nextSceneId: "era_acceleration" },
-            { text: "Jump to the modern era (1975-2024)", nextSceneId: "era_modern" }
         ]
     },
     era_acceleration: {
@@ -365,8 +375,8 @@ export const storyData: Record<Language, Record<string, StorySegment>> = {
         sceneDescription: "Interestingly, from 1945 to 1975, the warming trend stalls and even slightly reverses. This 'hiatus' is largely attributed to a massive increase in industrial aerosol pollution, which reflected sunlight and temporarily masked the warming effect of rising CO2.",
         chartConfig: { startYear: 1945, endYear: 1975 },
         choices: [
-            { text: "Investigate the preceding era (1880-1945)", nextSceneId: "era_industrial" },
-            { text: "See what happened next (1975-2024)", nextSceneId: "era_modern" }
+            { text: "Review the prior period (1910-1945)", nextSceneId: "era_early_warming" },
+            { text: "See what happened next (1975-2024)", nextSceneId: "era_modern" },
         ]
     },
     era_modern: {
@@ -374,7 +384,7 @@ export const storyData: Record<Language, Record<string, StorySegment>> = {
         sceneDescription: "From 1975 onwards, the warming trend resumes with a dramatic and sustained acceleration. Clean air regulations reduced cooling aerosols, unmasking the potent effect of greenhouse gases, which continued to accumulate at an ever-increasing rate.",
         chartConfig: { startYear: 1975, endYear: 2024 },
         choices: [
-            { text: "Review the 'Great Acceleration' (1945-1975)", nextSceneId: "era_acceleration" },
+            { text: "Review the prior period (1945-1975)", nextSceneId: "era_acceleration" },
             { text: "Conclude the analysis", nextSceneId: "end" }
         ]
     },
@@ -391,18 +401,28 @@ export const storyData: Record<Language, Record<string, StorySegment>> = {
       sceneDescription: "Comienza el análisis. Los datos forman una estructura esquelética que representa las anomalías de la temperatura global de 1880 a 2024. La vista inicial muestra la línea de tiempo completa. ¿Dónde deberíamos centrar nuestra investigación?",
       image: GRAPH_OVERVIEW_IMAGE,
       choices: [
-        { text: "Examinar la era industrial temprana (1880-1945)", nextSceneId: "era_industrial" },
-        { text: "Analizar la 'Gran Aceleración' de la posguerra (1945-1975)", nextSceneId: "era_acceleration" },
-        { text: "Investigar el período reciente de calentamiento rápido (1975-2024)", nextSceneId: "era_modern" }
+        { text: "Época 1: Estabilidad Relativa (1880-1910)", nextSceneId: "era_stability" },
+        { text: "Época 2: Calentamiento Temprano (1910-1945)", nextSceneId: "era_early_warming" },
+        { text: "Época 3: El Hiato de 'Enfriamiento' (1945-1975)", nextSceneId: "era_acceleration" },
+        { text: "Época 4: Calentamiento Acelerado (1975-2024)", nextSceneId: "era_modern" }
       ]
     },
-    era_industrial: {
-        id: 'era_industrial',
-        sceneDescription: "De 1880 a 1945, observamos fluctuaciones iniciales pero una clara, aunque lenta, tendencia al calentamiento comienza a surgir después de 1910. Este período marca el auge de las economías industriales impulsadas por el carbón.",
-        chartConfig: { startYear: 1880, endYear: 1945 },
+    era_stability: {
+        id: 'era_stability',
+        sceneDescription: "Entre 1880 y 1910, las temperaturas muestran fluctuaciones naturales pero sin una tendencia significativa. Este período representa la línea base del clima justo antes de que el impacto generalizado de las emisiones industriales de CO2 comenzara a afianzarse.",
+        chartConfig: { startYear: 1880, endYear: 1910 },
         choices: [
+            { text: "Continuar al siguiente período (1910-1945)", nextSceneId: "era_early_warming" },
+            { text: "Volver a la selección de épocas", nextSceneId: "start" },
+        ]
+    },
+    era_early_warming: {
+        id: 'era_early_warming',
+        sceneDescription: "De 1910 a 1945, emerge una clara, aunque lenta, tendencia al calentamiento. Esto marca el auge de las economías industriales impulsadas por el carbón y las primeras señales discernibles y sostenidas del impacto humano en el clima.",
+        chartConfig: { startYear: 1910, endYear: 1945 },
+        choices: [
+            { text: "Revisar el período anterior (1880-1910)", nextSceneId: "era_stability" },
             { text: "Continuar al siguiente período (1945-1975)", nextSceneId: "era_acceleration" },
-            { text: "Saltar a la era moderna (1975-2024)", nextSceneId: "era_modern" }
         ]
     },
     era_acceleration: {
@@ -410,8 +430,8 @@ export const storyData: Record<Language, Record<string, StorySegment>> = {
         sceneDescription: "Curiosamente, de 1945 a 1975, la tendencia al calentamiento se estanca e incluso se revierte ligeramente. Este 'hiato' se atribuye en gran medida a un aumento masivo de la contaminación por aerosoles industriales, que reflejaron la luz solar y enmascararon temporalmente el efecto de calentamiento del creciente CO2.",
         chartConfig: { startYear: 1945, endYear: 1975 },
         choices: [
-            { text: "Investigar la era anterior (1880-1945)", nextSceneId: "era_industrial" },
-            { text: "Ver qué sucedió después (1975-2024)", nextSceneId: "era_modern" }
+            { text: "Revisar el período anterior (1910-1945)", nextSceneId: "era_early_warming" },
+            { text: "Ver qué sucedió después (1975-2024)", nextSceneId: "era_modern" },
         ]
     },
     era_modern: {
@@ -419,7 +439,7 @@ export const storyData: Record<Language, Record<string, StorySegment>> = {
         sceneDescription: "A partir de 1975, la tendencia al calentamiento se reanuda con una aceleración dramática y sostenida. Las regulaciones de aire limpio redujeron los aerosoles refrigerantes, desenmascarando el potente efecto de los gases de efecto invernadero, que continuaron acumulándose a un ritmo cada vez mayor.",
         chartConfig: { startYear: 1975, endYear: 2024 },
         choices: [
-            { text: "Revisar la 'Gran Aceleración' (1945-1975)", nextSceneId: "era_acceleration" },
+            { text: "Revisar el período anterior (1945-1975)", nextSceneId: "era_acceleration" },
             { text: "Concluir el análisis", nextSceneId: "end" }
         ]
     },
