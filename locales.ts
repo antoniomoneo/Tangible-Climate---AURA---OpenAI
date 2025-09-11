@@ -100,6 +100,8 @@ export const locales: Record<Language, LocaleStrings> = {
     appHubComingSoon: 'Próximamente',
     appHubAddYourAppTitle: '¿Tienes una idea?',
     appHubAddYourAppDesc: 'Contacta con nosotros para añadir tu propia aplicación climática.',
+    appHubNFTTitle: 'Colección NFT',
+    appHubNFTDesc: '¡Visita nuestra colección! Explora datos climáticos como activos digitales únicos en OpenSea.',
 
     // KNOWLEDGE BASE
     knowledgeBaseBack: 'Volver al Panel',
@@ -265,6 +267,8 @@ export const locales: Record<Language, LocaleStrings> = {
     appHubComingSoon: 'Coming Soon',
     appHubAddYourAppTitle: 'Have an idea?',
     appHubAddYourAppDesc: 'Contact us to add your own climate application.',
+    appHubNFTTitle: 'NFT Collection',
+    appHubNFTDesc: 'Visit our collection! Explore climate data as unique digital assets on OpenSea.',
 
     // KNOWLEDGE BASE
     knowledgeBaseBack: 'Back to Hub',

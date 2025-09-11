@@ -128,6 +128,12 @@ export const ResetIcon: React.FC<IconProps> = (props) => (
   </svg>
 );
 
+export const StarIcon: React.FC<IconProps> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345h5.364c.54 0 .762.724.372 1.04l-4.34 3.155a.563.563 0 00-.182.658l2.125 5.111a.563.563 0 01-.812.622l-4.34-3.155a.563.563 0 00-.658 0l-4.34 3.155a.563.563 0 01-.812-.622l2.125-5.111a.563.563 0 00-.182-.658l-4.34-3.155a.563.563 0 01.372-1.04h5.364a.563.563 0 00.475-.345l2.125-5.111z" />
+  </svg>
+);
+
 export const ViewfinderIcon: React.FC<IconProps> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6" {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 8.25V7.5a2.25 2.25 0 012.25-2.25h1.5M3 15.75V16.5a2.25 2.25 0 002.25 2.25h1.5M16.5 3.75h1.5a2.25 2.25 0 012.25 2.25V8.25m-4.5 12h1.5a2.25 2.25 0 002.25-2.25V15.75m-10.5-5.25a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0z" />

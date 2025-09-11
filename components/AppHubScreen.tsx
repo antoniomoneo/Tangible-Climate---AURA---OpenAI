@@ -14,7 +14,8 @@ import {
   ChatBubbleIcon,
   AcademicCapIcon,
   CompassIcon,
-  ViewfinderIcon
+  ViewfinderIcon,
+  StarIcon
 } from './icons';
 
 interface AppHubScreenProps {
@@ -83,6 +84,13 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       description: t.appHubEducationalPackDesc,
       icon: <AcademicCapIcon />,
       action: onOpenEducationalPack,
+      enabled: true,
+    },
+    {
+      title: t.appHubNFTTitle,
+      description: t.appHubNFTDesc,
+      icon: <StarIcon />,
+      action: () => window.open('https://opensea.io/collection/tangible-climate-data', '_blank', 'noopener,noreferrer'),
       enabled: true,
     },
     {
