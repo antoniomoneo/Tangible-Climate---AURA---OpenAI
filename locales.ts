@@ -7,7 +7,7 @@ const en: LocaleStrings = {
     // Splash Screen
     splashGretting: "Tangible Data presents",
     splashCollabIntro: "In collaboration with",
-    splashCollabPartner: "OpenAI",
+    splashCollabPartner: "National Museum of Natural Sciences",
     splashTitle: "The Skeleton of Climate Change",
     splashSubtitle: "An Interactive Analysis of Global Temperature Anomalies",
     skipButton: "Skip",
@@ -186,7 +186,7 @@ const es: LocaleStrings = {
     // Splash Screen
     splashGretting: "Tangible Data presenta",
     splashCollabIntro: "En colaboración con",
-    splashCollabPartner: "OpenAI",
+    splashCollabPartner: "Museo Nacional de Ciencias Naturales",
     splashTitle: "El Esqueleto del Cambio Climático",
     splashSubtitle: "Un Análisis Interactivo de las Anomalías de Temperatura Global",
     skipButton: "Saltar",
@@ -368,45 +368,59 @@ const storyDataBase = {
         sceneDescription: "The analysis begins with a complete overview of the dataset, from 1880 to 2024. The data forms a shape reminiscent of a vertebrate skeleton, where each 'vertebra' is a year's temperature anomaly. The initial view shows a period of relative stability, followed by a clear and accelerating upward trend. We must decide which historical period to analyze first to understand this evolution.",
         image: GRAPH_OVERVIEW_IMAGE,
         choices: [
-            { text: "Analyze the Industrial Era and early 20th century (1880-1945)", nextSceneId: "era_industrial" },
-            { text: "Analyze the 'Great Acceleration' after WWII (1945-1975)", nextSceneId: "era_acceleration" },
-            { text: "Analyze the modern era of rapid warming (1975-2024)", nextSceneId: "era_modern" },
+            { text: "Analyze the early industrial era (1880-1945)", nextSceneId: 'era_industrial' },
+            { text: "Examine the great acceleration (1945-1975)", nextSceneId: 'era_acceleration' },
+            { text: "Investigate the modern, rapid warming (1975-2024)", nextSceneId: 'era_modern' },
         ],
+        chartConfig: {
+            startYear: 1880,
+            endYear: 2024
+        }
     },
     era_industrial: {
-        id: "era_industrial",
-        sceneDescription: "Focusing on 1880-1945, we observe high variability but no sustained warming trend until about 1910. After that, a gentle warming begins, coinciding with the expansion of industrialization. The causes are debated: was it early greenhouse gas emissions, or natural cycles?",
-        chartConfig: { startYear: 1880, endYear: 1945 },
+        id: 'era_industrial',
+        sceneDescription: "From 1880 to 1945, we observe a slow but noticeable warming trend. This period covers the second industrial revolution and two world wars. While temperatures fluctuate, the average is clearly rising by the end of this era. What should we focus on next?",
         choices: [
-            { text: "Return to the full overview", nextSceneId: "start" },
-            { text: "Examine the next period (1945-1975)", nextSceneId: "era_acceleration" },
-        ]
+            { text: "Compare with the post-war period (1945-1975)", nextSceneId: 'era_acceleration' },
+            { text: "Jump to the modern era (1975-2024)", nextSceneId: 'era_modern' },
+        ],
+        chartConfig: {
+            startYear: 1880,
+            endYear: 1945
+        }
     },
     era_acceleration: {
-        id: "era_acceleration",
-        sceneDescription: "From 1945 to 1975, something unexpected happens: despite a massive increase in CO2 emissions from the post-war economic boom, global temperatures plateau and even slightly cool. This phenomenon, known as the 'global warming hiatus,' is a key puzzle. Scientific consensus points to the cooling effect of industrial aerosols (air pollution) masking the warming from greenhouse gases.",
-        chartConfig: { startYear: 1945, endYear: 1975 },
+        id: 'era_acceleration',
+        sceneDescription: "Interestingly, from 1945 to 1975, the warming trend stalls and even slightly reverses. This 'hiatus' coincides with a massive post-war industrial boom that pumped huge amounts of sun-blocking aerosol pollutants into the atmosphere, temporarily masking the effect of rising CO2. Where to next?",
         choices: [
-            { text: "Return to the full overview", nextSceneId: "start" },
-            { text: "Examine the next period (1975-2024)", nextSceneId: "era_modern" },
-        ]
+            { text: "Review the preceding industrial era (1880-1945)", nextSceneId: 'era_industrial' },
+            { text: "See what happened when pollution was cleaned up (1975-2024)", nextSceneId: 'era_modern' },
+        ],
+        chartConfig: {
+            startYear: 1945,
+            endYear: 1975
+        }
     },
     era_modern: {
-        id: "era_modern",
-        sceneDescription: "Starting around 1975, the warming trend resumes with alarming speed. Clean air regulations in the US and Europe reduce cooling aerosols, unmasking the potent effect of accumulated greenhouse gases. This period contains almost all of the warmest years on record, pushing the climate system into an unprecedented state.",
-        chartConfig: { startYear: 1975, endYear: 2024 },
+        id: 'era_modern',
+        sceneDescription: "From 1975 onwards, the trend is unambiguous and alarming. As clean air acts reduced aerosol pollution, the underlying warming from greenhouse gases was revealed and has accelerated dramatically since. This period contains the hottest years on record. What is our conclusion?",
         choices: [
-            { text: "Return to the full overview", nextSceneId: "start" },
-            { text: "View the conclusion", nextSceneId: "conclusion" },
-        ]
+            { text: "Acknowledge human activity as the dominant driver and conclude the analysis.", nextSceneId: 'conclusion' },
+        ],
+        chartConfig: {
+            startYear: 1975,
+            endYear: 2024
+        }
     },
     conclusion: {
-        id: "conclusion",
-        sceneDescription: "The analysis is clear: after a century of fluctuations, the last 50 years show an unequivocal and accelerating warming trend driven by human activity. The data sculpture, now complete, stands as a stark visualization of our planet's recent climate history, culminating in the record-breaking heat of the 2020s. The trajectory is now in our hands.",
+        id: 'conclusion',
+        sceneDescription: "Our analysis, moving through distinct historical eras, has clearly shown how the planet's temperature has evolved. From early industrial warming, through a mid-century pollution-masked plateau, to the recent rapid acceleration, the data tells a consistent story. The scientific consensus is that this dramatic modern warming is overwhelmingly driven by human-caused greenhouse gas emissions.",
         image: MUSEUM_EXTERIOR_IMAGE,
         choices: [],
     }
 };
+
+const storyDataEn: Record<string, StorySegment> = storyDataBase;
 
 const storyDataEs: Record<string, StorySegment> = {
     start: {
@@ -414,48 +428,59 @@ const storyDataEs: Record<string, StorySegment> = {
         sceneDescription: "El análisis comienza con una visión general completa del conjunto de datos, de 1880 a 2024. Los datos forman una figura que recuerda a un esqueleto de vertebrado, donde cada 'vértebra' es la anomalía de temperatura de un año. La vista inicial muestra un período de relativa estabilidad, seguido de una tendencia ascendente clara y acelerada. Debemos decidir qué período histórico analizar primero para entender esta evolución.",
         image: GRAPH_OVERVIEW_IMAGE,
         choices: [
-            { text: "Analizar la Era Industrial y principios del s. XX (1880-1945)", nextSceneId: "era_industrial" },
-            { text: "Analizar la 'Gran Aceleración' post-SGM (1945-1975)", nextSceneId: "era_acceleration" },
-            { text: "Analizar la era moderna de calentamiento rápido (1975-2024)", nextSceneId: "era_modern" },
+            { text: "Analizar la era industrial temprana (1880-1945)", nextSceneId: 'era_industrial' },
+            { text: "Examinar la gran aceleración (1945-1975)", nextSceneId: 'era_acceleration' },
+            { text: "Investigar el calentamiento rápido moderno (1975-2024)", nextSceneId: 'era_modern' },
         ],
+        chartConfig: {
+            startYear: 1880,
+            endYear: 2024
+        }
     },
     era_industrial: {
-        id: "era_industrial",
-        sceneDescription: "Centrándonos en 1880-1945, observamos una alta variabilidad pero ninguna tendencia de calentamiento sostenida hasta aproximadamente 1910. Después de eso, comienza un calentamiento suave, coincidiendo con la expansión de la industrialización. Las causas se debaten: ¿fueron las primeras emisiones de gases de efecto invernadero o ciclos naturales?",
-        chartConfig: { startYear: 1880, endYear: 1945 },
+        id: 'era_industrial',
+        sceneDescription: "De 1880 a 1945, observamos una tendencia de calentamiento lenta pero perceptible. Este período abarca la segunda revolución industrial y dos guerras mundiales. Aunque las temperaturas fluctúan, el promedio está claramente en aumento al final de esta era. ¿En qué nos centramos ahora?",
         choices: [
-            { text: "Volver a la vista general", nextSceneId: "start" },
-            { text: "Examinar el siguiente período (1945-1975)", nextSceneId: "era_acceleration" },
-        ]
+            { text: "Comparar con el período de posguerra (1945-1975)", nextSceneId: 'era_acceleration' },
+            { text: "Saltar a la era moderna (1975-2024)", nextSceneId: 'era_modern' },
+        ],
+        chartConfig: {
+            startYear: 1880,
+            endYear: 1945
+        }
     },
     era_acceleration: {
-        id: "era_acceleration",
-        sceneDescription: "De 1945 a 1975, ocurre algo inesperado: a pesar de un aumento masivo en las emisiones de CO2 por el boom económico de la posguerra, las temperaturas globales se estancan e incluso se enfrían ligeramente. Este fenómeno, conocido como el 'hiato del calentamiento global', es un rompecabezas clave. El consenso científico apunta al efecto enfriador de los aerosoles industriales (contaminación del aire) que enmascaró el calentamiento de los gases de efecto invernadero.",
-        chartConfig: { startYear: 1945, endYear: 1975 },
+        id: 'era_acceleration',
+        sceneDescription: "Curiosamente, de 1945 a 1975, la tendencia de calentamiento se detiene e incluso se invierte ligeramente. Este 'hiato' coincide con un masivo auge industrial de posguerra que bombeó enormes cantidades de aerosoles contaminantes que bloqueaban el sol, enmascarando temporalmente el efecto del aumento de CO2. ¿Hacia dónde vamos ahora?",
         choices: [
-            { text: "Volver a la vista general", nextSceneId: "start" },
-            { text: "Examinar el siguiente período (1975-2024)", nextSceneId: "era_modern" },
-        ]
+            { text: "Revisar la era industrial precedente (1880-1945)", nextSceneId: 'era_industrial' },
+            { text: "Ver qué pasó cuando se limpió la contaminación (1975-2024)", nextSceneId: 'era_modern' },
+        ],
+        chartConfig: {
+            startYear: 1945,
+            endYear: 1975
+        }
     },
     era_modern: {
-        id: "era_modern",
-        sceneDescription: "A partir de 1975, la tendencia de calentamiento se reanuda con una velocidad alarmante. Las regulaciones de aire limpio en EE. UU. y Europa reducen los aerosoles enfriadores, desenmascarando el potente efecto de los gases de efecto invernadero acumulados. Este período contiene casi todos los años más cálidos registrados, llevando al sistema climático a un estado sin precedentes.",
-        chartConfig: { startYear: 1975, endYear: 2024 },
+        id: 'era_modern',
+        sceneDescription: "A partir de 1975, la tendencia es inequívoca y alarmante. A medida que las leyes de aire limpio redujeron la contaminación por aerosoles, el calentamiento subyacente de los gases de efecto invernadero se reveló y se ha acelerado drásticamente desde entonces. Este período contiene los años más calurosos registrados. ¿Cuál es nuestra conclusión?",
         choices: [
-            { text: "Volver a la vista general", nextSceneId: "start" },
-            { text: "Ver la conclusión", nextSceneId: "conclusion" },
-        ]
+            { text: "Reconocer la actividad humana como el motor dominante y concluir el análisis.", nextSceneId: 'conclusion' },
+        ],
+        chartConfig: {
+            startYear: 1975,
+            endYear: 2024
+        }
     },
     conclusion: {
-        id: "conclusion",
-        sceneDescription: "El análisis es claro: después de un siglo de fluctuaciones, los últimos 50 años muestran una tendencia de calentamiento inequívoca y acelerada impulsada por la actividad humana. La escultura de datos, ahora completa, se erige como una visualización cruda de la historia climática reciente de nuestro planeta, culminando en el calor récord de la década de 2020. La trayectoria está ahora en nuestras manos.",
+        id: 'conclusion',
+        sceneDescription: "Nuestro análisis, a través de distintas eras históricas, ha mostrado claramente cómo ha evolucionado la temperatura del planeta. Desde el calentamiento industrial temprano, pasando por una meseta enmascarada por la contaminación a mediados de siglo, hasta la reciente y rápida aceleración, los datos cuentan una historia consistente. El consenso científico es que este dramático calentamiento moderno está impulsado abrumadoramente por las emisiones de gases de efecto invernadero de origen humano.",
         image: MUSEUM_EXTERIOR_IMAGE,
         choices: [],
     }
 };
 
-
 export const storyData: Record<Language, Record<string, StorySegment>> = {
-  en: storyDataBase,
-  es: storyDataEs,
+    en: storyDataEn,
+    es: storyDataEs,
 };

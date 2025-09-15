@@ -11,27 +11,33 @@ interface SplashScreenProps {
 }
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onFinished, language }) => {
-  const [phase, setPhase] = useState(0); // 0: logo, 1: title/subtitle
+  const [phase, setPhase] = useState(0); // 0: logo, 1: title, 2: photo
   const t = locales[language];
+  const sculpturePhotoUrl = 'https://lh3.googleusercontent.com/pw/AP1GczNObISJaRfsLaSCUXQjDcFTJkR9gs2mwNlptiMQ-r9r3AM9X0Pb_siZ1NqzgMRPAjtVFfzB3IjcTbZI7kH4EXrNhVaNFoFy_kTSnOSWU-aaPt_PP7ddtee4-WU3SOaM3WqWgPni-6HEEBPlAQXTFIY0IA=w1670-h988-s-no?authuser=0';
 
   useEffect(() => {
     const timer1 = setTimeout(() => {
-      setPhase(1); // Start fading out logo, fading in title
+      setPhase(1); // Show title
     }, 2500);
 
     const timer2 = setTimeout(() => {
+      setPhase(2); // Show photo
+    }, 5500);
+
+    const timer3 = setTimeout(() => {
       onFinished(); // Call onFinished to transition to next screen
-    }, 6500); // Total duration of splash screen
+    }, 8500); // Total duration of splash screen
 
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
+      clearTimeout(timer3);
     };
   }, [onFinished]);
 
   return (
-    <div className="fixed inset-0 bg-gray-900 flex items-center justify-center text-white font-title z-[100]">
-      <div className="relative text-center w-full max-w-3xl mx-auto px-4 h-48 flex items-center justify-center">
+    <div className="fixed inset-0 bg-gray-900 flex items-center justify-center text-white font-title z-[100] overflow-hidden">
+      <div className="relative text-center w-full max-w-4xl mx-auto px-4 h-[70vh] flex items-center justify-center">
         {/* Phase 0: Logo */}
         <div
           className={`absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-1000 ${
@@ -53,10 +59,24 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinished, language }) => 
           <h1 className="text-5xl md:text-6xl text-cyan-400 mb-4 animate-fadeIn">
             {t.splashTitle}
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 animate-fadeIn" style={{ animationDelay: '1s' }}>
+          <p className="text-xl md:text-2xl text-gray-300 animate-fadeIn" style={{ animationDelay: '0.5s' }}>
             {t.splashSubtitle}
           </p>
         </div>
+        
+        {/* Phase 2: Sculpture Photo */}
+        <div
+          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-1000 ${
+            phase === 2 ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <img 
+            src={sculpturePhotoUrl} 
+            alt="Fotografía de la escultura El Esqueleto del Cambio Climático"
+            className="w-auto h-full object-contain rounded-lg shadow-2xl animate-fadeIn"
+          />
+        </div>
+
       </div>
       <button
         onClick={onFinished}

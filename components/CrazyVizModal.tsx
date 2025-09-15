@@ -102,7 +102,6 @@ const CrazyVizModal: React.FC<CrazyVizModalProps> = ({ isOpen, onClose, language
   const gainRef = useRef<GainNode | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
-  // FIX: Add ref to manage the media stream destination for proper disconnection.
   const mediaStreamDestinationRef = useRef<MediaStreamAudioDestinationNode | null>(null);
   
   const particlesRef = useRef<Particle[]>([]);
@@ -122,18 +121,13 @@ const CrazyVizModal: React.FC<CrazyVizModalProps> = ({ isOpen, onClose, language
 
         oscillator.connect(gain);
         
-        // FIX: The original logic for connecting to a recording destination was flawed.
-        // The gain node should always connect to the speakers for live preview.
-        // The recording logic in `toggleRecording` will handle connecting to the
-        // MediaStream destination separately.
         gain.connect(audioContext.destination);
 
-        // FIX: oscillator.start() can require an argument in older browsers. Using 0 is safer and fixes the "Expected 1 arguments" error.
+        // FIX: oscillator.start() requires an argument in some browser versions. Passing 0 starts the oscillator immediately and ensures compatibility.
         oscillator.start(0);
         oscillatorRef.current = oscillator;
         gainRef.current = gain;
     }
-  // FIX: isRecording dependency is removed as the logic is now handled in toggleRecording.
   }, []);
 
   const togglePlay = () => {
@@ -165,7 +159,6 @@ const CrazyVizModal: React.FC<CrazyVizModalProps> = ({ isOpen, onClose, language
   const toggleRecording = () => {
     if (isRecording) { // Stop recording
       mediaRecorderRef.current?.stop();
-      // FIX: Disconnect from the recording stream destination to prevent resource leaks.
       if (gainRef.current && mediaStreamDestinationRef.current) {
         gainRef.current.disconnect(mediaStreamDestinationRef.current);
         mediaStreamDestinationRef.current = null;
@@ -392,7 +385,11 @@ const CrazyVizModal: React.FC<CrazyVizModalProps> = ({ isOpen, onClose, language
                     </div>
                 </div>
             </main>
-
+            
+            <p className="absolute bottom-5 right-5 text-xs text-gray-500 font-mono pointer-events-auto opacity-75">
+                Created with Tangible Data Technology
+            </p>
+            
             <footer className="p-4 flex justify-between items-center text-white pointer-events-auto">
                 <ControlButton onClick={() => setIsControlsVisible(!isControlsVisible)} title={t.crazyVizControlsTitle}>
                     <SlidersIcon className="h-6 w-6"/>
