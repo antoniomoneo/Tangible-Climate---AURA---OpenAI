@@ -27,6 +27,7 @@ import GlossaryModal from './components/GlossaryModal';
 import AuraChatButton from './components/AuraChatButton';
 import ARModeScreen from './components/ARModeScreen';
 import Footer from './components/Footer';
+import CrazyVizModal from './components/CrazyVizModal';
 
 // FIX: Add a global declaration for window.gtag to resolve TypeScript errors.
 declare global {
@@ -91,6 +92,7 @@ const Game: React.FC = () => {
   const [isScenarioLabOpen, setIsScenarioLabOpen] = useState(false);
   const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
   const [isDebugPanelOpen, setIsDebugPanelOpen] = useState(false);
+  const [isCrazyVizOpen, setIsCrazyVizOpen] = useState(false);
   const [debugEvents, setDebugEvents] = useState<any[]>([]);
   const [currentChatContext, setCurrentChatContext] = useState('');
   const [currentSceneId, setCurrentSceneId] = useState('general_inquiry');
@@ -234,6 +236,11 @@ const Game: React.FC = () => {
     trackEvent('navigate_to_ar_mode', { from_state: gameState });
     setGameState(GameState.AR_MODE);
   };
+
+  const handleOpenCrazyViz = () => {
+    trackEvent('open_modal', { modal_name: 'crazy_viz' });
+    setIsCrazyVizOpen(true);
+  };
   
   const handleCloseARMode = () => {
     setGameState(GameState.APP_HUB);
@@ -287,6 +294,7 @@ const Game: React.FC = () => {
                   onOpenScenarioLab={handleOpenScenarioLab}
                   onOpenGlossary={handleOpenGlossary}
                   onOpenARMode={handleOpenARMode}
+                  onOpenCrazyViz={handleOpenCrazyViz}
                   language={language}
                 />;
       case GameState.KNOWLEDGE_BASE:
@@ -397,6 +405,11 @@ const Game: React.FC = () => {
           onClose={() => setIsGlossaryOpen(false)}
           language={language}
           onAskAura={handleAskAuraInGlossary}
+        />
+        <CrazyVizModal
+            isOpen={isCrazyVizOpen}
+            onClose={() => setIsCrazyVizOpen(false)}
+            language={language}
         />
        {isAdmin && (
          <DebugPanel 

@@ -15,7 +15,9 @@ import {
   AcademicCapIcon,
   CompassIcon,
   ViewfinderIcon,
-  StarIcon
+  StarIcon,
+  IdentificationIcon,
+  SwirlIcon
 } from './icons';
 
 interface AppHubScreenProps {
@@ -30,10 +32,11 @@ interface AppHubScreenProps {
   onOpenScenarioLab: () => void;
   onOpenGlossary: () => void;
   onOpenARMode: () => void;
+  onOpenCrazyViz: () => void;
   language: Language;
 }
 
-const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenInstructions, onOpenKnowledgeBase, onOpenEducationalPack, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, onOpenARMode, language }) => {
+const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenInstructions, onOpenKnowledgeBase, onOpenEducationalPack, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, onOpenARMode, onOpenCrazyViz, language }) => {
   const t = locales[language];
 
   const apps = [
@@ -49,6 +52,13 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       description: t.appHubDataExplorerDesc,
       icon: <CompassIcon />,
       action: onStartGame,
+      enabled: true,
+    },
+    {
+      title: t.appHubCrazyVizTitle,
+      description: t.appHubCrazyVizDesc,
+      icon: <SwirlIcon />,
+      action: onOpenCrazyViz,
       enabled: true,
     },
     {
@@ -154,6 +164,17 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
               )}
             </button>
           ))}
+            <div
+              className="text-left bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700"
+            >
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-gray-700 rounded-md mr-4 text-cyan-400">
+                  <IdentificationIcon />
+                </div>
+                <h2 className="text-xl font-bold text-white">{t.appHubCreditsTitle}</h2>
+              </div>
+              <p className="text-gray-400 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t.appHubCreditsDesc }} />
+            </div>
             <a
               href="mailto:hello@tangibledata.xyz"
               className="group relative flex flex-col items-center justify-center text-center bg-gray-800/50 p-6 rounded-lg shadow-lg border-2 border-dashed border-gray-600 transition-all duration-300 hover:border-cyan-500 hover:bg-gray-700/50 hover:-translate-y-1"

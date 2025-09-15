@@ -99,7 +99,9 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ isOpen, onClose, language
         try {
           const response = await fetch(apiUrl);
           if (!response.ok) {
-            throw new Error('Failed to fetch calendar data.');
+            const errorBody = await response.json().catch(() => ({}));
+            const serverMessage = errorBody.error?.message;
+            throw new Error(serverMessage || `Server responded with status ${response.status}`);
           }
           const icsData = await response.text();
           const parsedEvents = parseICS(icsData);
@@ -111,7 +113,8 @@ const CalendarModal: React.FC<CalendarModalProps> = ({ isOpen, onClose, language
           setEvents(upcomingEvents);
         } catch (e) {
           console.error(e);
-          setError(t.calendarError);
+          const errorMessage = e instanceof Error ? e.message : t.calendarError;
+          setError(errorMessage);
         } finally {
           setIsLoading(false);
         }
