@@ -2,6 +2,197 @@
 import type { StorySegment } from './types';
 import { GRAPH_OVERVIEW_IMAGE, MUSEUM_EXTERIOR_IMAGE } from './assets';
 
+export interface QuestChoice {
+  action: string;
+  result: string;
+  reward?: { type: 'item' | 'score' | 'access' | 'clue'; value: string | number };
+  punishment?: { type: 'score' | 'item_loss' | 'trap'; value: number | string };
+  nextChapterId?: number;
+  endsGame?: 'win' | 'lose';
+}
+
+export interface QuestChapter {
+  id: number;
+  name: string;
+  description: string;
+  choices: QuestChoice[];
+}
+
+export interface QuestGameData {
+  title: string;
+  intro: string;
+  finale: {
+    good_ending: string;
+    bad_ending: string;
+  };
+  chapters: QuestChapter[];
+}
+
+export const questGameData: { en: QuestGameData; es: QuestGameData } = {
+  es: {
+    title: "Tangible Climate Quest",
+    intro: "Estás en las ruinas polvorientas del antiguo Museo de Ciencias Naturales en Madrid. El aire es espeso. Tu misión: explorar las ruinas, descifrar los huesos del 'Esqueleto del Clima' y descubrir cómo los datos perdidos podían haber cambiado el destino de la humanidad.",
+    finale: {
+      good_ending: "Reconstruiste la historia climática y redactaste un diagnóstico: 'Hubiéramos cambiado el destino si hubiéramos confiado en los datos'. Has completado la misión y honrado la memoria de los que intentaron advertir al mundo.",
+      bad_ending: "Abandonas las ruinas con información incompleta, condenado a repetir los errores del pasado. La historia sigue sin contarse."
+    },
+    chapters: [
+      {
+        id: 1,
+        name: "El inicio – El hallazgo",
+        description: "Dos investigadores entran en las ruinas polvorientas del Museo. El aire es espeso. Encuentran fragmentos de huesos y un extraño símbolo tallado en la piedra.",
+        choices: [
+          {
+            action: "EXAMINAR SIMBOLO",
+            result: "Descubres que es un registro de las primeras mediciones de temperatura. ¡Has encontrado una pista clave!",
+            reward: { type: 'clue', value: 'Registro de temperatura antiguo' },
+            nextChapterId: 2,
+          },
+          {
+            action: "IGNORAR SIMBOLO",
+            result: "Mientras avanzas, un techo se derrumba ligeramente, bloqueando el camino por el que viniste. Pierdes tiempo y energía.",
+            punishment: { type: 'score', value: -5 },
+          }
+        ]
+      },
+      {
+        id: 2,
+        name: "Sombras de la guerra",
+        description: "Encuentras un búnker oculto con restos de la Segunda Guerra Mundial. Dentro, hay mapas, armas oxidadas y un diario con gráficos de emisiones.",
+        choices: [
+          {
+            action: "LEER DIARIO",
+            result: "El diario detalla cómo la contaminación industrial de la guerra enmascaró temporalmente el calentamiento. Comprendes una parte crucial de la historia.",
+            reward: { type: 'clue', value: 'Efecto de los aerosoles de guerra' },
+            nextChapterId: 3,
+          },
+          {
+            action: "TOCAR ARMAS",
+            result: "Al tocar un rifle oxidado, activas una trampa antigua. Una reja cae, cerrando la salida del búnker. Te llevará un tiempo encontrar una forma de abrirla.",
+            punishment: { type: 'trap', value: 'Atrapado en el búnker' },
+          }
+        ]
+      },
+      {
+        id: 3,
+        name: "La era del ascenso",
+        description: "En una cámara sellada encuentras gráficas talladas en piedra que muestran el ascenso de las temperaturas desde los años 60. Hay un pedestal con una balanza rota.",
+        choices: [
+          {
+            action: "COLOCAR HUESO EN BALANZA",
+            result: "Colocas uno de los fragmentos de hueso en el plato de la balanza. Se equilibra y un compartimento secreto se abre, revelando un disco de datos.",
+            reward: { type: 'clue', value: 'Disco de datos de la "Gran Aceleración"' },
+            nextChapterId: 4,
+          },
+          {
+            action: "ROMPER BALANZA",
+            result: "Frustrado, golpeas la balanza. Se hace añicos y el suelo tiembla. El polvo que cae del techo te hace perder de vista uno de tus objetos.",
+            punishment: { type: 'item_loss', value: 'first' },
+          }
+        ]
+      },
+      {
+        id: 4,
+        name: "La vértebra vacía",
+        description: "Llegas al final del esqueleto: la última vértebra está hueca. Representa el presente (2024) y el vacío de decisiones humanas. Es el momento de actuar.",
+        choices: [
+          {
+            action: "INSERTAR PISTAS EN VERTEBRA",
+            result: "Colocas los registros y el disco de datos dentro de la vértebra hueca. El esqueleto se ilumina, proyectando el diagnóstico final en la pared.",
+            endsGame: 'win',
+          },
+          {
+            action: "SALIR SIN COMPLETAR",
+            result: "Decides que es demasiado arriesgado y abandonas las ruinas. El misterio del esqueleto quedará sin resolver.",
+            endsGame: 'lose',
+          }
+        ]
+      }
+    ],
+  },
+  en: {
+    title: "Tangible Climate Quest",
+    intro: "You are in the dusty ruins of the former Museum of Natural Sciences in Madrid. The air is thick. Your mission: explore the ruins, decipher the bones of the 'Climate Skeleton', and discover how lost data could have changed humanity's destiny.",
+    finale: {
+      good_ending: "You have reconstructed the climate history and written a diagnosis: 'We could have changed our destiny if we had trusted the data.' You have completed the mission and honored the memory of those who tried to warn the world.",
+      bad_ending: "You leave the ruins with incomplete information, condemned to repeat the mistakes of the past. The story remains untold."
+    },
+    chapters: [
+      {
+        id: 1,
+        name: "The Beginning – The Find",
+        description: "Two researchers enter the dusty ruins of the Museum. The air is thick. They find bone fragments and a strange symbol carved in stone.",
+        choices: [
+          {
+            action: "EXAMINE SYMBOL",
+            result: "You discover it's a record of early temperature measurements. You've found a key clue!",
+            reward: { type: 'clue', value: 'Ancient Temperature Record' },
+            nextChapterId: 2,
+          },
+          {
+            action: "IGNORE SYMBOL",
+            result: "As you move on, a ceiling partially collapses, blocking the way you came. You lose time and energy.",
+            punishment: { type: 'score', value: -5 },
+          }
+        ]
+      },
+      {
+        id: 2,
+        name: "Shadows of War",
+        description: "You find a hidden bunker with remnants from World War II. Inside, there are maps, rusty weapons, and a diary with emission graphs.",
+        choices: [
+          {
+            action: "READ DIARY",
+            result: "The diary details how industrial pollution from the war temporarily masked warming. You understand a crucial part of the story.",
+            reward: { type: 'clue', value: 'Effect of War Aerosols' },
+            nextChapterId: 3,
+          },
+          {
+            action: "TOUCH WEAPONS",
+            result: "Touching a rusty rifle triggers an old trap. A grate falls, sealing the bunker exit. It will take you some time to find a way to open it.",
+            punishment: { type: 'trap', value: 'Trapped in the bunker' },
+          }
+        ]
+      },
+      {
+        id: 3,
+        name: "The Age of Ascent",
+        description: "In a sealed chamber, you find graphs carved in stone showing the rise in temperatures since the 60s. There is a pedestal with a broken scale.",
+        choices: [
+          {
+            action: "PLACE BONE ON SCALE",
+            result: "You place one of the bone fragments on the scale's plate. It balances, and a secret compartment opens, revealing a data disk.",
+            reward: { type: 'clue', value: 'Data Disk of the "Great Acceleration"' },
+            nextChapterId: 4,
+          },
+          {
+            action: "BREAK SCALE",
+            result: "Frustrated, you strike the scale. It shatters, and the floor trembles. The dust falling from the ceiling makes you lose track of one of your items.",
+            punishment: { type: 'item_loss', value: 'first' },
+          }
+        ]
+      },
+      {
+        id: 4,
+        name: "The Empty Vertebra",
+        description: "You reach the end of the skeleton: the last vertebra is hollow. It represents the present (2024) and the void of human decisions. It's time to act.",
+        choices: [
+          {
+            action: "INSERT CLUES INTO VERTEBRA",
+            result: "You place the records and the data disk inside the hollow vertebra. The skeleton lights up, projecting the final diagnosis on the wall.",
+            endsGame: 'win',
+          },
+          {
+            action: "LEAVE WITHOUT COMPLETING",
+            result: "You decide it's too risky and leave the ruins. The skeleton's mystery will remain unsolved.",
+            endsGame: 'lose',
+          }
+        ]
+      }
+    ],
+  }
+};
+
 export const storyData: {
   en: { [key: string]: StorySegment };
   es: { [key: string]: StorySegment };
@@ -221,7 +412,7 @@ export const locales = {
     appHubCrazyVizDesc: "A creative, sound-reactive visualization of the temperature data.",
 
     appHubQuestTitle: 'Climate Quest',
-    appHubQuestDesc: 'Test your knowledge about the project and the data.',
+    appHubQuestDesc: 'A retro text adventure into the future of climate data.',
 
     appHubCreditsTitle: 'Credits',
     appHubCreditsDesc: 'View the team and technologies behind this project.',
@@ -249,7 +440,7 @@ export const locales = {
     
     // About Modal
     aboutTitle: "About Tangible Climate Data",
-    intro: "This interactive experience is a digital companion to the 'Climate Change Skeleton', a data sculpture created by artist and data scientist Dr. Iñigo Manglano-Ovalle, commissioned by the Spanish National Museum of Natural Sciences (MNCN-CSIC) in Madrid.",
+    intro: "This interactive experience is a digital companion to the 'Climate Change Skeleton', a data sculpture created by Antonio Moneo Laín and David San Román Gomendio, and commissioned by the Spanish National Museum of Natural Sciences (MNCN-CSIC) in Madrid.",
     objective: "Our goal is to make complex climate data accessible, engaging, and understandable for a broad audience. By transforming raw data into a story, we hope to foster a deeper connection with the urgent issue of climate change.",
     aboutCredit: "A project by",
     
@@ -360,32 +551,28 @@ export const locales = {
 
     // Credits
     creditsModalContent: `
-      <h3 class="text-xl font-bold text-cyan-400 mb-2">Project Leadership</h3>
-      <p><strong>Concept & Direction:</strong> Tangible Data</p>
-      <p><strong>Lead Developer:</strong> John Doe</p>
-      <p><strong>UI/UX Design:</strong> Jane Smith</p>
+      <h3 class="text-xl font-bold text-cyan-400 mb-2">Project Team</h3>
+      <p><strong>Sculpture Authors:</strong> Antonio Moneo Laín & David San Román Gomendio</p>
+      <p><strong>App Design & Development:</strong> Antonio Moneo Laín</p>
+
+      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Collaboration</h3>
+      <p>A project by <a href="https://www.tangibledata.xyz" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline">Tangible Data</a> in collaboration with the <span class="font-semibold">Spanish National Museum of Natural Sciences (MNCN-CSIC)</span>.</p>
       
-      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Partners</h3>
-      <p>Spanish National Museum of Natural Sciences (MNCN-CSIC)</p>
-      
-      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Data Source</h3>
-      <p><strong>GISTEMP v4:</strong> NASA Goddard Institute for Space Studies</p>
-      
-      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Technology Stack</h3>
-      <p>React, TypeScript, Tailwind CSS, Recharts, Gemini API</p>
+      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Sources & Technology</h3>
+      <p><strong>Temperature Data:</strong> GISTEMP v4, NASA Goddard Institute for Space Studies</p>
+      <p><strong>Generative AI API:</strong> Google Gemini</p>
+      <p><strong>Technology Stack:</strong> React, TypeScript, Tailwind CSS, Recharts</p>
     `,
 
-    // Quest
-    questTitle: 'Tangible Climate Quest',
-    questIntro: 'Answer a few questions to test your knowledge about the project and the data sculpture.',
-    questStart: 'Start Quest',
-    questCorrect: 'Correct!',
-    questIncorrect: 'Not quite.',
-    questNext: 'Next Question',
-    questResults: 'Show Results',
-    questRestart: 'Restart Quest',
-    questResultsTitle: 'Quest Complete',
-    questResultsScore: 'You answered {score} out of {total} correctly.',
+    // Text Adventure Quest
+    textAdventureQuestTitle: "Tangible Climate Quest",
+    textAdventureQuestSubmit: "Enter",
+    textAdventureQuestScore: "Score",
+    textAdventureQuestInventory: "Inventory",
+    textAdventureQuestRestart: "Restart Quest",
+    textAdventureQuestWin: "MISSION COMPLETE",
+    textAdventureQuestLose: "MISSION FAILED",
+
   },
   es: {
     // Splash
@@ -439,7 +626,7 @@ export const locales = {
     appHubCrazyVizDesc: "Una visualización creativa y reactiva al sonido de los datos de temperatura.",
 
     appHubQuestTitle: 'Misión Climática',
-    appHubQuestDesc: 'Pon a prueba tus conocimientos sobre el proyecto y los datos.',
+    appHubQuestDesc: 'Una aventura conversacional retro al futuro de los datos climáticos.',
 
     appHubCreditsTitle: 'Créditos',
     appHubCreditsDesc: 'Conoce al equipo y las tecnologías detrás de este proyecto.',
@@ -467,7 +654,7 @@ export const locales = {
     
     // About Modal
     aboutTitle: "Sobre Datos Climáticos Tangibles",
-    intro: "Esta experiencia interactiva es un complemento digital de la 'Escultura del Esqueleto del Cambio Climático', creada por el artista y científico de datos Dr. Iñigo Manglano-Ovalle, por encargo del Museo Nacional de Ciencias Naturales (MNCN-CSIC) en Madrid.",
+    intro: "Esta experiencia interactiva es un complemento digital de la 'Escultura del Esqueleto del Cambio Climático', creada por Antonio Moneo Laín y David San Román Gomendio, por encargo del Museo Nacional de Ciencias Naturales (MNCN-CSIC) en Madrid.",
     objective: "Nuestro objetivo es hacer que los datos climáticos complejos sean accesibles, atractivos y comprensibles para un público amplio. Al transformar datos brutos en una historia, esperamos fomentar una conexión más profunda con el urgente problema del cambio climático.",
     aboutCredit: "Un proyecto de",
 
@@ -578,31 +765,27 @@ export const locales = {
 
     // Credits
     creditsModalContent: `
-      <h3 class="text-xl font-bold text-cyan-400 mb-2">Liderazgo del Proyecto</h3>
-      <p><strong>Concepto y Dirección:</strong> Tangible Data</p>
-      <p><strong>Desarrollador Principal:</strong> John Doe</p>
-      <p><strong>Diseño UI/UX:</strong> Jane Smith</p>
+      <h3 class="text-xl font-bold text-cyan-400 mb-2">Equipo del Proyecto</h3>
+      <p><strong>Autores de la Escultura:</strong> Antonio Moneo Laín y David San Román Gomendio</p>
+      <p><strong>Diseño y Desarrollo de la App:</strong> Antonio Moneo Laín</p>
+
+      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Colaboración</h3>
+      <p>Un proyecto de <a href="https://www.tangibledata.xyz" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline">Tangible Data</a> en colaboración con el <span class="font-semibold">Museo Nacional de Ciencias Naturales (MNCN-CSIC)</span>.</p>
       
-      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Colaboradores</h3>
-      <p>Museo Nacional de Ciencias Naturales (MNCN-CSIC)</p>
-      
-      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Fuente de Datos</h3>
-      <p><strong>GISTEMP v4:</strong> NASA Goddard Institute for Space Studies</p>
-      
-      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Tecnologías Utilizadas</h3>
-      <p>React, TypeScript, Tailwind CSS, Recharts, Gemini API</p>
+      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Fuentes y Tecnologías</h3>
+      <p><strong>Datos de Temperatura:</strong> GISTEMP v4, NASA Goddard Institute for Space Studies</p>
+      <p><strong>API de IA Generativa:</strong> Google Gemini</p>
+      <p><strong>Stack Tecnológico:</strong> React, TypeScript, Tailwind CSS, Recharts</p>
     `,
 
-    // Quest
-    questTitle: 'Misión Climática Tangible',
-    questIntro: 'Responde unas preguntas para probar tu conocimiento sobre el proyecto y la escultura de datos.',
-    questStart: 'Empezar Misión',
-    questCorrect: '¡Correcto!',
-    questIncorrect: 'No es correcto.',
-    questNext: 'Siguiente Pregunta',
-    questResults: 'Ver Resultados',
-    questRestart: 'Reiniciar Misión',
-    questResultsTitle: 'Misión Completa',
-    questResultsScore: 'Respondiste correctamente {score} de {total} preguntas.',
+    // Text Adventure Quest
+    textAdventureQuestTitle: "Tangible Climate Quest",
+    textAdventureQuestSubmit: "Intro",
+    textAdventureQuestScore: "Puntuación",
+    textAdventureQuestInventory: "Inventario",
+    textAdventureQuestRestart: "Reiniciar Misión",
+    textAdventureQuestWin: "MISIÓN COMPLETADA",
+    textAdventureQuestLose: "MISIÓN FALLIDA",
+    
   },
 };

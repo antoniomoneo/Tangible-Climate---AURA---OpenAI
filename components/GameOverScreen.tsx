@@ -4,14 +4,16 @@ import type { StorySegment, Language } from '../types';
 // FIX: Fix import paths to be relative.
 import { locales } from '../locales';
 import TextToSpeechButton from './TextToSpeechButton';
+import { IdentificationIcon } from './icons';
 
 interface GameOverScreenProps {
   finalScene: StorySegment;
   onRestart: () => void;
   language: Language;
+  onOpenQuest: () => void;
 }
 
-const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalScene, onRestart, language }) => {
+const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalScene, onRestart, language, onOpenQuest }) => {
   const t = locales[language];
   return (
     <div className="flex flex-col items-center justify-center w-full h-full text-center animate-fadeIn">
@@ -27,12 +29,21 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalScene, onRestart, 
         </div>
         <p className="text-gray-300 text-lg leading-relaxed mb-8">{finalScene.sceneDescription}</p>
 
-        <button 
-          onClick={onRestart}
-          className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-6 rounded-lg transition-colors text-lg shadow-lg"
-        >
-          {t.gameOverRestart}
-        </button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button 
+            onClick={onRestart}
+            className="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-6 rounded-lg transition-colors text-lg shadow-lg"
+          >
+            {t.gameOverRestart}
+          </button>
+           <button 
+              onClick={onOpenQuest}
+              className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-lg transition-colors text-lg shadow-lg flex items-center justify-center gap-2"
+            >
+              <IdentificationIcon className="h-5 w-5" />
+              {t.appHubQuestTitle}
+            </button>
+        </div>
       </div>
     </div>
   );

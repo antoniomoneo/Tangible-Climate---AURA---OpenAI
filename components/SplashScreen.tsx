@@ -4,6 +4,7 @@ import { TangibleDataLogo } from './icons';
 import type { Language } from '../types';
 // FIX: Fix import paths to be relative.
 import { locales } from '../locales';
+import { MUSEUM_EXTERIOR_IMAGE } from '../assets';
 
 interface SplashScreenProps {
   onFinished: () => void;
@@ -13,7 +14,7 @@ interface SplashScreenProps {
 const SplashScreen: React.FC<SplashScreenProps> = ({ onFinished, language }) => {
   const [phase, setPhase] = useState(0); // 0: logo, 1: title, 2: photo
   const t = locales[language];
-  const sculpturePhotoUrl = 'https://lh3.googleusercontent.com/pw/AP1GczNObISJaRfsLaSCUXQjDcFTJkR9gs2mwNlptiMQ-r9r3AM9X0Pb_siZ1NqzgMRPAjtVFfzB3IjcTbZI7kH4EXrNhVaNFoFy_kTSnOSWU-aaPt_PP7ddtee4-WU3SOaM3WqWgPni-6HEEBPlAQXTFIY0IA=w1670-h988-s-no?authuser=0';
+  const sculpturePhotoUrl = MUSEUM_EXTERIOR_IMAGE;
 
   useEffect(() => {
     const timer1 = setTimeout(() => {

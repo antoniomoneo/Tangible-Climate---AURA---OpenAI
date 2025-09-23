@@ -76,7 +76,8 @@ class Particle {
 const CrazyVizModal: React.FC<CrazyVizModalProps> = ({ isOpen, onClose, language }) => {
   const t = locales[language];
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameIdRef = useRef<number>();
+  // FIX: Pass an initial value to useRef to resolve the "Expected 1 arguments, but got 0" error.
+  const animationFrameIdRef = useRef<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const isPlayingRef = useRef(isPlaying);
   isPlayingRef.current = isPlaying;

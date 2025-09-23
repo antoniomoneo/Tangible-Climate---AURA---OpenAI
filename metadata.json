@@ -1,6 +1,6 @@
 {
-  "name": "Tangible Climate - AURA - Museo Nacional de Ciencias Naturales",
-  "description": "An interactive educational game exploring the history of climate change through a mysterious data sculpture, guided by a scientific AI.",
+  "name": "El Esqueleto del Cambio Climático",
+  "description": "Una experiencia interactiva y educativa que explora la historia del cambio climático a través de la escultura de datos 'El Esqueleto del Cambio Climático', guiada por la IA AURA.",
   "requestFramePermissions": [
     "camera"
   ]

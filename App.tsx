@@ -322,7 +322,12 @@ const Game: React.FC = () => {
         ) : null;
       case GameState.GAME_OVER:
          return currentStory ? (
-           <GameOverScreen finalScene={currentStory} onRestart={resetGame} language={language} />
+           <GameOverScreen 
+              finalScene={currentStory} 
+              onRestart={resetGame} 
+              language={language}
+              onOpenQuest={handleOpenClimateQuest}
+            />
          ) : null;
       case GameState.DASHBOARD:
         return <DashboardScreen onBack={handleCloseDashboard} language={language} />;

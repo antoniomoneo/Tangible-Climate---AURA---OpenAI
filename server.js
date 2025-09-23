@@ -1,9 +1,9 @@
-
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fetch from 'node-fetch';
 import { GoogleGenAI, Type } from '@google/genai';
+import { questGameData } from './locales.js';
 
 // --- CONFIGURATION ---
 const __filename = fileURLToPath(import.meta.url);
@@ -24,7 +24,7 @@ if (!API_KEY) {
 
 const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-const CALENDAR_URL = "https://calendar.google.com/calendar/ical/mncn.csic.es_j397r1822g1n2m81p4h1nk4c7o%40group.calendar.google.com/public/basic.ics";
+const CALENDAR_URL = "https://calendar.google.com/calendar/ical/c_41592e57472725b685e2d4ffb20f05c12f117f9ea2a46431ea621ed686f870ff%40group.calendar.google.com/public/basic.ics";
 
 // --- MIDDLEWARE ---
 app.use(express.json());
@@ -147,6 +147,98 @@ app.post('/api/scenario', async (req, res) => {
     }
 });
 
+app.post('/api/text-adventure', async (req, res) => {
+    try {
+        const { language, command, gameState } = req.body;
+        const { chapterId, score, inventory } = gameState;
+
+        const game = questGameData[language];
+        const currentChapter = game.chapters.find(c => c.id === chapterId);
+
+        if (!currentChapter) {
+            return res.status(404).json({ error: 'Chapter not found' });
+        }
+
+        const choice = currentChapter.choices.find(c => c.action.toUpperCase() === command.toUpperCase());
+
+        let responseText = '';
+        const newState = { ...gameState };
+        let isGameOver = null;
+        let newChapterDescription = null;
+
+        if (choice) {
+            responseText = choice.result;
+            if (choice.reward) {
+                switch(choice.reward.type) {
+                    case 'clue':
+                    case 'item':
+                        newState.inventory.push(choice.reward.value);
+                        newState.score += 10;
+                        break;
+                    case 'score':
+                        newState.score += choice.reward.value;
+                        break;
+                }
+            }
+            if (choice.punishment) {
+                switch(choice.punishment.type) {
+                    case 'score':
+                        newState.score += choice.punishment.value;
+                        break;
+                    case 'item_loss':
+                        if (newState.inventory.length > 0) {
+                            const lostItem = newState.inventory.shift();
+                            responseText += ` (Has perdido: ${lostItem})`;
+                        }
+                        break;
+                    case 'trap':
+                        newState.score -= 5;
+                        break;
+                }
+            }
+            if (choice.nextChapterId) {
+                newState.chapterId = choice.nextChapterId;
+                const nextChapter = game.chapters.find(c => c.id === newState.chapterId);
+                if (nextChapter) {
+                    newChapterDescription = nextChapter.description;
+                }
+            }
+            if (choice.endsGame) {
+                isGameOver = choice.endsGame;
+                responseText += `\n\n${isGameOver === 'win' ? game.finale.good_ending : game.finale.bad_ending}`;
+            }
+
+        } else { // Generative response for unknown commands
+            const prompt = `
+              Eres el Game Master de una aventura de texto retro.
+              Tema: Aventura arqueológica post-apocalíptica, misterio, tensión.
+              Ubicación: Ruinas del Museo de Ciencias Naturales de Madrid.
+              Idioma de respuesta: ${language === 'es' ? 'Español' : 'Inglés'}.
+              
+              Estado actual del jugador:
+              - Escena: "${currentChapter.description}"
+              - Inventario: [${inventory.join(', ')}]
+              
+              El jugador ha introducido un comando no estándar: "${command}"
+              
+              Tu tarea:
+              Genera una respuesta creativa y atmosférica que encaje con el tono del juego. La respuesta debe indicar que la acción no es posible o no tiene sentido, sin romper la inmersión. Sé breve (1-2 frases). No des pistas.
+            `;
+            const genAIResponse = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: prompt
+            });
+            responseText = genAIResponse.text;
+        }
+
+        res.json({ responseText, newGameState: newState, newChapterDescription, isGameOver });
+
+    } catch (error) {
+        console.error('Text Adventure API error:', error);
+        res.status(500).json({ error: { message: 'Failed to process game command.', details: error.message } });
+    }
+});
+
 
 // Calendar proxy endpoint
 app.get('/api/calendar', async (req, res) => {
@@ -206,20 +298,17 @@ app.post('/api/tts', async (req, res) => {
   }
 });
 
-
 // --- STATIC FILE SERVING ---
-// This serves the built React app from the 'dist' folder in a production environment
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, 'dist')));
-    
-    // For any other request, serve the index.html file.
-    // This is crucial to support client-side routing in a Single Page Application (SPA).
-    // This regex matches any path that doesn't start with /api or /health,
-    // ensuring API calls are not hijacked by the SPA's catch-all route.
-    app.get(/^\/(?!api|health).*/, (req, res) => {
-        res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-    });
-}
+// The original logic caused 404 errors in environments where NODE_ENV is 'production'
+// but the app hasn't been built. The AI Studio environment runs from source, so we
+// will always serve files from the project root (__dirname).
+app.use(express.static(__dirname));
+
+// The catch-all is needed for SPA routing, pointing to the root index.html for any
+// request that doesn't match an API route or a static file.
+app.get(/^\/(?!api|health).*/, (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 
 // --- SERVER START ---
