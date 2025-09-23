@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import url from 'url';
 import fetch from 'node-fetch'; // For TTS API
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // --- SETUP ---
 const app = express();
@@ -19,6 +20,8 @@ if (!API_KEY) {
   throw new Error("API_KEY or GEMINI_API_KEY environment variable is not set.");
 }
 
+const genAI = new GoogleGenerativeAI(API_KEY);
+
 // --- API ENDPOINTS ---
 
 // Simple health endpoint for readiness/liveness checks
@@ -31,9 +34,7 @@ app.post('/api/chat', async (req, res) => {
   try {
     const { history, message, context } = req.body;
 
-    // Lazy import to avoid startup failures
-    const { GoogleGenAI } = await import("@google/genai");
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash', systemInstruction: context });
 
     // Map frontend roles to Gemini roles
     const geminiHistory = history.map(msg => ({
@@ -43,22 +44,16 @@ app.post('/api/chat', async (req, res) => {
 
     const contents = [...geminiHistory, { role: 'user', parts: [{ text: message }] }];
 
-    const stream = await ai.models.generateContentStream({
-      model: 'gemini-2.5-flash',
-      contents: contents,
-      // Use the context from the frontend as a system instruction
-      config: {
-        systemInstruction: context,
-      }
-    });
+    const result = await model.generateContentStream({ contents });
 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    for await (const chunk of stream) {
-      if (chunk.text) {
-        res.write(`data: ${JSON.stringify({ type: 'chunk', payload: chunk.text })}\n\n`);
+    for await (const chunk of result.stream) {
+      const text = chunk.text();
+      if (text) {
+        res.write(`data: ${JSON.stringify({ type: 'chunk', payload: text })}\n\n`);
       }
     }
     res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
@@ -143,41 +138,39 @@ app.post('/api/scenario', async (req, res) => {
         `;
 
         const responseSchema = {
-            type: (await import("@google/genai")).Type.OBJECT,
+            type: "object",
             properties: {
                 simulatedData: {
-                    type: (await import("@google/genai")).Type.ARRAY,
+                    type: "array",
                     description: "An array of 30 future data points.",
                     items: {
-                        type: (await import("@google/genai")).Type.OBJECT,
+                        type: "object",
                         properties: {
-                            year: { type: (await import("@google/genai")).Type.INTEGER },
-                            anomaly: { type: (await import("@google/genai")).Type.NUMBER }
+                            year: { type: "integer" },
+                            anomaly: { type: "number" }
                         },
                         required: ["year", "anomaly"],
                     }
                 },
                 explanation: {
-                    type: (await import("@google/genai")).Type.STRING,
+                    type: "string",
                     description: "A brief paragraph explaining the logic for the simulation."
                 }
             },
             required: ["simulatedData", "explanation"]
         };
         
-        const { GoogleGenAI } = await import("@google/genai");
-        const ai = new GoogleGenAI({ apiKey: API_KEY });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
         
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-          config: {
+        const response = await model.generateContent({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
             responseMimeType: 'application/json',
             responseSchema: responseSchema,
           }
         });
         
-        const jsonText = response.text.trim();
+        const jsonText = response.response.text();
         const data = JSON.parse(jsonText);
         res.json(data);
 
