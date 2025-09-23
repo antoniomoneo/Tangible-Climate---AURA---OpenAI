@@ -6,7 +6,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // --- CONFIGURATION ---
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(filename);
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -209,7 +209,7 @@ if (process.env.NODE_ENV === 'production') {
     
     // For any other request, serve the index.html file.
     // This is crucial to support client-side routing in a Single Page Application (SPA).
-    app.get('*', (req, res) => {
+    app.get('/:path(.*)', (req, res) => {
         res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
 }
