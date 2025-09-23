@@ -209,7 +209,7 @@ if (process.env.NODE_ENV === 'production') {
     
     // For any other request, serve the index.html file.
     // This is crucial to support client-side routing in a Single Page Application (SPA).
-    app.get('/*', (req, res) => {
+    app.get('*', (req, res) => {
         res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
 }
