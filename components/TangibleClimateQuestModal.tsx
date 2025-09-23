@@ -1,114 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import type { Language } from '../types';
 import { locales } from '../locales';
 import { IdentificationIcon } from './icons';
-
-// Game structure provided by user
-const gameData = {
-  "title": "Tangible Climate Quest",
-  "setting": {
-    "era": "Futuro postapocalíptico",
-    "location": "Ruinas de la antigua sede del Museo de Ciencias Naturales en Madrid",
-    "theme": "Aventura arqueológica con misterio y tensión",
-    "style": "Aventura gráfica retro estilo Sierra (King’s Quest / Space Quest)"
-  },
-  "instructions": {
-    "objective": "Explorar las ruinas, descifrar los huesos del 'Esqueleto del Clima' y descubrir cómo los datos perdidos podían haber cambiado el destino de la humanidad.",
-    "controls": [
-      "EXAMINAR + objeto (ej. EXAMINAR huesos)",
-      "USAR + objeto",
-      "HABLAR con + personaje",
-      "MOVER hacia + dirección",
-      "INVENTARIO para ver tus objetos"
-    ],
-    "win_condition": "El jugador debe recopilar todas las pistas en las cuatro fases históricas y redactar un diagnóstico final.",
-    "lose_condition": "Si tomas decisiones precipitadas o ignoras pistas, quedarás atrapado en las ruinas sin respuestas."
-  },
-  "chapters": [
-    {
-      "id": 1,
-      "name": "El inicio – El hallazgo",
-      "description": "Dos investigadores entran en las ruinas polvorientas del Museo. El aire es espeso. Encuentran fragmentos de huesos y un extraño símbolo tallado en la piedra.",
-      "choices": [
-        {
-          "action": "EXAMINAR símbolo",
-          "result": "Descubres que es un registro de las primeras mediciones de temperatura. Premio: 1 pista clave."
-        },
-        {
-          "action": "IGNORAR símbolo",
-          "result": "Un techo se derrumba ligeramente. Pierdes tiempo y energía. Castigo: -1 turno."
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "name": "Sombras de la guerra",
-      "description": "Encuentras un búnker oculto con restos de la Segunda Guerra Mundial. Dentro, hay mapas, armas oxidadas y un diario con gráficos de emisiones.",
-      "choices": [
-        {
-          "action": "LEER diario",
-          "result": "Comprendes cómo la guerra alteró los patrones climáticos. Premio: acceso a nueva sala secreta."
-        },
-        {
-          "action": "TOCAR armas oxidadas",
-          "result": "Se activa una trampa antigua. Una puerta se cierra y quedas atrapado momentáneamente. Castigo: debes resolver un acertijo para salir."
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "name": "La era del ascenso",
-      "description": "En una cámara sellada encuentras gráficas talladas en piedra que muestran el ascenso de las temperaturas desde los años 60. Hay un pedestal con una balanza rota.",
-      "choices": [
-        {
-          "action": "COLOCAR hueso en la balanza",
-          "result": "La sala se ilumina y revela datos clave. Premio: desbloqueas pista final."
-        },
-        {
-          "action": "ROMPER la balanza",
-          "result": "El suelo tiembla, la sala empieza a hundirse. Castigo: pierdes un objeto del inventario."
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "name": "La vértebra vacía",
-      "description": "Llegas al final del esqueleto: la última vértebra está hueca. Representa el presente (2024) y el vacío de decisiones humanas.",
-      "choices": [
-        {
-          "action": "INSERTAR todas las pistas en la vértebra",
-          "result": "El esqueleto cobra vida simbólicamente y muestra el diagnóstico final. Premio: Victoria."
-        },
-        {
-          "action": "SALIR sin completar",
-          "result": "El jugador abandona las ruinas con dudas. Castigo: derrota."
-        }
-      ]
-    }
-  ],
-  "rewards": [
-    "Pistas clave para avanzar",
-    "Acceso a salas secretas",
-    "Objetos de inventario (linterna, huesos, mapas antiguos)",
-    "Fragmentos de un mural que se completa al final"
-  ],
-  "punishments": [
-    "Pérdida de turnos",
-    "Atrapar al jugador en trampas",
-    "Perder objetos del inventario",
-    "Finales alternativos incompletos"
-  ],
-  "finale": {
-    "good_ending": "El jugador reconstruye la historia climática y redacta un diagnóstico: 'Hubiéramos cambiado el destino si hubiéramos confiado en los datos'.",
-    "bad_ending": "El jugador queda atrapado o sale con información incompleta, condenado a repetir los errores del pasado."
-  }
-};
-
-
-interface GameLogEntry {
-    type: 'narrator' | 'player' | 'system';
-    text: string;
-}
 
 interface TangibleClimateQuestModalProps {
   isOpen: boolean;
@@ -116,169 +9,172 @@ interface TangibleClimateQuestModalProps {
   language: Language;
 }
 
+const questQuestions = {
+  en: [
+    {
+      question: "What is the 'Climate Change Skeleton' sculpture based on?",
+      options: ["Fossil records", "Global temperature anomaly data", "Ocean acidity levels", "Atmospheric CO2 concentrations"],
+      correctAnswer: "Global temperature anomaly data",
+      explanation: "The sculpture's 'ribs' are shaped by the global temperature anomaly data from 1880 to the present, visualizing the warming trend."
+    },
+    {
+      question: "Which institution collaborated with Tangible Data on this project?",
+      options: ["The Louvre Museum", "The British Museum", "The Spanish National Museum of Natural Sciences (MNCN-CSIC)", "The Smithsonian"],
+      correctAnswer: "The Spanish National Museum of Natural Sciences (MNCN-CSIC)",
+      explanation: "This project is a collaboration with the MNCN-CSIC in Madrid, where the physical sculpture is exhibited."
+    },
+    {
+      question: "What does a positive temperature anomaly value signify in the data?",
+      options: ["A year colder than average", "A year warmer than the 1951-1980 average", "A year with average temperature", "A data error"],
+      correctAnswer: "A year warmer than the 1951-1980 average",
+      explanation: "The data shows deviations from a baseline period (1951-1980). Positive values (red/warm colors in charts) mean the year was warmer than that baseline average."
+    }
+  ],
+  es: [
+    {
+      question: "¿En qué se basa la escultura 'El Esqueleto del Cambio Climático'?",
+      options: ["Registros fósiles", "Datos de la anomalía de la temperatura global", "Niveles de acidez del océano", "Concentraciones de CO2 atmosférico"],
+      correctAnswer: "Datos de la anomalía de la temperatura global",
+      explanation: "Las 'costillas' de la escultura están moldeadas por los datos de la anomalía de la temperatura global desde 1880 hasta el presente, visualizando la tendencia al calentamiento."
+    },
+    {
+      question: "¿Qué institución colaboró con Tangible Data en este proyecto?",
+      options: ["El Museo del Louvre", "El Museo Británico", "El Museo Nacional de Ciencias Naturales (MNCN-CSIC)", "El Smithsonian"],
+      correctAnswer: "El Museo Nacional de Ciencias Naturales (MNCN-CSIC)",
+      explanation: "Este proyecto es una colaboración con el MNCN-CSIC en Madrid, donde se exhibe la escultura física."
+    },
+    {
+      question: "¿Qué significa un valor de anomalía de temperatura positivo en los datos?",
+      options: ["Un año más frío que el promedio", "Un año más cálido que el promedio de 1951-1980", "Un año con temperatura promedio", "Un error en los datos"],
+      correctAnswer: "Un año más cálido que el promedio de 1951-1980",
+      explanation: "Los datos muestran desviaciones de un período de referencia (1951-1980). Los valores positivos (colores rojos/cálidos en los gráficos) significan que el año fue más cálido que el promedio de esa referencia."
+    }
+  ]
+}
+
+type QuestState = 'intro' | 'playing' | 'results';
+
 const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ isOpen, onClose, language }) => {
   const t = locales[language];
-  const [gameLog, setGameLog] = useState<GameLogEntry[]>([]);
+  const questions = questQuestions[language];
+  
+  const [questState, setQuestState] = useState<QuestState>('intro');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
-  const [inventory, setInventory] = useState<string[]>([]);
-  const [chapter, setChapter] = useState(1);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isGameOver, setIsGameOver] = useState(false);
 
-  const logEndRef = useRef<HTMLDivElement>(null);
+  const resetQuest = () => {
+    setQuestState('intro');
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
+    setIsAnswered(false);
+    setScore(0);
+  };
+  
+  const handleClose = () => {
+      resetQuest();
+      onClose();
+  }
 
-  useEffect(() => {
-    if (isOpen) {
-      // Reset game state
-      setGameLog([{ type: 'narrator', text: t.questWelcome }]);
-      setScore(0);
-      setInventory([]);
-      setChapter(1);
-      setInput('');
-      setError(null);
-      setIsLoading(false);
-      setIsGameOver(false);
-    }
-  }, [isOpen, t.questWelcome]);
+  if (!isOpen) return null;
+  
+  const currentQuestion = questions[currentQuestionIndex];
 
-  useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [gameLog]);
-
-
-  const handleSendCommand = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const command = input.trim();
-    if (!command || isLoading || isGameOver) return;
-    
-    setError(null);
-    setInput('');
-    setGameLog(prev => [...prev, { type: 'player', text: `> ${command}` }]);
-    setIsLoading(true);
-
-    try {
-        const response = await fetch('/api/quest', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                playerInput: command,
-                gameState: { chapter, score, inventory },
-                gameRules: gameData, // Send the whole ruleset
-            }),
-        });
-
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.error?.message || 'Server error');
-        }
-
-        const result = await response.json();
-        
-        const newLogEntries: GameLogEntry[] = [{ type: 'narrator', text: result.narrative }];
-        if (result.newInventoryItem) {
-            setInventory(prev => [...prev, result.newInventoryItem]);
-            newLogEntries.push({ type: 'system', text: `[Item obtained: ${result.newInventoryItem}]` });
-        }
-        if (result.updatedScore > score) {
-            newLogEntries.push({ type: 'system', text: `[Score +${result.updatedScore - score}]` });
-        } else if (result.updatedScore < score) {
-             newLogEntries.push({ type: 'system', text: `[Score ${result.updatedScore - score}]` });
-        }
-        
-        setGameLog(prev => [...prev, ...newLogEntries]);
-        setScore(result.updatedScore);
-        
-        if (result.updatedChapter) {
-            setChapter(result.updatedChapter);
-        }
-
-        if (result.isGameOver) {
-            setIsGameOver(true);
-            setGameLog(prev => [...prev, { type: 'system', text: `[GAME OVER] ${result.ending}` }]);
-        }
-        
-    } catch(err) {
-        const message = err instanceof Error ? err.message : 'An unknown error occurred.';
-        setError(message);
-        setGameLog(prev => [...prev, { type: 'system', text: `[ERROR: ${message}]` }]);
-    } finally {
-        setIsLoading(false);
+  const handleAnswerSelect = (answer: string) => {
+    if (isAnswered) return;
+    setSelectedAnswer(answer);
+    setIsAnswered(true);
+    if (answer === currentQuestion.correctAnswer) {
+      setScore(prev => prev + 1);
     }
   };
 
+  const handleNext = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setIsAnswered(false);
+    } else {
+      setQuestState('results');
+    }
+  };
 
-  if (!isOpen) return null;
+  const renderContent = () => {
+    switch (questState) {
+      case 'intro':
+        return (
+          <div className="text-center">
+            <p className="text-lg mb-6">{t.questIntro}</p>
+            <button
+              onClick={() => setQuestState('playing')}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-6 rounded-lg transition-colors text-lg"
+            >
+              {t.questStart}
+            </button>
+          </div>
+        );
+      case 'results':
+        return (
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-white mb-2">{t.questResultsTitle}</h3>
+            <p className="text-lg mb-4">{t.questResultsScore.replace('{score}', score.toString()).replace('{total}', questions.length.toString())}</p>
+            <div className="flex justify-center gap-4">
+              <button onClick={resetQuest} className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg">
+                {t.questRestart}
+              </button>
+            </div>
+          </div>
+        );
+      case 'playing':
+        return (
+          <div>
+            <p className="text-sm text-gray-400 mb-2">{t.quizQuestionLabel.replace('{current}', (currentQuestionIndex + 1).toString()).replace('{total}', questions.length.toString())}</p>
+            <h3 className="text-xl font-semibold mb-4 text-white">{currentQuestion.question}</h3>
+            <div className="space-y-3">
+              {currentQuestion.options.map(option => {
+                const isCorrect = option === currentQuestion.correctAnswer;
+                const isSelected = option === selectedAnswer;
+                let buttonClass = 'w-full text-left bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors';
+                if (isAnswered) {
+                  if (isCorrect) buttonClass = 'w-full text-left bg-green-600 text-white font-semibold py-3 px-4 rounded-lg';
+                  else if (isSelected) buttonClass = 'w-full text-left bg-red-600 text-white font-semibold py-3 px-4 rounded-lg';
+                }
+                return (
+                  <button key={option} onClick={() => handleAnswerSelect(option)} disabled={isAnswered} className={buttonClass}>
+                    {option}
+                  </button>
+                );
+              })}
+            </div>
+            {isAnswered && (
+              <div className="mt-4 p-3 bg-gray-900/50 rounded-lg animate-fadeIn">
+                <p className={`font-bold ${selectedAnswer === currentQuestion.correctAnswer ? 'text-green-400' : 'text-red-400'}`}>
+                    {selectedAnswer === currentQuestion.correctAnswer ? t.questCorrect : t.questIncorrect}
+                </p>
+                <p className="text-gray-300 mt-1">{currentQuestion.explanation}</p>
+                <button onClick={handleNext} className="mt-3 w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg">
+                  {currentQuestionIndex === questions.length - 1 ? t.questResults : t.questNext}
+                </button>
+              </div>
+            )}
+          </div>
+        );
+    }
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col font-mono">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-600 flex-shrink-0">
-          <h2 className="text-2xl text-cyan-400 flex items-center gap-3">
-            <IdentificationIcon />
+      <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl w-full max-w-2xl flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-gray-600">
+          <h2 className="font-title text-2xl text-cyan-400 flex items-center gap-2">
+            <IdentificationIcon className="h-6 w-6"/>
             {t.questTitle}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+          <button onClick={handleClose} className="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
         </div>
-
-        {/* Main Content */}
-        <div className="flex-grow flex min-h-0">
-            {/* Game Log (Left) */}
-            <div className="w-2/3 p-4 flex flex-col border-r border-gray-600">
-                <div className="flex-grow overflow-y-auto pr-2 text-lg leading-relaxed text-gray-300 space-y-4">
-                    {gameLog.map((entry, index) => {
-                        let style = 'whitespace-pre-wrap';
-                        if (entry.type === 'player') style += ' text-cyan-400';
-                        if (entry.type === 'system') style += ' text-amber-400 italic text-base';
-                        return <p key={index} className={style}>{entry.text}</p>;
-                    })}
-                     <div ref={logEndRef} />
-                </div>
-                <form onSubmit={handleSendCommand} className="flex gap-2 pt-4">
-                    <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder={t.questPlaceholder}
-                        disabled={isLoading || isGameOver}
-                        className="w-full bg-gray-900 border border-gray-500 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:opacity-50"
-                        autoComplete="off"
-                    />
-                    <button
-                        type="submit"
-                        disabled={isLoading || isGameOver || !input.trim()}
-                        className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-md transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
-                    >
-                        {isLoading ? '...' : t.questSend}
-                    </button>
-                </form>
-            </div>
-
-            {/* Status (Right) */}
-            <div className="w-1/3 p-6 space-y-8">
-                <div>
-                    <h3 className="text-xl text-gray-400 border-b border-gray-600 pb-2 mb-4">{t.questScore}</h3>
-                    <p className="text-5xl text-white text-center font-bold">{score}</p>
-                </div>
-                 <div>
-                    <h3 className="text-xl text-gray-400 border-b border-gray-600 pb-2 mb-4">{t.questInventory}</h3>
-                    {inventory.length > 0 ? (
-                        <ul className="space-y-2">
-                           {inventory.map(item => <li key={item} className="text-white text-lg">- {item}</li>)}
-                        </ul>
-                    ) : (
-                        <p className="text-gray-500 italic">Empty</p>
-                    )}
-                </div>
-                 {error && (
-                    <div>
-                        <h3 className="text-xl text-red-500 border-b border-red-700 pb-2 mb-4">SYSTEM ERROR</h3>
-                        <p className="text-red-400">{error}</p>
-                    </div>
-                )}
-            </div>
+        <div className="p-6 text-gray-300">
+            {renderContent()}
         </div>
       </div>
     </div>
