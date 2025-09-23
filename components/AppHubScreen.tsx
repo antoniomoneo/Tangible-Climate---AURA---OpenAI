@@ -17,7 +17,8 @@ import {
   ViewfinderIcon,
   StarIcon,
   IdentificationIcon,
-  SwirlIcon
+  SwirlIcon,
+  InfoIcon,
 } from './icons';
 
 interface AppHubScreenProps {
@@ -27,16 +28,17 @@ interface AppHubScreenProps {
   onOpenChat: () => void;
   onOpenInstructions: () => void;
   onOpenKnowledgeBase: () => void;
-  onOpenEducationalPack: () => void;
   onOpenJoinUs: () => void;
   onOpenScenarioLab: () => void;
   onOpenGlossary: () => void;
   onOpenARMode: () => void;
   onOpenCrazyViz: () => void;
+  onOpenClimateQuest: () => void;
+  onOpenCredits: () => void;
   language: Language;
 }
 
-const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenInstructions, onOpenKnowledgeBase, onOpenEducationalPack, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, onOpenARMode, onOpenCrazyViz, language }) => {
+const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenInstructions, onOpenKnowledgeBase, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, onOpenARMode, onOpenCrazyViz, onOpenClimateQuest, onOpenCredits, language }) => {
   const t = locales[language];
 
   const apps = [
@@ -52,6 +54,13 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       description: t.appHubDataExplorerDesc,
       icon: <CompassIcon />,
       action: onStartGame,
+      enabled: true,
+    },
+    {
+      title: t.appHubQuestTitle,
+      description: t.appHubQuestDesc,
+      icon: <IdentificationIcon />,
+      action: onOpenClimateQuest,
       enabled: true,
     },
     {
@@ -93,7 +102,7 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       title: t.appHubEducationalPackTitle,
       description: t.appHubEducationalPackDesc,
       icon: <AcademicCapIcon />,
-      action: onOpenEducationalPack,
+      action: () => window.open('https://tangibledata.xyz/tangible-data-educational-program/', '_blank', 'noopener,noreferrer'),
       enabled: true,
     },
     {
@@ -131,6 +140,13 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       action: onOpenJoinUs,
       enabled: true,
     },
+     {
+      title: t.appHubCreditsTitle,
+      description: t.appHubCreditsDesc,
+      icon: <InfoIcon />,
+      action: onOpenCredits,
+      enabled: true,
+    },
   ];
 
   return (
@@ -164,17 +180,6 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
               )}
             </button>
           ))}
-            <div
-              className="text-left bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700"
-            >
-              <div className="flex items-center mb-3">
-                <div className="p-2 bg-gray-700 rounded-md mr-4 text-cyan-400">
-                  <IdentificationIcon />
-                </div>
-                <h2 className="text-xl font-bold text-white">{t.appHubCreditsTitle}</h2>
-              </div>
-              <p className="text-gray-400 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t.appHubCreditsDesc }} />
-            </div>
             <a
               href="mailto:hello@tangibledata.xyz"
               className="group relative flex flex-col items-center justify-center text-center bg-gray-800/50 p-6 rounded-lg shadow-lg border-2 border-dashed border-gray-600 transition-all duration-300 hover:border-cyan-500 hover:bg-gray-700/50 hover:-translate-y-1"

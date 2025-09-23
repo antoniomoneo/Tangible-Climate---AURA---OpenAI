@@ -247,6 +247,88 @@ You MUST provide your response as a single, valid JSON object that adheres to th
 });
 
 
+app.post("/api/quest", async (req, res) => {
+    if (!API_KEY) {
+        return res.status(500).json({ error: { message: "Missing API_KEY environment variable." } });
+    }
+    const { playerInput, gameState, gameRules } = req.body;
+    if (!playerInput || !gameState || !gameRules) {
+        return res.status(400).json({ error: { message: "Request body must contain 'playerInput', 'gameState', and 'gameRules'." } });
+    }
+    
+    const currentChapterData = gameRules.chapters.find(c => c.id === gameState.chapter);
+    if (!currentChapterData) {
+        return res.status(400).json({ error: { message: `Invalid chapter ID: ${gameState.chapter}` } });
+    }
+
+    const prompt = `
+You are a text-adventure game master for the game 'Tangible Climate Quest'.
+The style is a retro text adventure like Sierra's King's Quest. Be descriptive, slightly tense, and focus on the atmosphere.
+
+**GAME RULEBOOK (JSON):**
+${JSON.stringify(gameRules, null, 2)}
+
+**CURRENT PLAYER STATE:**
+- Current Chapter: ${gameState.chapter} (${currentChapterData.name})
+- Current Scene Description: ${currentChapterData.description}
+- Player Score: ${gameState.score}
+- Player Inventory: [${gameState.inventory.join(', ')}]
+
+**PLAYER's COMMAND:**
+"${playerInput}"
+
+**YOUR TASK:**
+1.  Interpret the player's command in the context of the current state and the rulebook. The command might not be an exact match to the choices, so use your judgment. For example, if a choice is "EXAMINAR símbolo" and the player says "look at symbol", that's a match.
+2.  Determine the outcome based on the 'choices' in the current chapter. If the command matches a choice's action, use its 'result' and 'punishment' fields.
+3.  Generate a narrative description of what happens. This is the 'narrative' field in your response.
+4.  Update the score. If a choice has a "Premio" (reward), increment the score by 100. If it has a "Castigo" (punishment), decrement the score by 50.
+5.  Determine if a new item is added to the inventory from a "Premio". Items can be 'Pista clave', 'mapas antiguos', etc.
+6.  Determine if the chapter changes. The game progresses linearly. If the player completes the main positive objective of a chapter, move to the next chapter number.
+7.  Check for win/lose conditions as described in the 'finale' and 'chapters' section. Set 'isGameOver' to true if the player wins or loses. Provide the appropriate 'ending' text.
+8.  You MUST respond with a single, valid JSON object that adheres to the provided schema. Do not add any text before or after the JSON object. If a field like 'newInventoryItem' or 'ending' is not applicable, return an empty string "".
+
+Example for a successful action: The player is in chapter 1 and types "examinar simbolo". Your response should be based on the first choice.
+Example for a failed action: The player is in chapter 2 and types "abrir puerta". This command doesn't match any choice. Your narrative should say something like "The door is rusted shut and won't budge." with no change in score or inventory.
+`;
+
+    const responseSchema = {
+        type: Type.OBJECT,
+        properties: {
+            narrative: { type: Type.STRING, description: "The story text to show the player. Be descriptive and atmospheric." },
+            updatedScore: { type: Type.INTEGER, description: "The player's new total score." },
+            newInventoryItem: { type: Type.STRING, description: "The name of the new item added to inventory, or an empty string if nothing was added." },
+            updatedChapter: { type: Type.INTEGER, description: "The new chapter number if it changes. Otherwise, the current chapter." },
+            isGameOver: { type: Type.BOOLEAN, description: "Set to true if the game has ended." },
+            ending: { type: Type.STRING, description: "The final message for the good or bad ending, or an empty string if not game over." }
+        },
+        required: ["narrative", "updatedScore", "newInventoryItem", "updatedChapter", "isGameOver", "ending"]
+    };
+
+    try {
+        const ai = new GoogleGenAI({ apiKey: API_KEY });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: responseSchema,
+            },
+        });
+        
+        const jsonText = response.text.trim();
+        if (jsonText.startsWith('{') && jsonText.endsWith('}')) {
+             const jsonResponse = JSON.parse(jsonText);
+             res.json(jsonResponse);
+        } else {
+            throw new Error("AI returned a non-JSON response.");
+        }
+    } catch (e) {
+        console.error("Error in Gemini quest generation:", e.message);
+        res.status(500).json({ error: { message: `AI quest generation failed: ${e.message}` } });
+    }
+});
+
+
 // servir SPA
 const distPath = path.join(__dirname, "dist");
 app.use(express.static(distPath));

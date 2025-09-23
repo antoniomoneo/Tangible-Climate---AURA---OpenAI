@@ -42,6 +42,8 @@ const en: LocaleStrings = {
     appHubChatDesc: "Ask questions about climate change. Powered by Gemini.",
     appHubDataExplorerTitle: "Data Explorer",
     appHubDataExplorerDesc: "Navigate the historical temperature data step by step.",
+    appHubQuestTitle: "Tangible Climate Quest",
+    appHubQuestDesc: "A generative text-adventure. Uncover the story of climate data from a post-apocalyptic future.",
     appHubCrazyVizTitle: "Crazy Viz",
     appHubCrazyVizDesc: "An experimental, artistic visualization of climate data.",
     appHubScenarioLabTitle: "Scenario Lab",
@@ -67,7 +69,8 @@ const en: LocaleStrings = {
     appHubAboutTitle: "About",
     appHubComingSoon: "Coming Soon",
     appHubCreditsTitle: "Credits",
-    appHubCreditsDesc: `<strong>Concept & Development:</strong> <a href="https://www.linkedin.com/in/juan-del-rio/" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline">Juan del Rio</a><br/><strong>AI Integration:</strong> Google`,
+    appHubCreditsDesc: "Sculpture, development, data, and technology credits.",
+    creditsModalContent: `<strong>Sculpture:</strong> Antonio Moneo & David San Roman Gomendio<br/><strong>App Development:</strong> Antonio Moneo<br/><strong>Data:</strong> Thanks to NASA GISTEMP for creating and maintaining the data.<br/><strong>Technology:</strong> Built with React, Recharts, Vite, Tailwind CSS, and the Google Gemini API.`,
     appHubAddYourAppTitle: "Add Your App!",
     appHubAddYourAppDesc: "Have a climate data app or idea? Get in touch!",
 
@@ -100,10 +103,6 @@ const en: LocaleStrings = {
     calendarLoading: "Loading events...",
     calendarError: "Could not load calendar events.",
     calendarNoEvents: "No upcoming events found.",
-
-    // Knowledge Base
-    knowledgeBaseBack: "Back to Hub",
-    knowledgeBaseAskReport: "Ask AURA about this report",
 
     // Educational Pack
     educationalPackTitle: "Educational Pack",
@@ -179,6 +178,14 @@ const en: LocaleStrings = {
     crazyVizControlsTrail: "Trail Length",
     crazyVizControlsComplexity: "Complexity",
     crazyVizControlsFlow: "Flow Strength",
+
+    // Climate Quest
+    questTitle: "Tangible Climate Quest",
+    questScore: "Score",
+    questInventory: "Inventory",
+    questPlaceholder: "Enter command (e.g., EXAMINAR huesos)...",
+    questSend: "Send",
+    questWelcome: "You are in the dusty ruins of the Natural Sciences Museum. The air is thick. You see fragments of bone and a strange symbol carved into the stone. What do you do?",
 };
 
 const es: LocaleStrings = {
@@ -221,6 +228,8 @@ const es: LocaleStrings = {
     appHubChatDesc: "Haz preguntas sobre el cambio climático. Potenciado por Gemini.",
     appHubDataExplorerTitle: "Explorador de Datos",
     appHubDataExplorerDesc: "Navega por los datos históricos de temperatura paso a paso.",
+    appHubQuestTitle: "Tangible Climate Quest",
+    appHubQuestDesc: "Una aventura de texto generativa. Descubre la historia de los datos climáticos desde un futuro postapocalíptico.",
     appHubCrazyVizTitle: "Visualización Loca",
     appHubCrazyVizDesc: "Una visualización artística y experimental de los datos climáticos.",
     appHubScenarioLabTitle: "Laboratorio de Escenarios",
@@ -246,7 +255,8 @@ const es: LocaleStrings = {
     appHubAboutTitle: "Acerca de",
     appHubComingSoon: "Próximamente",
     appHubCreditsTitle: "Créditos",
-    appHubCreditsDesc: `<strong>Concepto y Desarrollo:</strong> <a href="https://www.linkedin.com/in/juan-del-rio/" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline">Juan del Rio</a><br/><strong>Integración IA:</strong> Google`,
+    appHubCreditsDesc: "Créditos de la escultura, desarrollo, datos y tecnología.",
+    creditsModalContent: `<strong>Escultura:</strong> Antonio Moneo y David San Roman Gomendio<br/><strong>Desarrollo de la App:</strong> Antonio Moneo<br/><strong>Datos:</strong> Gracias a NASA GISTEMP por la creación y mantenimiento de los datos.<br/><strong>Tecnología:</strong> Creado con React, Recharts, Vite, Tailwind CSS y la API de Google Gemini.`,
     appHubAddYourAppTitle: "¡Añade tu App!",
     appHubAddYourAppDesc: "¿Tienes una app o idea sobre datos climáticos? ¡Contáctanos!",
 
@@ -358,6 +368,14 @@ const es: LocaleStrings = {
     crazyVizControlsTrail: "Longitud de Estela",
     crazyVizControlsComplexity: "Complejidad",
     crazyVizControlsFlow: "Fuerza de Flujo",
+
+    // Climate Quest
+    questTitle: "Tangible Climate Quest",
+    questScore: "Puntuación",
+    questInventory: "Inventario",
+    questPlaceholder: "Introduce comando (ej. EXAMINAR huesos)...",
+    questSend: "Enviar",
+    questWelcome: "Estás en las ruinas polvorientas del Museo de Ciencias Naturales. El aire es espeso. Ves fragmentos de huesos y un extraño símbolo tallado en la piedra. ¿Qué haces?",
 };
 
 export const locales: Record<Language, LocaleStrings> = { en, es };

@@ -19,7 +19,6 @@ import LanguageSelectionScreen from './components/LanguageSelectionScreen';
 import AppHubScreen from './components/AppHubScreen';
 import KnowledgeBaseScreen from './components/KnowledgeBaseScreen';
 import { knowledgeBaseContent } from './data/knowledgeBaseContent';
-import EducationalPackModal from './components/EducationalPackModal';
 import JoinUsModal from './components/JoinUsModal';
 import ScenarioLabModal from './components/ScenarioLabModal';
 // FIX: Fix import paths to be relative.
@@ -28,6 +27,8 @@ import AuraChatButton from './components/AuraChatButton';
 import ARModeScreen from './components/ARModeScreen';
 import Footer from './components/Footer';
 import CrazyVizModal from './components/CrazyVizModal';
+import TangibleClimateQuestModal from './components/TangibleClimateQuestModal';
+import CreditsModal from './components/CreditsModal';
 
 // FIX: Add a global declaration for window.gtag to resolve TypeScript errors.
 declare global {
@@ -87,12 +88,13 @@ const Game: React.FC = () => {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [isEducationalPackOpen, setIsEducationalPackOpen] = useState(false);
   const [isJoinUsOpen, setIsJoinUsOpen] = useState(false);
   const [isScenarioLabOpen, setIsScenarioLabOpen] = useState(false);
   const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
   const [isDebugPanelOpen, setIsDebugPanelOpen] = useState(false);
   const [isCrazyVizOpen, setIsCrazyVizOpen] = useState(false);
+  const [isClimateQuestOpen, setIsClimateQuestOpen] = useState(false);
+  const [isCreditsOpen, setIsCreditsOpen] = useState(false);
   const [debugEvents, setDebugEvents] = useState<any[]>([]);
   const [currentChatContext, setCurrentChatContext] = useState('');
   const [currentSceneId, setCurrentSceneId] = useState('general_inquiry');
@@ -202,11 +204,6 @@ const Game: React.FC = () => {
     setIsInstructionsOpen(true);
   };
 
-  const handleOpenEducationalPack = () => {
-    trackEvent('open_modal', { modal_name: 'educational_pack' });
-    setIsEducationalPackOpen(true);
-  }
-  
   const handleOpenCalendar = () => {
     trackEvent('open_modal', { modal_name: 'calendar' });
     setIsCalendarOpen(true);
@@ -242,6 +239,16 @@ const Game: React.FC = () => {
     setIsCrazyVizOpen(true);
   };
   
+  const handleOpenClimateQuest = () => {
+    trackEvent('open_modal', { modal_name: 'climate_quest' });
+    setIsClimateQuestOpen(true);
+  };
+
+  const handleOpenCredits = () => {
+    trackEvent('open_modal', { modal_name: 'credits' });
+    setIsCreditsOpen(true);
+  }
+
   const handleCloseARMode = () => {
     setGameState(GameState.APP_HUB);
   };
@@ -289,12 +296,13 @@ const Game: React.FC = () => {
                   onOpenChat={handleOpenGeneralChat}
                   onOpenInstructions={handleOpenInstructions}
                   onOpenKnowledgeBase={handleOpenKnowledgeBase}
-                  onOpenEducationalPack={handleOpenEducationalPack}
                   onOpenJoinUs={handleOpenJoinUs}
                   onOpenScenarioLab={handleOpenScenarioLab}
                   onOpenGlossary={handleOpenGlossary}
                   onOpenARMode={handleOpenARMode}
                   onOpenCrazyViz={handleOpenCrazyViz}
+                  onOpenClimateQuest={handleOpenClimateQuest}
+                  onOpenCredits={handleOpenCredits}
                   language={language}
                 />;
       case GameState.KNOWLEDGE_BASE:
@@ -385,11 +393,6 @@ const Game: React.FC = () => {
           onClose={() => setIsCalendarOpen(false)}
           language={language}
        />
-       <EducationalPackModal
-          isOpen={isEducationalPackOpen}
-          onClose={() => setIsEducationalPackOpen(false)}
-          language={language}
-        />
         <JoinUsModal
           isOpen={isJoinUsOpen}
           onClose={() => setIsJoinUsOpen(false)}
@@ -409,6 +412,16 @@ const Game: React.FC = () => {
         <CrazyVizModal
             isOpen={isCrazyVizOpen}
             onClose={() => setIsCrazyVizOpen(false)}
+            language={language}
+        />
+        <TangibleClimateQuestModal
+            isOpen={isClimateQuestOpen}
+            onClose={() => setIsClimateQuestOpen(false)}
+            language={language}
+        />
+        <CreditsModal
+            isOpen={isCreditsOpen}
+            onClose={() => setIsCreditsOpen(false)}
             language={language}
         />
        {isAdmin && (
