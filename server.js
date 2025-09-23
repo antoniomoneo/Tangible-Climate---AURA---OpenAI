@@ -2,11 +2,11 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fetch from 'node-fetch';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI, Type } from '@google/genai';
 
 // --- CONFIGURATION ---
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(filename);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -21,7 +21,7 @@ if (!API_KEY) {
   process.exit(1); 
 }
 
-const genAI = new GoogleGenerativeAI(API_KEY);
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 const CALENDAR_URL = "https://calendar.google.com/calendar/ical/mncn.csic.es_j397r1822g1n2m81p4h1nk4c7o%40group.calendar.google.com/public/basic.ics";
 
@@ -40,25 +40,28 @@ app.post('/api/chat', async (req, res) => {
   try {
     const { history, message, context } = req.body;
 
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
-      systemInstruction: context,
-    });
+    // Map client history to the format expected by the Gemini API
+    const contents = (history || []).map((msg) => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }],
+    }));
+    contents.push({ role: 'user', parts: [{ text: message }] });
 
-    const chat = model.startChat({
-        history: history || [],
+    const stream = await ai.models.generateContentStream({
+        model: 'gemini-2.5-flash',
+        contents: contents,
+        config: {
+            systemInstruction: context,
+        },
     });
-
-    const result = await chat.sendMessageStream(message);
 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders();
 
-    for await (const chunk of result.stream) {
-      const text = chunk.text();
-      res.write(`data: ${JSON.stringify({ type: 'chunk', payload: text })}\n\n`);
+    for await (const chunk of stream) {
+      res.write(`data: ${JSON.stringify({ type: 'chunk', payload: chunk.text })}\n\n`);
     }
 
     res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
@@ -69,6 +72,8 @@ app.post('/api/chat', async (req, res) => {
     const errorMessage = `data: ${JSON.stringify({ type: 'error', payload: { message: error.message || 'An unknown error occurred' } })}\n\n`;
     if (!res.headersSent) {
       res.status(500).setHeader('Content-Type', 'text/event-stream').write(errorMessage);
+    } else {
+      res.write(errorMessage);
     }
     res.end();
   }
@@ -98,24 +103,22 @@ app.post('/api/scenario', async (req, res) => {
             
             The output must be a valid JSON object matching the provided schema. Do not include any text outside of the JSON structure.
         `;
-
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
         
         const responseSchema = {
-            type: "OBJECT",
+            type: Type.OBJECT,
             properties: {
                 explanation: {
-                    type: "STRING",
+                    type: Type.STRING,
                     description: "A concise, scientific explanation for the simulated trend based on the user's hypothesis.",
                 },
                 simulatedData: {
-                    type: "ARRAY",
+                    type: Type.ARRAY,
                     description: `An array of data points for ${PROJECTION_YEARS} years, starting from ${lastDataPoint.year + 1}.`,
                     items: {
-                        type: "OBJECT",
+                        type: Type.OBJECT,
                         properties: {
-                            year: { type: "INTEGER" },
-                            anomaly: { type: "NUMBER" }
+                            year: { type: Type.INTEGER },
+                            anomaly: { type: Type.NUMBER }
                         },
                         required: ["year", "anomaly"]
                     }
@@ -124,15 +127,16 @@ app.post('/api/scenario', async (req, res) => {
             required: ["explanation", "simulatedData"]
         };
 
-        const result = await model.generateContent({
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: {
-                responseMimeType: 'application/json',
-                responseSchema: responseSchema,
-            },
+        const response = await ai.models.generateContent({
+           model: "gemini-2.5-flash",
+           contents: prompt,
+           config: {
+             responseMimeType: "application/json",
+             responseSchema: responseSchema,
+           },
         });
 
-        const jsonText = result.response.text();
+        const jsonText = response.text.trim();
         const parsedResponse = JSON.parse(jsonText);
         res.json(parsedResponse);
 
