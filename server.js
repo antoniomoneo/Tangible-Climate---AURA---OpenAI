@@ -38,6 +38,17 @@ app.get("/health", (req, res) => {
 
 // Chat endpoint (streaming)
 app.post('/api/chat', async (req, res) => {
+  if (!API_KEY) {
+    // This check is redundant due to the global check, but added per patch logic
+    return res.status(500).json({ error: { message: "Missing API_KEY environment variable." } });
+  }
+
+  // Set headers for streaming immediately
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
   try {
     const { history, message, context } = req.body;
 
@@ -47,87 +58,100 @@ app.post('/api/chat', async (req, res) => {
         parts: [{ text: msg.content }],
     }));
     contents.push({ role: 'user', parts: [{ text: message }] });
+    
+    const geminiModel = 'gemini-2.5-flash';
+    const debugInfo = {
+       gemini_Request: {
+         model: geminiModel,
+         config: { systemInstruction: "..." }, // Abridged for debug log
+         content_sent: contents,
+       }
+    };
+    res.write(`data: ${JSON.stringify({ type: 'debug', payload: debugInfo })}\n\n`);
 
     const stream = await ai.models.generateContentStream({
-        model: 'gemini-2.5-flash',
+        model: geminiModel,
         contents: contents,
         config: {
             systemInstruction: context,
         },
     });
 
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders();
-
     for await (const chunk of stream) {
-      res.write(`data: ${JSON.stringify({ type: 'chunk', payload: chunk.text })}\n\n`);
+      if (chunk.text) {
+        res.write(`data: ${JSON.stringify({ type: 'chunk', payload: chunk.text })}\n\n`);
+      }
     }
 
     res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
-    res.end();
 
   } catch (error) {
     console.error('Chat API error:', error);
     const errorMessage = `data: ${JSON.stringify({ type: 'error', payload: { message: error.message || 'An unknown error occurred' } })}\n\n`;
-    if (!res.headersSent) {
-      res.status(500).setHeader('Content-Type', 'text/event-stream').write(errorMessage);
-    } else {
-      res.write(errorMessage);
-    }
+    res.write(errorMessage);
+  } finally {
     res.end();
   }
 });
 
 // Scenario generation endpoint (JSON)
 app.post('/api/scenario', async (req, res) => {
-    try {
-        const { userInput, historicalData } = req.body;
-        const lastDataPoint = historicalData[historicalData.length - 1];
-        const PROJECTION_YEARS = 50;
+    if (!API_KEY) {
+        return res.status(500).json({ error: { message: "Missing API_KEY environment variable." } });
+    }
+    const { userInput, historicalData } = req.body;
+    if (!userInput || typeof userInput !== "string" || !historicalData || !Array.isArray(historicalData)) {
+        return res.status(400).json({ error: { message: "Request body must contain 'userInput' (string) and 'historicalData' (array)." } });
+    }
 
-        const prompt = `
-            You are a climate science modeling expert.
-            Based on the provided historical temperature anomaly data and the user's hypothesis, generate a plausible future data projection.
+    const lastDataPoint = historicalData[historicalData.length - 1];
+    const PROJECTION_YEARS = 50;
 
-            Hypothesis to model: "${userInput}"
+    const prompt = `
+You are a climate science simulation expert. Your task is to generate a plausible future climate scenario based on historical data and a user's hypothesis.
 
-            Historical Data Summary:
-            - Start Year: ${historicalData[0].year}
-            - End Year: ${lastDataPoint.year}
-            - Final Anomaly: ${lastDataPoint.anomaly.toFixed(2)}°C
+Historical Data Summary:
+The provided data shows global temperature anomalies from 1880 to ${lastDataPoint.year}.
+The last recorded anomaly in ${lastDataPoint.year} was ${lastDataPoint.anomaly.toFixed(2)}°C.
+The overall trend shows significant warming, especially since the 1970s.
 
-            Your task is to:
-            1.  Provide a concise, scientific explanation (2-3 sentences) for the simulated trend based on the user's hypothesis.
-            2.  Generate an array of simulated data points for ${PROJECTION_YEARS} years, starting from the year after the historical data ends.
-            
-            The output must be a valid JSON object matching the provided schema. Do not include any text outside of the JSON structure.
-        `;
-        
-        const responseSchema = {
-            type: Type.OBJECT,
-            properties: {
-                explanation: {
-                    type: Type.STRING,
-                    description: "A concise, scientific explanation for the simulated trend based on the user's hypothesis.",
-                },
-                simulatedData: {
-                    type: Type.ARRAY,
-                    description: `An array of data points for ${PROJECTION_YEARS} years, starting from ${lastDataPoint.year + 1}.`,
-                    items: {
-                        type: Type.OBJECT,
-                        properties: {
-                            year: { type: Type.INTEGER },
-                            anomaly: { type: Type.NUMBER }
-                        },
-                        required: ["year", "anomaly"]
-                    }
-                }
+User's Hypothesis:
+"${userInput}"
+
+Your Task:
+
+1. Analyze the Hypothesis: Interpret the user's scenario and its potential impact on global temperature trends.
+2. Project a New Trend: Based on your analysis, project the annual temperature anomaly for the next ${PROJECTION_YEARS} years, starting from ${lastDataPoint.year + 1}. The projection should be a scientifically plausible continuation based on the user's premise.
+3. Provide a Rationale: Write a concise explanation for your simulation. Justify the trend you've created by linking it to the user's hypothesis and established climate science principles (e.g., effects on GHG emissions, albedo, carbon cycle, etc.).
+
+Output Format:
+You MUST provide your response as a single, valid JSON object that adheres to the provided schema.
+`;
+    
+    const responseSchema = {
+        type: Type.OBJECT,
+        properties: {
+            explanation: {
+                type: Type.STRING,
+                description: "A concise, scientific explanation for the simulated trend based on the user's hypothesis.",
             },
-            required: ["explanation", "simulatedData"]
-        };
+            simulatedData: {
+                type: Type.ARRAY,
+                description: `An array of data points for ${PROJECTION_YEARS} years, starting from ${lastDataPoint.year + 1}.`,
+                items: {
+                    type: Type.OBJECT,
+                    properties: {
+                        year: { type: Type.INTEGER },
+                        anomaly: { type: Type.NUMBER }
+                    },
+                    required: ["year", "anomaly"]
+                }
+            }
+        },
+        required: ["explanation", "simulatedData"]
+    };
 
+    try {
         const response = await ai.models.generateContent({
            model: "gemini-2.5-flash",
            contents: prompt,
@@ -138,12 +162,16 @@ app.post('/api/scenario', async (req, res) => {
         });
 
         const jsonText = response.text.trim();
-        const parsedResponse = JSON.parse(jsonText);
-        res.json(parsedResponse);
-
+        // Validate if the response is JSON before parsing
+        if (jsonText.startsWith('{') && jsonText.endsWith('}')) {
+            const jsonResponse = JSON.parse(jsonText);
+            res.json(jsonResponse);
+        } else {
+            throw new Error("AI returned a non-JSON response.");
+        }
     } catch (error) {
-        console.error('Scenario API error:', error);
-        res.status(500).json({ error: { message: 'Failed to generate AI scenario.', details: error.message } });
+        console.error("Error in Gemini scenario generation:", error.message);
+        res.status(500).json({ error: { message: `AI scenario generation failed: ${error.message}` } });
     }
 });
 
