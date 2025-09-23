@@ -1,3 +1,4 @@
+
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -31,7 +32,7 @@ app.use(express.json());
 // --- API ENDPOINTS ---
 
 // Simple health endpoint for readiness/liveness checks required by Cloud Run
-app.get("/healthz", (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).send("ok");
 });
 
@@ -213,7 +214,7 @@ if (process.env.NODE_ENV === 'production') {
     
     // For any other request, serve the index.html file.
     // This is crucial to support client-side routing in a Single Page Application (SPA).
-    app.get('/:path(.*)', (req, res) => {
+    app.get('/*', (req, res) => {
         res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
 }
