@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fetch from 'node-fetch';
 import { GoogleGenAI, Type } from '@google/genai';
-import { questGameData } from './locales.js';
+import { questGameData } from './data/questGameData.js';
 
 // --- CONFIGURATION ---
 const __filename = fileURLToPath(import.meta.url);
