@@ -214,7 +214,9 @@ if (process.env.NODE_ENV === 'production') {
     
     // For any other request, serve the index.html file.
     // This is crucial to support client-side routing in a Single Page Application (SPA).
-    app.get('/*', (req, res) => {
+    // This regex matches any path that doesn't start with /api or /health,
+    // ensuring API calls are not hijacked by the SPA's catch-all route.
+    app.get(/^\/(?!api|health).*/, (req, res) => {
         res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
 }
