@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'path';
 import url from 'url';
 import fetch from 'node-fetch'; // For TTS API
-import { GoogleGenAI, Type } from "@google/genai";
 
 // --- SETUP ---
 const app = express();
@@ -12,18 +11,29 @@ const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // --- GEMINI SETUP ---
+// Prefer API_KEY (Cloud Run secret mapping in infra) but also allow GEMINI_API_KEY.
+const API_KEY = process.env.API_KEY || process.env.GEMINI_API_KEY;
+
 // Check for API key at startup
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable is not set.");
+if (!API_KEY) {
+  throw new Error("API_KEY or GEMINI_API_KEY environment variable is not set.");
 }
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 // --- API ENDPOINTS ---
+
+// Simple health endpoint for readiness/liveness checks
+app.get("/healthz", (req, res) => {
+  res.status(200).send("ok");
+});
 
 // 1. CHAT API
 app.post('/api/chat', async (req, res) => {
   try {
     const { history, message, context } = req.body;
+
+    // Lazy import to avoid startup failures
+    const { GoogleGenAI } = await import("@google/genai");
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
 
     // Map frontend roles to Gemini roles
     const geminiHistory = history.map(msg => ({
@@ -133,27 +143,30 @@ app.post('/api/scenario', async (req, res) => {
         `;
 
         const responseSchema = {
-            type: Type.OBJECT,
+            type: (await import("@google/genai")).Type.OBJECT,
             properties: {
                 simulatedData: {
-                    type: Type.ARRAY,
+                    type: (await import("@google/genai")).Type.ARRAY,
                     description: "An array of 30 future data points.",
                     items: {
-                        type: Type.OBJECT,
+                        type: (await import("@google/genai")).Type.OBJECT,
                         properties: {
-                            year: { type: Type.INTEGER },
-                            anomaly: { type: Type.NUMBER }
+                            year: { type: (await import("@google/genai")).Type.INTEGER },
+                            anomaly: { type: (await import("@google/genai")).Type.NUMBER }
                         },
                         required: ["year", "anomaly"],
                     }
                 },
                 explanation: {
-                    type: Type.STRING,
+                    type: (await import("@google/genai")).Type.STRING,
                     description: "A brief paragraph explaining the logic for the simulation."
                 }
             },
             required: ["simulatedData", "explanation"]
         };
+        
+        const { GoogleGenAI } = await import("@google/genai");
+        const ai = new GoogleGenAI({ apiKey: API_KEY });
         
         const response = await ai.models.generateContent({
           model: 'gemini-2.5-flash',
@@ -180,7 +193,7 @@ app.post('/api/tts', async (req, res) => {
     try {
         const { text, language } = req.body;
         
-        const GOOGLE_TTS_API_URL = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${process.env.API_KEY}`;
+        const GOOGLE_TTS_API_URL = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${API_KEY}`;
         
         const voiceConfig = language === 'es' 
             ? { languageCode: 'es-ES', name: 'es-ES-Wavenet-B' }
