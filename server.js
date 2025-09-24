@@ -492,15 +492,15 @@ app.post('/api/tts', async (req, res) => {
 });
 
 // --- STATIC FILE SERVING ---
-// The original logic caused 404 errors in environments where NODE_ENV is 'production'
-// but the app hasn't been built. The AI Studio environment runs from source, so we
-// will always serve files from the project root (__dirname).
-app.use(express.static(__dirname));
+// Define the path to the 'dist' directory where Vite builds the assets.
+const distPath = path.join(__dirname, 'dist');
+app.use(express.static(distPath));
 
-// The catch-all is needed for SPA routing, pointing to the root index.html for any
-// request that doesn't match an API route or a static file.
+// The catch-all is needed for SPA routing. For any request that doesn't match an API
+// route or a static file, it serves the main index.html from the 'dist' directory.
+// This allows the React router to handle client-side navigation.
 app.get(/^\/(?!api|health).*/, (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(distPath, 'index.html'));
 });
 
 
