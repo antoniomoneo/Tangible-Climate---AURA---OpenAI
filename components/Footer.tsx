@@ -10,7 +10,7 @@ const socialLinks = [
   {
     name: 'X',
     url: 'https://x.com/tandatxyz',
-    icon: <XIcon className="w-5 h-5" />,
+    icon: <XIcon className="w-6 h-6" />,
   },
   {
     name: 'Facebook',
