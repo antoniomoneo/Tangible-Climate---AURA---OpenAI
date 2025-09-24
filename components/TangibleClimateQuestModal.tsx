@@ -25,12 +25,38 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
   const [gameOver, setGameOver] = useState<'win' | 'lose' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHintLoading, setIsHintLoading] = useState(false);
+  const [suggestedActions, setSuggestedActions] = useState<string[]>([]);
+  const [areSuggestionsLoading, setAreSuggestionsLoading] = useState(false);
   
   const logEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const fetchSuggestedActions = async (state: GameState) => {
+      if (gameOver) return;
+      setAreSuggestionsLoading(true);
+      try {
+          const res = await fetch('/api/text-adventure-suggestions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ language, gameState: state }),
+          });
+          if (!res.ok) throw new Error('Failed to fetch suggestions');
+          const suggestions = await res.json();
+          if (Array.isArray(suggestions) && suggestions.length > 0) {
+              setSuggestedActions(suggestions);
+          } else {
+              setSuggestedActions([]);
+          }
+      } catch (err) {
+          console.error(err);
+          setSuggestedActions([]);
+      } finally {
+          setAreSuggestionsLoading(false);
+      }
   };
 
   const resetGame = () => {
@@ -40,6 +66,7 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
     setLog([gameData.intro, firstChapter!.description]);
     setGameOver(null);
     setInput('');
+    fetchSuggestedActions(initialGameState);
   };
 
   useEffect(() => {
@@ -53,14 +80,13 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
     scrollToBottom();
   }, [log]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const command = input.trim();
+  const processCommand = async (command: string) => {
     if (!command || isLoading || isHintLoading || gameOver) return;
 
     setLog(prev => [...prev, `> ${command}`]);
     setInput('');
     setIsLoading(true);
+    setSuggestedActions([]);
 
     try {
         const res = await fetch('/api/text-adventure', {
@@ -80,8 +106,11 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
         }
         setLog(prev => [...prev, ...newLogMessages]);
         setGameState(newGameState);
+
         if (isGameOver) {
             setGameOver(isGameOver);
+        } else {
+            fetchSuggestedActions(newGameState);
         }
 
     } catch (err: any) {
@@ -89,6 +118,15 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
     } finally {
         setIsLoading(false);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    processCommand(input.trim());
+  };
+
+  const handleSuggestedActionClick = (action: string) => {
+    processCommand(action);
   };
 
   const handleAskForHint = async () => {
@@ -115,7 +153,6 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
         setIsHintLoading(false);
     }
   };
-
 
   if (!isOpen) return null;
 
@@ -146,7 +183,26 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
                 </div>
                )}
             </div>
-            <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+            
+            {!gameOver && (
+              <div className="mb-2 flex flex-wrap gap-2 justify-start">
+                  {areSuggestionsLoading ? (
+                      <p className="text-sm text-gray-500 italic">AURA is thinking of suggestions...</p>
+                  ) : (
+                      suggestedActions.map((action, i) => (
+                          <button
+                              key={i}
+                              onClick={() => handleSuggestedActionClick(action)}
+                              className="bg-gray-800 border border-cyan-700 text-cyan-400 px-3 py-1 rounded-sm text-sm hover:bg-cyan-900 hover:text-white transition-colors"
+                          >
+                              {action}
+                          </button>
+                      ))
+                  )}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="flex gap-2 items-center mt-2">
               <span className="text-cyan-400 text-lg flex-shrink-0">&gt;</span>
               <input
                 ref={inputRef}

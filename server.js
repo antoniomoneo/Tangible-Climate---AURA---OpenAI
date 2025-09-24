@@ -445,8 +445,8 @@ app.post('/api/text-adventure-hint', async (req, res) => {
         }
 
         const prompt = `
-          You are AURA, a helpful AI game master for the text adventure 'Tangible Climate Quest'. The user is stuck and has asked for a hint.
-          Your goal is to provide a subtle, in-character hint that suggests possible actions without revealing the exact solution command.
+          You are AURA, a helpful AI game master for the text adventure 'Tangible Climate Quest'. The user is stuck and has asked for a clear hint.
+          Your goal is to provide a direct hint that helps the player progress.
 
           Current Game State:
           - Language for response: ${language === 'es' ? 'Spanish' : 'English'}
@@ -455,9 +455,9 @@ app.post('/api/text-adventure-hint', async (req, res) => {
           - Correct Actions for this scene: [${currentChapter.choices.map(c => `'${c.action}'`).join(', ')}]
 
           Task:
-          Generate a helpful hint. The hint should encourage the player to examine their surroundings or think about the objects they have. Suggest a general direction or type of action they could take.
-          For example, instead of saying "Type 'EXAMINE SYMBOL'", you could say "That strange symbol on the wall looks important. Perhaps you should take a closer look." or "What can you do with the objects in this room?".
-          Keep the response concise (1-2 sentences) and atmospheric.
+          Generate a clear, direct hint. The hint should explicitly suggest an action or object of interest. If possible, suggest the command format.
+          For example, instead of being subtle, say something like: "You should try to EXAMINE the strange SYMBOL on the wall." or "Maybe you can use one of your items, like the bone fragment, on the broken scale. Try 'PLACE BONE ON SCALE'."
+          Keep the response concise (1-2 sentences).
         `;
         
         const genAIResponse = await ai.models.generateContent({
@@ -470,6 +470,62 @@ app.post('/api/text-adventure-hint', async (req, res) => {
     } catch (error) {
         console.error('Text Adventure Hint API error:', error);
         res.status(500).json({ error: { message: 'Failed to generate hint.', details: error.message } });
+    }
+});
+
+app.post('/api/text-adventure-suggestions', async (req, res) => {
+    try {
+        const { language, gameState } = req.body;
+        const { chapterId, inventory } = gameState;
+        
+        const game = questGameData[language];
+        const currentChapter = game.chapters.find(c => c.id === chapterId);
+
+        if (!currentChapter) {
+            return res.status(404).json({ error: 'Chapter not found for suggestions.' });
+        }
+
+        const prompt = `
+            You are a creative Game Master for a retro text adventure. The user needs two suggested actions for their current situation.
+            
+            Game Style: Post-apocalyptic archaeological mystery, tense atmosphere.
+            Location: Ruins of the Museum of Natural Sciences in Madrid.
+            Language for suggestions: ${language === 'es' ? 'Spanish' : 'English'}.
+
+            Current Game State:
+            - Scene Description: "${currentChapter.description}"
+            - Player Inventory: [${inventory.join(', ')}]
+            - Pre-defined 'correct' actions available in this scene: [${currentChapter.choices.map(c => `'${c.action}'`).join(', ')}]
+
+            Your Task:
+            Generate a JSON array containing exactly two distinct, short, and logical actions (as strings) that the player could take.
+            1.  One action should be one of the pre-defined 'correct' actions.
+            2.  The other action should be a creative, plausible alternative that makes sense in the context but might not be the optimal path (e.g., exploring something else, trying a different interaction).
+            3.  The actions should be in the format of "VERB NOUN", e.g., "EXAMINE SYMBOL" or "GO NORTH".
+            4.  Ensure the response is ONLY a valid JSON array.
+        `;
+
+        const responseSchema = {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+        };
+
+        const response = await ai.models.generateContent({
+           model: "gemini-2.5-flash",
+           contents: prompt,
+           config: {
+             responseMimeType: "application/json",
+             responseSchema: responseSchema,
+           },
+        });
+        
+        const jsonText = response.text.trim();
+        const jsonResponse = JSON.parse(jsonText);
+        res.json(jsonResponse);
+        
+    } catch (error) {
+        console.error('Text Adventure Suggestions API error:', error);
+        res.status(500).json({ error: { message: 'Failed to generate suggestions.', details: error.message } });
     }
 });
 
