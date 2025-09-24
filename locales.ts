@@ -413,6 +413,7 @@ export const locales = {
     textAdventureQuestWin: "MISSION COMPLETE",
     textAdventureQuestLose: "MISSION FAILED",
     textAdventureQuestHint: "Ask AURA for a Hint",
+    textAdventureQuestSkeletonReconstruction: "Skeleton Reconstruction",
 
   },
   es: {
@@ -628,6 +629,7 @@ export const locales = {
     textAdventureQuestWin: "MISIÓN COMPLETADA",
     textAdventureQuestLose: "MISIÓN FALLIDA",
     textAdventureQuestHint: "Pedir Pista a AURA",
+    textAdventureQuestSkeletonReconstruction: "Reconstrucción del Esqueleto",
     
   },
 };

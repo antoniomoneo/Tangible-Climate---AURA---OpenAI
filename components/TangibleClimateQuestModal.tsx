@@ -3,6 +3,57 @@ import type { Language } from '../types';
 import { locales, questGameData } from '../locales';
 import { IdentificationIcon, LightBulbIcon } from './icons';
 
+// A visual component to render the climate skeleton progressively.
+const SKELETON_RIBS = [
+  "M 46 115 A 4 20 0 0 1 54 115", "M 54 117 A 4 22 0 0 1 62 117", "M 62 120 A 4 23 0 0 1 70 120",
+  "M 70 118 A 4 21 0 0 1 78 118", "M 77.5 115 A 4.5 25 0 0 1 86.5 115", "M 85.5 112 A 4.5 28 0 0 1 94.5 112",
+  "M 93.5 108 A 4.5 32 0 0 1 102.5 108", "M 101 105 A 5 35 0 0 1 111 105", "M 109 108 A 5 34 0 0 1 119 108",
+  "M 117 110 A 5 33 0 0 1 127 110", "M 125 112 A 5 32 0 0 1 135 112", "M 132.5 110 A 5.5 34 0 0 1 143.5 110",
+  "M 140.5 105 A 5.5 38 0 0 1 151.5 105", "M 148.5 98 A 5.5 44 0 0 1 159.5 98", "M 156 90 A 6 50 0 0 1 168 90",
+  "M 164 85 A 6 55 0 0 1 176 85", "M 172 80 A 6 60 0 0 1 184 80", "M 179.5 75 A 6.5 65 0 0 1 192.5 75",
+  "M 187.5 70 A 6.5 70 0 0 1 200.5 70", "M 195.5 65 A 6.5 75 0 0 1 208.5 65", "M 203 60 A 7 80 0 0 1 217 60",
+  "M 211 55 A 7 85 0 0 1 225 55", "M 219 50 A 7 90 0 0 1 233 50", "M 226.5 45 A 7.5 95 0 0 1 241.5 45",
+  "M 234.5 40 A 7.5 100 0 0 1 249.5 40"
+];
+
+const RIBS_PER_CHAPTER = 6;
+const TOTAL_RIBS = SKELETON_RIBS.length;
+
+interface SkeletonVisualizerProps {
+  progress: number; // 0 for chapter 1, 1 for chapter 2, etc.
+  isComplete: boolean;
+}
+
+const SkeletonVisualizer: React.FC<SkeletonVisualizerProps> = ({ progress, isComplete }) => {
+  const ribsToShow = isComplete ? TOTAL_RIBS : progress * RIBS_PER_CHAPTER;
+  const prevRibsToShow = useRef(ribsToShow);
+
+  useEffect(() => {
+    prevRibsToShow.current = ribsToShow;
+  }, [ribsToShow]);
+
+  return (
+    <div className="w-full aspect-video p-2 bg-gray-900/50 rounded border border-cyan-900 relative">
+      <svg xmlns="http://www.w.org/2000/svg" viewBox="40 20 220 120" className="w-full h-full">
+        <g fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <g transform="translate(0, -10)">
+            {SKELETON_RIBS.slice(0, ribsToShow).map((d, index) => (
+              <path 
+                key={index} 
+                d={d} 
+                className={`transition-colors duration-500 ${isComplete ? 'text-cyan-400' : 'text-green-400'} ${index >= prevRibsToShow.current ? 'animate-fadeIn' : ''}`}
+                style={{ animationDelay: `${(index - prevRibsToShow.current) * 50}ms` }}
+              />
+            ))}
+          </g>
+        </g>
+      </svg>
+      {isComplete && <div className="absolute inset-0 bg-cyan-400/20 rounded-lg animate-pulse pointer-events-none"></div>}
+    </div>
+  );
+};
+
+
 interface TangibleClimateQuestModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -168,8 +219,8 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
         </div>
         
         <div className="flex-grow flex flex-col md:flex-row overflow-hidden">
-          <div className="flex-grow flex flex-col p-4">
-            <div ref={logEndRef} className="flex-grow overflow-y-auto pr-2 space-y-3 text-lg leading-relaxed mb-4">
+          <div className="flex-grow flex flex-col p-4 overflow-hidden">
+            <div className="flex-grow overflow-y-auto pr-2 space-y-3 text-lg leading-relaxed mb-4">
               {log.map((line, index) => (
                 <p key={index} className={`whitespace-pre-wrap ${line.startsWith('>') ? 'text-cyan-400' : ''} ${line.startsWith('[AURA]') ? 'text-amber-400 italic' : ''}`} dangerouslySetInnerHTML={{ __html: line.replace(/\n/g, '<br />') }} />
               ))}
@@ -182,6 +233,7 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
                      </button>
                 </div>
                )}
+               <div ref={logEndRef} />
             </div>
             
             {!gameOver && (
@@ -228,17 +280,23 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
               </button>
             </form>
           </div>
-          <div className="w-full md:w-64 border-t-2 md:border-t-0 md:border-l-2 border-cyan-700 p-4 flex-shrink-0 overflow-y-auto">
-            <h3 className="text-cyan-400 text-xl mb-2">{t.textAdventureQuestScore}</h3>
-            <p className="text-2xl mb-4">{gameState.score}</p>
-            <h3 className="text-cyan-400 text-xl mb-2">{t.textAdventureQuestInventory}</h3>
-            {gameState.inventory.length > 0 ? (
-              <ul className="space-y-1 list-disc list-inside">
-                {gameState.inventory.map((item, i) => <li key={i}>{item}</li>)}
-              </ul>
-            ) : (
-                <p className="text-gray-500 italic">Vacío</p>
-            )}
+          <div className="w-full md:w-64 border-t-2 md:border-t-0 md:border-l-2 border-cyan-700 p-4 flex-shrink-0 flex flex-col overflow-y-auto">
+            <div>
+              <h3 className="text-cyan-400 text-xl mb-2">{t.textAdventureQuestScore}</h3>
+              <p className="text-2xl mb-4">{gameState.score}</p>
+              <h3 className="text-cyan-400 text-xl mb-2">{t.textAdventureQuestInventory}</h3>
+              {gameState.inventory.length > 0 ? (
+                <ul className="space-y-1 list-disc list-inside">
+                  {gameState.inventory.map((item, i) => <li key={i}>{item}</li>)}
+                </ul>
+              ) : (
+                  <p className="text-gray-500 italic">Vacío</p>
+              )}
+            </div>
+            <div className="mt-auto pt-4 border-t-2 border-cyan-800">
+                <h3 className="text-cyan-400 text-xl mb-2">{t.textAdventureQuestSkeletonReconstruction}</h3>
+                <SkeletonVisualizer progress={gameState.chapterId - 1} isComplete={gameOver === 'win'} />
+            </div>
           </div>
         </div>
       </div>
