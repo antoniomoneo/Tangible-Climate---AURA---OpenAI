@@ -432,6 +432,47 @@ app.post('/api/text-adventure', async (req, res) => {
     }
 });
 
+app.post('/api/text-adventure-hint', async (req, res) => {
+    try {
+        const { language, gameState } = req.body;
+        const { chapterId, inventory } = gameState;
+        
+        const game = questGameData[language];
+        const currentChapter = game.chapters.find(c => c.id === chapterId);
+
+        if (!currentChapter) {
+            return res.status(404).json({ error: 'Chapter not found for hint.' });
+        }
+
+        const prompt = `
+          You are AURA, a helpful AI game master for the text adventure 'Tangible Climate Quest'. The user is stuck and has asked for a hint.
+          Your goal is to provide a subtle, in-character hint that suggests possible actions without revealing the exact solution command.
+
+          Current Game State:
+          - Language for response: ${language === 'es' ? 'Spanish' : 'English'}
+          - Current Scene Description: "${currentChapter.description}"
+          - Player Inventory: [${inventory.join(', ')}]
+          - Correct Actions for this scene: [${currentChapter.choices.map(c => `'${c.action}'`).join(', ')}]
+
+          Task:
+          Generate a helpful hint. The hint should encourage the player to examine their surroundings or think about the objects they have. Suggest a general direction or type of action they could take.
+          For example, instead of saying "Type 'EXAMINE SYMBOL'", you could say "That strange symbol on the wall looks important. Perhaps you should take a closer look." or "What can you do with the objects in this room?".
+          Keep the response concise (1-2 sentences) and atmospheric.
+        `;
+        
+        const genAIResponse = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: prompt
+        });
+
+        res.json({ hint: genAIResponse.text });
+
+    } catch (error) {
+        console.error('Text Adventure Hint API error:', error);
+        res.status(500).json({ error: { message: 'Failed to generate hint.', details: error.message } });
+    }
+});
+
 
 // Calendar proxy endpoint
 app.get('/api/calendar', async (req, res) => {

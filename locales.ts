@@ -412,6 +412,7 @@ export const locales = {
     textAdventureQuestRestart: "Restart Quest",
     textAdventureQuestWin: "MISSION COMPLETE",
     textAdventureQuestLose: "MISSION FAILED",
+    textAdventureQuestHint: "Ask AURA for a Hint",
 
   },
   es: {
@@ -626,6 +627,7 @@ export const locales = {
     textAdventureQuestRestart: "Reiniciar Misión",
     textAdventureQuestWin: "MISIÓN COMPLETADA",
     textAdventureQuestLose: "MISIÓN FALLIDA",
+    textAdventureQuestHint: "Pedir Pista a AURA",
     
   },
 };

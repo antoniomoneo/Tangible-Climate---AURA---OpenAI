@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { Language } from '../types';
 import { locales, questGameData } from '../locales';
-import { IdentificationIcon, LoadingSpinnerIcon } from './icons';
+import { IdentificationIcon, LightBulbIcon } from './icons';
 
 interface TangibleClimateQuestModalProps {
   isOpen: boolean;
@@ -24,8 +24,10 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
   const [gameState, setGameState] = useState<GameState>({ chapterId: 1, score: 0, inventory: [] });
   const [gameOver, setGameOver] = useState<'win' | 'lose' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHintLoading, setIsHintLoading] = useState(false);
   
   const logEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -43,6 +45,7 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
   useEffect(() => {
     if (isOpen) {
       resetGame();
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen, language]);
 
@@ -53,7 +56,7 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const command = input.trim();
-    if (!command || isLoading || gameOver) return;
+    if (!command || isLoading || isHintLoading || gameOver) return;
 
     setLog(prev => [...prev, `> ${command}`]);
     setInput('');
@@ -88,6 +91,32 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
     }
   };
 
+  const handleAskForHint = async () => {
+    if (isLoading || isHintLoading || gameOver) return;
+
+    setIsHintLoading(true);
+    setLog(prev => [...prev, `> [${t.textAdventureQuestHint}]`]);
+
+    try {
+        const res = await fetch('/api/text-adventure-hint', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ language, gameState }),
+        });
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error?.message || 'Server error');
+        }
+        const { hint } = await res.json();
+        setLog(prev => [...prev, `[AURA]: ${hint}`]);
+    } catch (err: any) {
+        setLog(prev => [...prev, `[AURA]: Error: ${err.message}`]);
+    } finally {
+        setIsHintLoading(false);
+    }
+  };
+
+
   if (!isOpen) return null;
 
   return (
@@ -105,9 +134,9 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
           <div className="flex-grow flex flex-col p-4">
             <div ref={logEndRef} className="flex-grow overflow-y-auto pr-2 space-y-3 text-lg leading-relaxed mb-4">
               {log.map((line, index) => (
-                <p key={index} className={`whitespace-pre-wrap ${line.startsWith('>') ? 'text-cyan-400' : ''}`} dangerouslySetInnerHTML={{ __html: line.replace(/\n/g, '<br />') }} />
+                <p key={index} className={`whitespace-pre-wrap ${line.startsWith('>') ? 'text-cyan-400' : ''} ${line.startsWith('[AURA]') ? 'text-amber-400 italic' : ''}`} dangerouslySetInnerHTML={{ __html: line.replace(/\n/g, '<br />') }} />
               ))}
-               {isLoading && <div className="animate-pulse">_</div>}
+               {(isLoading || isHintLoading) && <div className="animate-pulse">_</div>}
                {gameOver && (
                 <div className={`mt-4 text-2xl font-bold text-center animate-fadeIn ${gameOver === 'win' ? 'text-green-400' : 'text-red-500'}`}>
                     <p>{gameOver === 'win' ? t.textAdventureQuestWin : t.textAdventureQuestLose}</p>
@@ -117,17 +146,28 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
                 </div>
                )}
             </div>
-            <form onSubmit={handleSubmit} className="flex gap-2">
-              <span className="text-cyan-400 text-lg">&gt;</span>
+            <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+              <span className="text-cyan-400 text-lg flex-shrink-0">&gt;</span>
               <input
+                ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                disabled={isLoading || !!gameOver}
+                disabled={isLoading || isHintLoading || !!gameOver}
                 className="flex-grow bg-transparent border-none text-cyan-400 text-lg focus:outline-none"
                 autoFocus
               />
-              <button type="submit" className="bg-cyan-700 text-white px-4 py-1 rounded-sm hover:bg-cyan-600 disabled:opacity-50">
+               <button 
+                  type="button" 
+                  onClick={handleAskForHint}
+                  disabled={isLoading || isHintLoading || !!gameOver}
+                  className="bg-amber-600 text-white px-3 py-2 rounded-sm hover:bg-amber-500 disabled:opacity-50 flex items-center gap-2"
+                  title={t.textAdventureQuestHint}
+                >
+                  <LightBulbIcon className="h-4 w-4" />
+                   <span className="hidden sm:inline">{t.textAdventureQuestHint}</span>
+               </button>
+              <button type="submit" className="bg-cyan-700 text-white px-4 py-2 rounded-sm hover:bg-cyan-600 disabled:opacity-50">
                 {t.textAdventureQuestSubmit}
               </button>
             </form>
