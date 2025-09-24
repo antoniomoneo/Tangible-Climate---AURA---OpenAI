@@ -1,80 +1,80 @@
 // This file is pure JavaScript to be safely imported by the Node.js server.
 export const questGameData = {
   es: {
-    title: "Tangible Climate Quest",
-    intro: "Estás en las ruinas polvorientas del antiguo Museo de Ciencias Naturales en Madrid. El aire es espeso. Tu misión: explorar las ruinas, descifrar los huesos del 'Esqueleto del Clima' y descubrir cómo los datos perdidos podían haber cambiado el destino de la humanidad.",
+    title: "Misión Climática Tangible",
+    intro: "Estás en el año 2150. Te encuentras en un lugar polvoriento, en lo que un día fue el Museo Nacional de Ciencias Naturales. Hay escombros, todo parece desolado. Con tu compañera AURA quitas los escombros y encuentras fragmentos de huesos de los esqueletos que un día estuvieron expuestos en el Museo...",
     finale: {
-      good_ending: "Reconstruiste la historia climática y redactaste un diagnóstico: 'Hubiéramos cambiado el destino si hubiéramos confiado en los datos'. Has completado la misión y honrado la memoria de los que intentaron advertir al mundo.",
-      bad_ending: "Abandonas las ruinas con información incompleta, condenado a repetir los errores del pasado. La historia sigue sin contarse."
+      good_ending: "Comprendes el mensaje a través del tiempo. Los artistas no predijeron el fin; ofrecieron una elección. Has redescubierto su advertencia y su esperanza. Misión cumplida.",
+      bad_ending: "Cansado, abandonas la estructura. Es solo un montón de huesos extraños, un enigma más en un mundo lleno de ellos. El mensaje se pierde de nuevo en el polvo, y la lección sigue sin aprenderse."
     },
     chapters: [
       {
         id: 1,
-        name: "El inicio – El hallazgo",
-        description: "Dos investigadores entran en las ruinas polvorientas del Museo. El aire es espeso. Encuentran fragmentos de huesos y un extraño símbolo tallado en la piedra.",
+        name: "El Esqueleto Anómalo",
+        description: "...de pronto encuentras un esqueleto completo, pero tiene algo especial. La estructura se asemeja a la espina dorsal de una criatura colosal, con costillas arqueándose hacia el cielo. Pero algo no encaja. La forma es... incorrecta. No se parece a ningún animal que conozcas, ni siquiera de los registros fósiles.",
         choices: [
           {
-            action: "EXAMINAR SIMBOLO",
-            result: "Descubres que es un registro de las primeras mediciones de temperatura. ¡Has encontrado una pista clave!",
-            reward: { type: 'clue', value: 'Registro de temperatura antiguo' },
+            action: "EXAMINAR ESTRUCTURA",
+            result: "Te acercas. Las 'vértebras' no tienen articulaciones, y las 'costillas' están espaciadas de forma irregular. Esto no es biología; es una construcción deliberada. Has descubierto que no es un fósil.",
+            reward: { type: 'clue', value: 'Diseño Artificial' },
             nextChapterId: 2,
           },
           {
-            action: "IGNORAR SIMBOLO",
-            result: "Mientras avanzas, un techo se derrumba ligeramente, bloqueando el camino por el que viniste. Pierdes tiempo y energía.",
+            action: "BUSCAR OTROS RESTOS",
+            result: "Ignoras la estructura principal y buscas fragmentos más pequeños, pero todo lo que encuentras es polvo y escombros. Has perdido un tiempo valioso.",
             punishment: { type: 'score', value: -5 },
           }
         ]
       },
       {
         id: 2,
-        name: "Sombras de la guerra",
-        description: "Encuentras un búnker oculto con restos de la Segunda Guerra Mundial. Dentro, hay mapas, armas oxidadas y un diario con gráficos de emisiones.",
+        name: "La Base del Tiempo",
+        description: "Ahora que sabes que es artificial, tu atención se centra en el pedestal de piedra sobre el que se asienta. Está cubierto por una gruesa capa de sedimento solidificado.",
         choices: [
           {
-            action: "LEER DIARIO",
-            result: "El diario detalla cómo la contaminación industrial de la guerra enmascaró temporalmente el calentamiento. Comprendes una parte crucial de la historia.",
-            reward: { type: 'clue', value: 'Efecto de los aerosoles de guerra' },
+            action: "LIMPIAR BASE",
+            result: "Con cuidado, retiras el polvo. Bajo la mugre, aparecen unas inscripciones finamente talladas: una serie de números que comienzan con '1880' en un extremo y terminan con '2024' en el otro. Es una línea de tiempo.",
+            reward: { type: 'clue', value: 'Línea de Tiempo 1880-2024' },
             nextChapterId: 3,
           },
           {
-            action: "TOCAR ARMAS",
-            result: "Al tocar un rifle oxidado, activas una trampa antigua. Una reja cae, cerrando la salida del búnker. Te llevará un tiempo encontrar una forma de abrirla.",
-            punishment: { type: 'trap', value: 'Atrapado en el búnker' },
+            action: "GOLPEAR BASE",
+            result: "Impaciente, golpeas la base con una herramienta. Una grieta recorre la piedra, haciendo ilegibles algunas de las inscripciones. Un recordatorio de que la fuerza bruta rara vez revela la verdad.",
+            punishment: { type: 'trap', value: 'Inscripción dañada' },
           }
         ]
       },
       {
         id: 3,
-        name: "La era del ascenso",
-        description: "En una cámara sellada encuentras gráficas talladas en piedra que muestran el ascenso de las temperaturas desde los años 60. Hay un pedestal con una balanza rota.",
+        name: "La Curva Ascendente",
+        description: "Una línea de tiempo. Las costillas no son aleatorias; cada una debe corresponder a un año. Observas la escultura en su totalidad. Las costillas cerca de 1880 son pequeñas, con altibajos. Hacia el final, cerca de 2024, se vuelven gigantescas, en una curva ascendente y aterradora.",
         choices: [
           {
-            action: "COLOCAR HUESO EN BALANZA",
-            result: "Colocas uno de los fragmentos de hueso en el plato de la balanza. Se equilibra y un compartimento secreto se abre, revelando un disco de datos.",
-            reward: { type: 'clue', value: 'Disco de datos de la "Gran Aceleración"' },
+            action: "PREGUNTAR A AURA",
+            result: "Consultas a tu IA de campo, AURA. 'Analizando... La forma coincide con una representación de datos: una serie temporal. Dada la época y el lugar... esto es una escultura de datos de la anomalía de la temperatura global. Un intento desesperado de hacer visible lo invisible. Una advertencia.'",
+            reward: { type: 'clue', value: 'Diagnóstico de AURA: Datos Climáticos' },
             nextChapterId: 4,
           },
           {
-            action: "ROMPER BALANZA",
-            result: "Frustrado, golpeas la balanza. Se hace añicos y el suelo tiembla. El polvo que cae del techo te hace perder de vista uno de tus objetos.",
-            punishment: { type: 'item_loss', value: 'first' },
+            action: "MEDIR COSTILLAS",
+            result: "Intentas medir las costillas, pero sin las unidades originales, los datos brutos carecen de sentido. La forma es lo importante, pero el significado se te escapa.",
+            punishment: { type: 'score', value: -5 },
           }
         ]
       },
       {
         id: 4,
-        name: "La vértebra vacía",
-        description: "Llegas al final del esqueleto: la última vértebra está hueca. Representa el presente (2024) y el vacío de decisiones humanas. Es el momento de actuar.",
+        name: "La Pregunta Abierta",
+        description: "Una advertencia... Sigues la curva hasta la última posición, más allá de 2024. El punto final de la escultura. La culminación del mensaje de los artistas.",
         choices: [
           {
-            action: "INSERTAR PISTAS EN VERTEBRA",
-            result: "Colocas los registros y el disco de datos dentro de la vértebra hueca. El esqueleto se ilumina, proyectando el diagnóstico final en la pared.",
+            action: "EXAMINAR FINAL",
+            result: "Donde debería estar la última y más grande costilla, no hay nada. Solo un soporte vacío. No es que se haya roto; fue dejada así intencionadamente. La respuesta te golpea: los artistas no estaban prediciendo el futuro. Estaban preguntando a su presente qué harían para cambiarlo.",
             endsGame: 'win',
           },
           {
-            action: "SALIR SIN COMPLETAR",
-            result: "Decides que es demasiado arriesgado y abandonas las ruinas. El misterio del esqueleto quedará sin resolver.",
+            action: "MARCHARSE",
+            result: "Crees que la escultura está inacabada o rota. Es una historia sin final. Das la espalda al artefacto, dejando su pregunta sin respuesta en el silencio de las ruinas.",
             endsGame: 'lose',
           }
         ]
@@ -83,79 +83,79 @@ export const questGameData = {
   },
   en: {
     title: "Tangible Climate Quest",
-    intro: "You are in the dusty ruins of the former Museum of Natural Sciences in Madrid. The air is thick. Your mission: explore the ruins, decipher the bones of the 'Climate Skeleton', and discover how lost data could have changed humanity's destiny.",
+    intro: "The year is 2150. You are in a dusty place, in what was once the National Museum of Natural Sciences. There is debris everywhere; it all seems desolate. With your companion AURA, you clear away the rubble and find bone fragments from the skeletons that were once on display in the Museum...",
     finale: {
-      good_ending: "You have reconstructed the climate history and written a diagnosis: 'We could have changed our destiny if we had trusted the data.' You have completed the mission and honored the memory of those who tried to warn the world.",
-      bad_ending: "You leave the ruins with incomplete information, condemned to repeat the mistakes of the past. The story remains untold."
+      good_ending: "You understand the message across time. The artists didn't predict an end; they offered a choice. You have rediscovered their warning and their hope. Mission accomplished.",
+      bad_ending: "Weary, you abandon the structure. It's just a pile of strange bones, another riddle in a world full of them. The message is lost again to the dust, and the lesson remains unlearned."
     },
     chapters: [
       {
         id: 1,
-        name: "The Beginning – The Find",
-        description: "Two researchers enter the dusty ruins of the Museum. The air is thick. They find bone fragments and a strange symbol carved in stone.",
+        name: "The Anomalous Skeleton",
+        description: "...suddenly you find a complete skeleton, but there's something special about it. The structure resembles the spine of a colossal creature, with ribs arching towards the sky. But something is wrong. The shape is... incorrect. It doesn't look like any animal you know, not even from the fossil records.",
         choices: [
           {
-            action: "EXAMINE SYMBOL",
-            result: "You discover it's a record of early temperature measurements. You've found a key clue!",
-            reward: { type: 'clue', value: 'Ancient Temperature Record' },
+            action: "EXAMINE STRUCTURE",
+            result: "You get closer. The 'vertebrae' have no joints, and the 'ribs' are irregularly spaced. This isn't biology; it's a deliberate construction. You've discovered it's not a fossil.",
+            reward: { type: 'clue', value: 'Artificial Design' },
             nextChapterId: 2,
           },
           {
-            action: "IGNORE SYMBOL",
-            result: "As you move on, a ceiling partially collapses, blocking the way you came. You lose time and energy.",
+            action: "SEARCH FOR OTHER REMAINS",
+            result: "You ignore the main structure and search for smaller fragments, but all you find is dust and debris. You've wasted valuable time.",
             punishment: { type: 'score', value: -5 },
           }
         ]
       },
       {
         id: 2,
-        name: "Shadows of War",
-        description: "You find a hidden bunker with remnants from World War II. Inside, there are maps, rusty weapons, and a diary with emission graphs.",
+        name: "The Foundation of Time",
+        description: "Now that you know it's artificial, your attention shifts to the stone pedestal it rests on. It's covered by a thick layer of solidified sediment.",
         choices: [
           {
-            action: "READ DIARY",
-            result: "The diary details how industrial pollution from the war temporarily masked warming. You understand a crucial part of the story.",
-            reward: { type: 'clue', value: 'Effect of War Aerosols' },
+            action: "CLEAN BASE",
+            result: "Carefully, you brush away the dust. Beneath the grime, finely carved inscriptions appear: a series of numbers starting with '1880' at one end and ending with '2024' at the other. It's a timeline.",
+            reward: { type: 'clue', value: 'Timeline 1880-2024' },
             nextChapterId: 3,
           },
           {
-            action: "TOUCH WEAPONS",
-            result: "Touching a rusty rifle triggers an old trap. A grate falls, sealing the bunker exit. It will take you some time to find a way to open it.",
-            punishment: { type: 'trap', value: 'Trapped in the bunker' },
+            action: "STRIKE BASE",
+            result: "Impatient, you hit the base with a tool. A crack runs through the stone, rendering some of the inscriptions illegible. A reminder that brute force rarely reveals the truth.",
+            punishment: { type: 'trap', value: 'Damaged Inscription' },
           }
         ]
       },
       {
         id: 3,
-        name: "The Age of Ascent",
-        description: "In a sealed chamber, you find graphs carved in stone showing the rise in temperatures since the 60s. There is a pedestal with a broken scale.",
+        name: "The Rising Curve",
+        description: "A timeline. The ribs aren't random; each must correspond to a year. You observe the sculpture as a whole. The ribs near 1880 are small, with ups and downs. Towards the end, near 2024, they become gigantic, in a terrifying, soaring curve.",
         choices: [
           {
-            action: "PLACE BONE ON SCALE",
-            result: "You place one of the bone fragments on the scale's plate. It balances, and a secret compartment opens, revealing a data disk.",
-            reward: { type: 'clue', value: 'Data Disk of the "Great Acceleration"' },
+            action: "ASK AURA",
+            result: "You consult your field AI, AURA. 'Analyzing... The shape matches a data representation: a time series. Given the era and location... this is a data sculpture of the global temperature anomaly. A desperate attempt to make the invisible visible. A warning.'",
+            reward: { type: 'clue', value: 'AURA\'s Diagnosis: Climate Data' },
             nextChapterId: 4,
           },
           {
-            action: "BREAK SCALE",
-            result: "Frustrated, you strike the scale. It shatters, and the floor trembles. The dust falling from the ceiling makes you lose track of one of your items.",
-            punishment: { type: 'item_loss', value: 'first' },
+            action: "MEASURE RIBS",
+            result: "You try to measure the ribs, but without the original units, the raw numbers are meaningless. The shape is important, but the significance escapes you.",
+            punishment: { type: 'score', value: -5 },
           }
         ]
       },
       {
         id: 4,
-        name: "The Empty Vertebra",
-        description: "You reach the end of the skeleton: the last vertebra is hollow. It represents the present (2024) and the void of human decisions. It's time to act.",
+        name: "The Open Question",
+        description: "A warning... You follow the curve to the final position, beyond 2024. The endpoint of the sculpture. The culmination of the artists' message.",
         choices: [
           {
-            action: "INSERT CLUES INTO VERTEBRA",
-            result: "You place the records and the data disk inside the hollow vertebra. The skeleton lights up, projecting the final diagnosis on the wall.",
+            action: "EXAMINE END",
+            result: "Where the last and largest rib should be, there is nothing. Just an empty mount. It's not broken; it was intentionally left this way. The answer hits you: the artists weren't predicting the future. They were asking their present what they would do to change it.",
             endsGame: 'win',
           },
           {
-            action: "LEAVE WITHOUT COMPLETING",
-            result: "You decide it's too risky and leave the ruins. The skeleton's mystery will remain unsolved.",
+            action: "WALK AWAY",
+            result: "You assume the sculpture is unfinished or broken. A story without an ending. You turn your back on the artifact, leaving its question unanswered in the silence of the ruins.",
             endsGame: 'lose',
           }
         ]
