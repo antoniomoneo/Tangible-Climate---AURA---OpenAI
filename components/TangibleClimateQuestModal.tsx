@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { Language } from '../types';
 import { locales, questGameData } from '../locales';
-import { IdentificationIcon, LightBulbIcon } from './icons';
+import { IdentificationIcon, LightBulbIcon, MenuIcon } from './icons';
 
 // A visual component to render the climate skeleton progressively.
 const SKELETON_RIBS = [
@@ -34,7 +34,7 @@ const SkeletonVisualizer: React.FC<SkeletonVisualizerProps> = ({ progress, isCom
 
   return (
     <div className="w-full aspect-video p-2 bg-gray-900/50 rounded border border-cyan-900 relative">
-      <svg xmlns="http://www.w.org/2000/svg" viewBox="40 20 220 120" className="w-full h-full">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="40 20 220 120" className="w-full h-full">
         <g fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <g transform="translate(0, -10)">
             {SKELETON_RIBS.slice(0, ribsToShow).map((d, index) => (
@@ -78,6 +78,7 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
   const [isHintLoading, setIsHintLoading] = useState(false);
   const [suggestedActions, setSuggestedActions] = useState<string[]>([]);
   const [areSuggestionsLoading, setAreSuggestionsLoading] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const logEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -117,6 +118,7 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
     setLog([gameData.intro, firstChapter!.description]);
     setGameOver(null);
     setInput('');
+    setIsMenuOpen(false);
     fetchSuggestedActions(initialGameState);
   };
 
@@ -215,10 +217,27 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
             <IdentificationIcon className="h-5 w-5"/>
             {t.textAdventureQuestTitle}
           </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
+           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              className="text-green-400 hover:text-white md:hidden"
+              title="Show Status"
+            >
+              <MenuIcon className="h-6 w-6" />
+            </button>
+            <button onClick={onClose} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
+          </div>
         </div>
         
-        <div className="flex-grow flex flex-col md:flex-row overflow-hidden">
+        {isMenuOpen && (
+          <div
+            className="absolute inset-0 bg-black/70 z-10 md:hidden"
+            onClick={() => setIsMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+        
+        <div className="flex-grow flex md:flex-row overflow-hidden relative">
           <div className="flex-grow flex flex-col p-4 overflow-hidden">
             <div className="flex-grow overflow-y-auto pr-2 space-y-3 text-lg leading-relaxed mb-4">
               {log.map((line, index) => (
@@ -280,7 +299,13 @@ const TangibleClimateQuestModal: React.FC<TangibleClimateQuestModalProps> = ({ i
               </button>
             </form>
           </div>
-          <div className="w-full md:w-64 border-t-2 md:border-t-0 md:border-l-2 border-cyan-700 p-4 flex-shrink-0 flex flex-col overflow-y-auto">
+          <div className={`
+              bg-black p-4 flex flex-col overflow-y-auto transition-transform duration-300 ease-in-out
+              md:static md:w-64 md:border-l-2 md:border-t-0 md:translate-x-0 md:flex-shrink-0
+              absolute top-0 right-0 h-full w-72 z-20 border-l-2 border-cyan-700
+              ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`
+            }
+          >
             <div>
               <h3 className="text-cyan-400 text-xl mb-2">{t.textAdventureQuestScore}</h3>
               <p className="text-2xl mb-4">{gameState.score}</p>
