@@ -15,8 +15,6 @@ declare global {
       'a-camera': React.HTMLProps<HTMLElement> & { [key: string]: any };
       'a-cursor': React.HTMLProps<HTMLElement> & { [key: string]: any };
       'a-plane': React.HTMLProps<HTMLElement> & { [key: string]: any };
-      // FIX: Corrected a typo in the index signature (`[key:string]` to `[key: string]`).
-      // This parsing error prevented TypeScript from recognizing any of the A-Frame custom elements.
       'a-text': React.HTMLProps<HTMLElement> & { [key: string]: any };
       'a-animation': React.HTMLProps<HTMLElement> & { [key: string]: any };
       'a-image': React.HTMLProps<HTMLElement> & { [key: string]: any };
@@ -132,16 +130,16 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
         id="vr-scene"
         vr-mode-ui="enabled: true;" 
         renderer="colorManagement: true; physicallyCorrectLights: true;"
-        background="color: #111827"
+        background="color: #ECECEC"
         shadow="type: pcfsoft"
       >
         {/* Environment & Lighting */}
-        <a-entity light="type: ambient; intensity: 1.5"></a-entity>
-        <a-entity light="type: point; intensity: 2; castShadow: true" position="2 4 4"></a-entity>
-        <a-sky color="#111827"></a-sky>
+        <a-entity light="type: ambient; intensity: 1.0"></a-entity>
+        <a-entity light="type: point; intensity: 1.0; castShadow: true" position="2 4 4"></a-entity>
+        <a-sky color="#ECECEC"></a-sky>
 
         {/* Camera Rig with Teleport and Orbit controls */}
-        <a-entity id="cameraRig" position="0 1.6 4">
+        <a-entity id="cameraRig" position="0 1.7 4">
           <a-camera 
             id="camera" 
             look-controls-enabled="true"
@@ -163,26 +161,28 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
           ></a-entity>
         </a-entity>
         
-        {/* Sculpture Model - Wrapped for grabbable interaction */}
+        {/* Sculpture Model - Refactored for correct rotation and animation */}
         <a-entity
             id="grabbable-skeleton"
             grabbable=""
-            position="0 0.8 0"
-            rotation="-90 0 0"
+            position="0 1.6 0"
         >
+          <a-entity
+            id="model-wrapper"
+            animation="property: rotation; to: 0 360 0; dur: 30000; easing: linear; loop: true"
+          >
             <a-entity
-            ref={modelEntityRef}
-            id="skeleton-model"
-            gltf-model={`url(${modelUrl})`}
-            crossorigin="anonymous"
-            position="0 0 0"
-            scale="1 1 1"
-            rotation="0 0 90"
-            shadow="cast: true"
-            visible={modelStatus === 'loaded'}
-            >
-            <a-animation attribute="rotation" to="0 360 0" dur="30000" easing="linear" repeat="indefinite"></a-animation>
-            </a-entity>
+              ref={modelEntityRef}
+              id="skeleton-model"
+              gltf-model={`url(${modelUrl})`}
+              crossorigin="anonymous"
+              position="0 0 0"
+              scale="1 1 1"
+              rotation="0 0 0"
+              shadow="cast: true"
+              visible={modelStatus === 'loaded'}
+            ></a-entity>
+          </a-entity>
         </a-entity>
         
         {/* App Hub Panels */}
@@ -197,7 +197,7 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
                return (
                    <a-entity key={app.id} position={`${x} 0 ${z}`} rotation={`0 ${rotationY} 0`}>
                        <a-plane
-                           class="clickable-app"
+                           className="clickable-app"
                            data-appid={app.id}
                            width="1" height="0.6"
                            color="#1f2937"
@@ -229,23 +229,24 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
         {/* Floor for teleportation and shadow */}
         <a-plane
           className="teleport-destination"
-          rotation="-90 0 0"
+          rotation="0 0 0"
+          position="0 0 0"
           width="20"
           height="20"
-          color="#1f2937"
+          color="#CCCCCC"
           shadow="receive: true"
         ></a-plane>
 
         {/* Loading / Error Feedback in Scene */}
         {(modelStatus === 'loading' || modelStatus === 'idle') && (
           <a-entity position="0 1.5 -1">
-            <a-text value={t.vrModeLoading} align="center" color="white" width="4"></a-text>
+            <a-text value={t.vrModeLoading} align="center" color="black" width="4"></a-text>
           </a-entity>
         )}
         
         {modelStatus === 'error' && (
           <a-entity position="0 1.5 -1">
-            <a-text value={error || ''} align="center" color="#f87171" width="4"></a-text>
+            <a-text value={error || ''} align="center" color="#B91C1C" width="4"></a-text>
           </a-entity>
         )}
       </a-scene>
@@ -256,8 +257,8 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
           {t.vrModeBackToHub}
         </button>
         <div className="text-center pointer-events-none">
-          <h1 className="text-2xl font-bold font-title drop-shadow-lg">{t.appHubVRTitle}</h1>
-          <p className="text-sm opacity-90 drop-shadow-md">{t.vrModeInstruction}</p>
+          <h1 className="text-2xl font-bold font-title text-gray-900 drop-shadow-lg">{t.appHubVRTitle}</h1>
+          <p className="text-sm opacity-90 text-gray-800 drop-shadow-md">{t.vrModeInstruction}</p>
         </div>
         <button 
           onClick={() => {
