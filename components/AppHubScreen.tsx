@@ -19,6 +19,7 @@ import {
   IdentificationIcon,
   SwirlIcon,
   InfoIcon,
+  VRHeadsetIcon,
 } from './icons';
 
 interface AppHubScreenProps {
@@ -32,13 +33,14 @@ interface AppHubScreenProps {
   onOpenScenarioLab: () => void;
   onOpenGlossary: () => void;
   onOpenARMode: () => void;
+  onOpenVRMode: () => void;
   onOpenCrazyViz: () => void;
   onOpenClimateQuest: () => void;
   onOpenCredits: () => void;
   language: Language;
 }
 
-const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenInstructions, onOpenKnowledgeBase, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, onOpenARMode, onOpenCrazyViz, onOpenClimateQuest, onOpenCredits, language }) => {
+const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenInstructions, onOpenKnowledgeBase, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, onOpenARMode, onOpenVRMode, onOpenCrazyViz, onOpenClimateQuest, onOpenCredits, language }) => {
   const t = locales[language];
 
   const apps = [
@@ -96,6 +98,13 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
       description: t.appHubARDesc,
       icon: <ViewfinderIcon />,
       action: onOpenARMode,
+      enabled: true,
+    },
+    {
+      title: t.appHubVRTitle,
+      description: t.appHubVRDesc,
+      icon: <VRHeadsetIcon />,
+      action: onOpenVRMode,
       enabled: true,
     },
     {

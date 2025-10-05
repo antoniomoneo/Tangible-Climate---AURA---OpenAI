@@ -244,6 +244,8 @@ export const locales = {
     appHubGlossaryDesc: "An interactive dictionary of key climate change terms.",
     appHubARTitle: "AR Mode",
     appHubARDesc: "Visualize the data sculpture in your own environment.",
+    appHubVRTitle: "VR Experience",
+    appHubVRDesc: "Step into a virtual space and see the data sculpture up close.",
     appHubEducationalPackTitle: "Educational Pack",
     appHubEducationalPackDesc: "Resources for teachers and students to learn about climate data.",
     appHubNFTTitle: "NFT Collection",
@@ -355,6 +357,14 @@ export const locales = {
 
     // AR Mode
     arModeInstruction: "Point your camera at a flat surface to visualize the data.",
+
+    // VR Mode
+    vrModeInstruction: "Enter VR to immerse yourself with the data sculpture.",
+    vrModeLoading: "Loading 3D model...",
+    vrModeError: "Could not load 3D model. Please try again.",
+    vrModeEnterVR: "Enter VR",
+    vrModeExitVR: "Exit VR",
+    vrModeBackToHub: "Back to Hub",
     
     // Crazy Viz
     crazyVizTitle: "Generative Art Viz",
@@ -460,6 +470,8 @@ export const locales = {
     appHubGlossaryDesc: "Un diccionario interactivo de términos clave sobre cambio climático.",
     appHubARTitle: "Modo RA",
     appHubARDesc: "Visualiza la escultura de datos en tu propio entorno.",
+    appHubVRTitle: "Experiencia RV",
+    appHubVRDesc: "Entra en un espacio virtual y observa la escultura de datos de cerca.",
     appHubEducationalPackTitle: "Pack Educativo",
     appHubEducationalPackDesc: "Recursos para profesores y estudiantes para aprender sobre datos climáticos.",
     appHubNFTTitle: "Colección NFT",
@@ -572,6 +584,14 @@ export const locales = {
     // AR Mode
     arModeInstruction: "Apunta tu cámara a una superficie plana para visualizar los datos.",
     
+    // VR Mode
+    vrModeInstruction: "Entra en RV para sumergirte con la escultura de datos.",
+    vrModeLoading: "Cargando modelo 3D...",
+    vrModeError: "No se pudo cargar el modelo 3D. Por favor, inténtalo de nuevo.",
+    vrModeEnterVR: "Entrar en RV",
+    vrModeExitVR: "Salir de RV",
+    vrModeBackToHub: "Volver al Hub",
+
     // Crazy Viz
     crazyVizTitle: "Arte Generativo Viz",
     crazyVizDownloading: "Preparando descarga...",

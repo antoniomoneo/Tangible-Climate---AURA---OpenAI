@@ -25,6 +25,7 @@ import ScenarioLabModal from './components/ScenarioLabModal';
 import GlossaryModal from './components/GlossaryModal';
 import AuraChatButton from './components/AuraChatButton';
 import ARModeScreen from './components/ARModeScreen';
+import VRModeScreen from './components/VRModeScreen';
 import Footer from './components/Footer';
 import CrazyVizModal from './components/CrazyVizModal';
 import TangibleClimateQuestModal from './components/TangibleClimateQuestModal';
@@ -234,6 +235,11 @@ const Game: React.FC = () => {
     setGameState(GameState.AR_MODE);
   };
 
+  const handleOpenVRMode = () => {
+    trackEvent('navigate_to_vr_mode', { from_state: gameState });
+    setGameState(GameState.VR_MODE);
+  };
+
   const handleOpenCrazyViz = () => {
     trackEvent('open_modal', { modal_name: 'crazy_viz' });
     setIsCrazyVizOpen(true);
@@ -250,6 +256,10 @@ const Game: React.FC = () => {
   }
 
   const handleCloseARMode = () => {
+    setGameState(GameState.APP_HUB);
+  };
+
+  const handleCloseVRMode = () => {
     setGameState(GameState.APP_HUB);
   };
 
@@ -300,6 +310,7 @@ const Game: React.FC = () => {
                   onOpenScenarioLab={handleOpenScenarioLab}
                   onOpenGlossary={handleOpenGlossary}
                   onOpenARMode={handleOpenARMode}
+                  onOpenVRMode={handleOpenVRMode}
                   onOpenCrazyViz={handleOpenCrazyViz}
                   onOpenClimateQuest={handleOpenClimateQuest}
                   onOpenCredits={handleOpenCredits}
@@ -333,6 +344,8 @@ const Game: React.FC = () => {
         return <DashboardScreen onBack={handleCloseDashboard} language={language} />;
       case GameState.AR_MODE:
         return <ARModeScreen onBack={handleCloseARMode} language={language} />;
+      case GameState.VR_MODE:
+        return <VRModeScreen onBack={handleCloseVRMode} language={language} />;
       case GameState.ERROR:
         return (
           <div className="text-center text-red-400">
@@ -351,9 +364,17 @@ const Game: React.FC = () => {
     }
   };
 
-  const showHeader = ![GameState.LANGUAGE_SELECTION, GameState.SPLASH, GameState.ERROR, GameState.AR_MODE].includes(gameState);
-  const showChatButton = ![GameState.LANGUAGE_SELECTION, GameState.SPLASH, GameState.ERROR, GameState.AR_MODE].includes(gameState);
-  const showFooter = ![GameState.LANGUAGE_SELECTION, GameState.SPLASH, GameState.ERROR, GameState.AR_MODE].includes(gameState);
+  const immersiveModes: GameState[] = [
+    GameState.LANGUAGE_SELECTION,
+    GameState.SPLASH,
+    GameState.ERROR,
+    GameState.AR_MODE,
+    GameState.VR_MODE,
+  ];
+
+  const showHeader = !immersiveModes.includes(gameState);
+  const showChatButton = !immersiveModes.includes(gameState);
+  const showFooter = !immersiveModes.includes(gameState);
 
   return (
     <div className="bg-gray-900 text-gray-200 min-h-screen flex flex-col items-center justify-center p-4 relative pb-14">

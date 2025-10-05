@@ -10,6 +10,7 @@ export enum GameState {
   DASHBOARD = 'DASHBOARD',
   KNOWLEDGE_BASE = 'KNOWLEDGE_BASE',
   AR_MODE = 'AR_MODE',
+  VR_MODE = 'VR_MODE',
   ERROR = 'ERROR',
 }
 
