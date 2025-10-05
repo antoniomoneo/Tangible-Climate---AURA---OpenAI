@@ -3,10 +3,17 @@ import type { Language } from '../types';
 import { locales } from '../locales';
 
 // Allow A-Frame elements in JSX
+// FIX: Replace wildcard declaration with explicit A-Frame element types to satisfy TypeScript's JSX checking.
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      [elemName:string]: any;
+      'a-scene': any;
+      'a-entity': any;
+      'a-sky': any;
+      'a-camera': any;
+      'a-cursor': any;
+      'a-plane': any;
+      'a-text': any;
     }
   }
 }
@@ -38,43 +45,33 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language }) => {
     const handleLoaded = () => setModelStatus('loaded');
     
     const handleError = (evt: any) => {
-      console.error('A-Frame model error event detail:', evt.detail);
+      console.error('A-Frame model error event:', evt);
       
       let specificError = 'An unknown loading error occurred.';
       const detail = evt.detail;
-      const errorSource = detail.error || detail;
 
-      if (errorSource instanceof Error) {
-          specificError = errorSource.message;
-      } else if (typeof errorSource === 'object' && errorSource !== null) {
-          if (errorSource.message) {
-              specificError = errorSource.message;
-          } else if (errorSource.statusText) {
-              specificError = `Network error: ${errorSource.status} ${errorSource.statusText}`;
-          } else {
-              try {
-                  const simpleDetails = Object.keys(errorSource).reduce((acc, key) => {
-                      const value = errorSource[key];
-                      if (typeof value !== 'object' && typeof value !== 'function') {
-                          (acc as any)[key] = value;
-                      }
-                      return acc;
-                  }, {} as Record<string, any>);
-                  
-                  if(Object.keys(simpleDetails).length > 0) {
-                      specificError = JSON.stringify(simpleDetails);
-                  } else {
-                      specificError = 'A complex, non-serializable error object was received.';
-                  }
-              } catch (e) {
-                  specificError = 'Could not process the error details.';
+      if (detail) {
+        if (typeof detail === 'object' && detail !== null) {
+          // Manually format the object to avoid "[object Object]" and handle complex structures gracefully.
+          specificError = Object.entries(detail)
+            .map(([key, value]) => {
+              let valueStr;
+              // Avoid trying to display nested objects in the VR view.
+              if (typeof value === 'object' && value !== null) {
+                valueStr = '[Object]';
+              } else {
+                valueStr = String(value);
               }
-          }
-      } else if (typeof errorSource !== 'undefined') {
-          specificError = String(errorSource);
+              return `${key}: ${valueStr}`;
+            })
+            .join('\n'); // Use newline for better formatting in a-text.
+        } else {
+          // Handle cases where detail is a string or other primitive.
+          specificError = String(detail);
+        }
       }
       
-      const userFriendlyError = `${t.vrModeError} (${specificError})`;
+      const userFriendlyError = `${t.vrModeError}\n\nDetails:\n${specificError}`;
       setError(userFriendlyError);
       setModelStatus('error');
     };
@@ -107,13 +104,13 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language }) => {
       <a-scene
         ref={sceneRef}
         vr-mode-ui="enabled: true;" 
-        renderer="colorManagement: true;"
+        renderer="colorManagement: true; physicallyCorrectLights: true;"
         background="color: #111827"
         shadow="type: pcfsoft"
       >
         {/* Environment & Lighting */}
-        <a-entity light="type: ambient; intensity: 0.7"></a-entity>
-        <a-entity light="type: point; intensity: 1; castShadow: true" position="2 4 4"></a-entity>
+        <a-entity light="type: ambient; intensity: 1.5"></a-entity>
+        <a-entity light="type: point; intensity: 2; castShadow: true" position="2 4 4"></a-entity>
         <a-sky color="#111827"></a-sky>
 
         {/* Camera Rig with Teleport */}
