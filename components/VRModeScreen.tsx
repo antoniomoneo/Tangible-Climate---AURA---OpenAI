@@ -177,7 +177,7 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
             crossorigin="anonymous"
             position="0 0 0"
             scale="1 1 1"
-            rotation="0 0 0"
+            rotation="0 0 90"
             shadow="cast: true"
             visible={modelStatus === 'loaded'}
             >
