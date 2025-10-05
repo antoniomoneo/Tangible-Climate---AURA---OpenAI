@@ -36,7 +36,6 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
   const t = locales[language];
   const [modelStatus, setModelStatus] = useState<ModelStatus>('idle');
   const [error, setError] = useState<string | null>(null);
-  const sceneRef = useRef<any>(null);
   const modelEntityRef = useRef<any>(null);
 
   // Auto-start loading the model when the component mounts
@@ -89,7 +88,7 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
   }, [t.vrModeError]);
 
   const handleBack = useCallback(() => {
-    const sceneEl = document.querySelector('a-scene') as any;
+    const sceneEl = document.getElementById('vr-scene') as any;
     if (sceneEl && sceneEl.is('vr-mode')) {
       sceneEl.exitVR();
     }
@@ -98,7 +97,7 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
   
   // App Panel click handler setup
   useEffect(() => {
-    const sceneEl = sceneRef.current;
+    const sceneEl = document.getElementById('vr-scene') as any;
     if (!sceneEl) return;
 
     const handleClick = (event: any) => {
@@ -130,7 +129,7 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
   return (
     <div className="fixed inset-0 bg-black text-white w-full h-full">
       <a-scene
-        ref={sceneRef}
+        id="vr-scene"
         vr-mode-ui="enabled: true;" 
         renderer="colorManagement: true; physicallyCorrectLights: true;"
         background="color: #111827"
@@ -261,7 +260,12 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
           <p className="text-sm opacity-90 drop-shadow-md">{t.vrModeInstruction}</p>
         </div>
         <button 
-          onClick={() => sceneRef.current?.enterVR()}
+          onClick={() => {
+            const sceneEl = document.getElementById('vr-scene') as any;
+            if (sceneEl) {
+                sceneEl.enterVR();
+            }
+          }}
           className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed pointer-events-auto"
           disabled={modelStatus !== 'loaded'}
         >
