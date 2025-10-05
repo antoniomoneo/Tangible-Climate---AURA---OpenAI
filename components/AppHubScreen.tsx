@@ -1,6 +1,6 @@
 import React from 'react';
 // FIX: Fix import paths to be relative.
-import type { Language } from '../types';
+import type { Language, AppDefinition } from '../types';
 // FIX: Fix import paths to be relative.
 import { locales } from '../locales';
 import { 
@@ -23,140 +23,37 @@ import {
 } from './icons';
 
 interface AppHubScreenProps {
-  onStartGame: () => void;
-  onOpenDashboard: () => void;
-  onOpenCalendar: () => void;
-  onOpenChat: () => void;
-  onOpenInstructions: () => void;
-  onOpenKnowledgeBase: () => void;
-  onOpenJoinUs: () => void;
-  onOpenScenarioLab: () => void;
-  onOpenGlossary: () => void;
-  onOpenARMode: () => void;
-  onOpenVRMode: () => void;
-  onOpenCrazyViz: () => void;
-  onOpenClimateQuest: () => void;
-  onOpenCredits: () => void;
+  apps: AppDefinition[];
   language: Language;
 }
 
-const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboard, onOpenCalendar, onOpenChat, onOpenInstructions, onOpenKnowledgeBase, onOpenJoinUs, onOpenScenarioLab, onOpenGlossary, onOpenARMode, onOpenVRMode, onOpenCrazyViz, onOpenClimateQuest, onOpenCredits, language }) => {
-  const t = locales[language];
+const iconMap: { [key: string]: React.ReactNode } = {
+  ChatBubbleIcon: <ChatBubbleIcon />,
+  CompassIcon: <CompassIcon />,
+  IdentificationIcon: <IdentificationIcon />,
+  SwirlIcon: <SwirlIcon />,
+  LightBulbIcon: <LightBulbIcon />,
+  DatabaseIcon: <DatabaseIcon />,
+  BookOpenIcon: <BookOpenIcon />,
+  ViewfinderIcon: <ViewfinderIcon />,
+  VRHeadsetIcon: <VRHeadsetIcon />,
+  AcademicCapIcon: <AcademicCapIcon />,
+  StarIcon: <StarIcon />,
+  DashboardIcon: <DashboardIcon />,
+  CalendarIcon: <CalendarIcon />,
+  QuestionMarkIcon: <QuestionMarkIcon />,
+  UsersIcon: <UsersIcon />,
+  InfoIcon: <InfoIcon />,
+};
 
-  const apps = [
-    {
-      title: t.appHubChatTitle,
-      description: t.appHubChatDesc,
-      icon: <ChatBubbleIcon />,
-      action: onOpenChat,
-      enabled: true,
-    },
-    {
-      title: t.appHubDataExplorerTitle,
-      description: t.appHubDataExplorerDesc,
-      icon: <CompassIcon />,
-      action: onStartGame,
-      enabled: true,
-    },
-    {
-      title: t.appHubQuestTitle,
-      description: t.appHubQuestDesc,
-      icon: <IdentificationIcon />,
-      action: onOpenClimateQuest,
-      enabled: true,
-    },
-    {
-      title: t.appHubCrazyVizTitle,
-      description: t.appHubCrazyVizDesc,
-      icon: <SwirlIcon />,
-      action: onOpenCrazyViz,
-      enabled: true,
-    },
-    {
-      title: t.appHubScenarioLabTitle,
-      description: t.appHubScenarioLabDesc,
-      icon: <LightBulbIcon />,
-      action: onOpenScenarioLab,
-      enabled: true,
-    },
-    {
-      title: t.appHubKnowledgeBaseTitle,
-      description: t.appHubKnowledgeBaseDesc,
-      icon: <DatabaseIcon />,
-      action: onOpenKnowledgeBase,
-      enabled: true,
-    },
-    {
-      title: t.appHubGlossaryTitle,
-      description: t.appHubGlossaryDesc,
-      icon: <BookOpenIcon />,
-      action: onOpenGlossary,
-      enabled: true,
-    },
-    {
-      title: t.appHubARTitle,
-      description: t.appHubARDesc,
-      icon: <ViewfinderIcon />,
-      action: onOpenARMode,
-      enabled: true,
-    },
-    {
-      title: t.appHubVRTitle,
-      description: t.appHubVRDesc,
-      icon: <VRHeadsetIcon />,
-      action: onOpenVRMode,
-      enabled: true,
-    },
-    {
-      title: t.appHubEducationalPackTitle,
-      description: t.appHubEducationalPackDesc,
-      icon: <AcademicCapIcon />,
-      action: () => window.open('https://tangibledata.xyz/tangible-data-educational-program/', '_blank', 'noopener,noreferrer'),
-      enabled: true,
-    },
-    {
-      title: t.appHubNFTTitle,
-      description: t.appHubNFTDesc,
-      icon: <StarIcon />,
-      action: () => window.open('https://opensea.io/collection/tangible-climate-data', '_blank', 'noopener,noreferrer'),
-      enabled: true,
-    },
-    {
-      title: t.appHubDashboardTitle,
-      description: t.appHubDashboardDesc,
-      icon: <DashboardIcon />,
-      action: onOpenDashboard,
-      enabled: true,
-    },
-    {
-      title: t.appHubCalendarTitle,
-      description: t.appHubCalendarDesc,
-      icon: <CalendarIcon />,
-      action: onOpenCalendar,
-      enabled: true,
-    },
-    {
-      title: t.appHubInstructionsTitle,
-      description: t.appHubInstructionsDesc,
-      icon: <QuestionMarkIcon />,
-      action: onOpenInstructions,
-      enabled: true,
-    },
-    {
-      title: t.appHubJoinUsTitle,
-      description: t.appHubJoinUsDesc,
-      icon: <UsersIcon />,
-      action: onOpenJoinUs,
-      enabled: true,
-    },
-     {
-      title: t.appHubCreditsTitle,
-      description: t.appHubCreditsDesc,
-      icon: <InfoIcon />,
-      action: onOpenCredits,
-      enabled: true,
-    },
-  ];
+const getIconByName = (iconUrl: string): React.ReactNode => {
+    const iconName = iconUrl.split('/').pop()?.replace('.svg', '');
+    const formattedName = iconName ? iconName.charAt(0).toUpperCase() + iconName.slice(1).replace(/-(\w)/g, (_, c) => c.toUpperCase()) + 'Icon' : '';
+    return iconMap[formattedName] || <QuestionMarkIcon />;
+};
+
+const AppHubScreen: React.FC<AppHubScreenProps> = ({ apps, language }) => {
+  const t = locales[language];
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full text-center animate-fadeIn">
@@ -164,9 +61,9 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
         <h1 className="font-title text-4xl md:text-5xl text-cyan-400 mb-4">{t.appHubTitle}</h1>
         <p className="text-gray-300 text-lg mb-8">{t.appHubSubtitle}</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {apps.map((app, index) => (
+          {apps.map((app) => (
             <button
-              key={index}
+              key={app.id}
               onClick={app.action}
               disabled={!app.enabled}
               className={`group relative text-left bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 transition-all duration-300 ${
@@ -177,11 +74,11 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ onStartGame, onOpenDashboar
             >
               <div className="flex items-center mb-3">
                 <div className="p-2 bg-gray-700 rounded-md mr-4 text-cyan-400">
-                  {app.icon}
+                  {getIconByName(app.iconUrl)}
                 </div>
-                <h2 className="text-xl font-bold text-white">{app.title}</h2>
+                <h2 className="text-xl font-bold text-white">{t[app.titleKey]}</h2>
               </div>
-              <p className="text-gray-400 text-sm">{app.description}</p>
+              <p className="text-gray-400 text-sm">{t[`${app.titleKey.replace('Title', 'Desc')}` as keyof typeof t]}</p>
               {!app.enabled && (
                 <div className="absolute top-2 right-2 bg-amber-500 text-black text-xs font-bold px-2 py-1 rounded">
                   {t.appHubComingSoon}

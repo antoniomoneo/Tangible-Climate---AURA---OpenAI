@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 // FIX: Fix import paths to be relative.
-import { GameState, StorySegment, StoryHistoryItem, Language, Choice, GlossaryTerm } from './types';
+import { GameState, StorySegment, StoryHistoryItem, Language, Choice, GlossaryTerm, AppDefinition } from './types';
 import StartScreen from './components/StartScreen';
 import GameScreen from './components/GameScreen';
 import GameOverScreen from './components/GameOverScreen';
@@ -22,7 +22,7 @@ import { knowledgeBaseContent } from './data/knowledgeBaseContent';
 import JoinUsModal from './components/JoinUsModal';
 import ScenarioLabModal from './components/ScenarioLabModal';
 // FIX: Fix import paths to be relative.
-import GlossaryModal from './components/GlossaryModal';
+import GlossaryModal from './components/GlossoryModal';
 import AuraChatButton from './components/AuraChatButton';
 import ARModeScreen from './components/ARModeScreen';
 import VRModeScreen from './components/VRModeScreen';
@@ -30,6 +30,8 @@ import Footer from './components/Footer';
 import CrazyVizModal from './components/CrazyVizModal';
 import TangibleClimateQuestModal from './components/TangibleClimateQuestModal';
 import CreditsModal from './components/CreditsModal';
+import { getAppHubApps } from './data/vrAppAssets';
+
 
 // FIX: Add a global declaration for window.gtag to resolve TypeScript errors.
 declare global {
@@ -286,6 +288,23 @@ const Game: React.FC = () => {
     setDebugEvents(prevEvents => [...prevEvents, eventWithTimestamp]);
   };
 
+  const appHubApps: AppDefinition[] = getAppHubApps({
+      onStartGame: handleStartGame,
+      onOpenDashboard: handleOpenDashboard,
+      onOpenCalendar: handleOpenCalendar,
+      onOpenChat: handleOpenGeneralChat,
+      onOpenInstructions: handleOpenInstructions,
+      onOpenKnowledgeBase: handleOpenKnowledgeBase,
+      onOpenJoinUs: handleOpenJoinUs,
+      onOpenScenarioLab: handleOpenScenarioLab,
+      onOpenGlossary: handleOpenGlossary,
+      onOpenARMode: handleOpenARMode,
+      onOpenVRMode: handleOpenVRMode,
+      onOpenCrazyViz: handleOpenCrazyViz,
+      onOpenClimateQuest: handleOpenClimateQuest,
+      onOpenCredits: handleOpenCredits,
+  });
+
   if (gameState === GameState.LANGUAGE_SELECTION) {
     return <LanguageSelectionScreen onSelect={handleLanguageSelection} />;
   }
@@ -300,20 +319,7 @@ const Game: React.FC = () => {
         return <StartScreen onShowHub={handleShowAppHub} language={language} />;
       case GameState.APP_HUB:
         return <AppHubScreen 
-                  onStartGame={handleStartGame}
-                  onOpenDashboard={handleOpenDashboard}
-                  onOpenCalendar={handleOpenCalendar}
-                  onOpenChat={handleOpenGeneralChat}
-                  onOpenInstructions={handleOpenInstructions}
-                  onOpenKnowledgeBase={handleOpenKnowledgeBase}
-                  onOpenJoinUs={handleOpenJoinUs}
-                  onOpenScenarioLab={handleOpenScenarioLab}
-                  onOpenGlossary={handleOpenGlossary}
-                  onOpenARMode={handleOpenARMode}
-                  onOpenVRMode={handleOpenVRMode}
-                  onOpenCrazyViz={handleOpenCrazyViz}
-                  onOpenClimateQuest={handleOpenClimateQuest}
-                  onOpenCredits={handleOpenCredits}
+                  apps={appHubApps}
                   language={language}
                 />;
       case GameState.KNOWLEDGE_BASE:
@@ -345,7 +351,7 @@ const Game: React.FC = () => {
       case GameState.AR_MODE:
         return <ARModeScreen onBack={handleCloseARMode} language={language} />;
       case GameState.VR_MODE:
-        return <VRModeScreen onBack={handleCloseVRMode} language={language} />;
+        return <VRModeScreen onBack={handleCloseVRMode} language={language} appHubApps={appHubApps} />;
       case GameState.ERROR:
         return (
           <div className="text-center text-red-400">

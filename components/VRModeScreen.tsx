@@ -1,23 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
-import type { Language } from '../types';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+// FIX: The type import path was incorrect. It should be a relative import from the project root.
+import type { Language, AppDefinition } from '../types';
+// FIX: The locales import path was incorrect. It should be a relative import from the project root.
 import { locales } from '../locales';
 
 // Allow A-Frame elements in JSX
-// FIX: The previous global declaration for A-Frame elements was not being correctly
-// interpreted by TypeScript. This more specific declaration extends React's base
-// HTML attributes and allows for any custom A-Frame component attributes,
-// resolving the "does not exist on type 'JSX.IntrinsicElements'" errors.
+// FIX: The previous declaration for A-Frame elements was overly broad, potentially causing type conflicts.
+// This revised declaration uses React.HTMLProps for a cleaner base type and adds an index signature
+// to allow for A-Frame's custom attributes, resolving the "property does not exist" errors.
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'a-scene': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
-      'a-entity': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
-      'a-sky': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
-      'a-camera': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
-      'a-cursor': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
-      'a-plane': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
-      'a-text': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
-      'a-animation': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
+      'a-scene': React.HTMLProps<HTMLElement> & { [key: string]: any };
+      'a-entity': React.HTMLProps<HTMLElement> & { [key: string]: any };
+      'a-sky': React.HTMLProps<HTMLElement> & { [key: string]: any };
+      'a-camera': React.HTMLProps<HTMLElement> & { [key: string]: any };
+      'a-cursor': React.HTMLProps<HTMLElement> & { [key: string]: any };
+      'a-plane': React.HTMLProps<HTMLElement> & { [key: string]: any };
+      'a-text': React.HTMLProps<HTMLElement> & { [key:string]: any };
+      'a-animation': React.HTMLProps<HTMLElement> & { [key: string]: any };
+      'a-image': React.HTMLProps<HTMLElement> & { [key: string]: any };
     }
   }
 }
@@ -25,11 +27,12 @@ declare global {
 interface VRModeScreenProps {
   onBack: () => void;
   language: Language;
+  appHubApps: AppDefinition[];
 }
 
 type ModelStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
-const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language }) => {
+const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApps }) => {
   const t = locales[language];
   const [modelStatus, setModelStatus] = useState<ModelStatus>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -56,21 +59,13 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language }) => {
 
       if (detail) {
         if (typeof detail === 'object' && detail !== null) {
-          // Manually format the object to avoid "[object Object]" and handle complex structures gracefully.
           specificError = Object.entries(detail)
             .map(([key, value]) => {
-              let valueStr;
-              // Avoid trying to display nested objects in the VR view.
-              if (typeof value === 'object' && value !== null) {
-                valueStr = '[Object]';
-              } else {
-                valueStr = String(value);
-              }
+              let valueStr = typeof value === 'object' && value !== null ? '[Object]' : String(value);
               return `${key}: ${valueStr}`;
             })
-            .join('\n'); // Use newline for better formatting in a-text.
+            .join('\n');
         } else {
-          // Handle cases where detail is a string or other primitive.
           specificError = String(detail);
         }
       }
@@ -92,16 +87,45 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language }) => {
       modelEl.removeEventListener('model-error', handleError);
     };
   }, [t.vrModeError]);
-  
-  const handleBack = () => {
+
+  const handleBack = useCallback(() => {
     const sceneEl = document.querySelector('a-scene') as any;
     if (sceneEl && sceneEl.is('vr-mode')) {
       sceneEl.exitVR();
     }
     onBack();
-  };
+  }, [onBack]);
   
+  // App Panel click handler setup
+  useEffect(() => {
+    const sceneEl = sceneRef.current;
+    if (!sceneEl) return;
+
+    const handleClick = (event: any) => {
+      const appId = event.target.getAttribute('data-appid');
+      if (appId) {
+        const app = appHubApps.find(a => a.id === appId);
+        if (app && app.action) {
+          // Exiting VR before triggering action
+          handleBack();
+          // Timeout to allow VR exit animation to start
+          setTimeout(() => app.action(), 300);
+        }
+      }
+    };
+
+    const panels = sceneEl.querySelectorAll('.clickable-app');
+    panels.forEach((panel: any) => panel.addEventListener('click', handleClick));
+
+    return () => {
+      panels.forEach((panel: any) => panel.removeEventListener('click', handleClick));
+    };
+  }, [appHubApps, handleBack, modelStatus]); // Re-run if modelStatus changes to attach events after render
+
   const modelUrl = "https://antoniomoneo.github.io/Datasets/objects/climate-skeleton.glb";
+  const vrApps = appHubApps.filter(app => app.id !== 'vr-mode' && app.enabled);
+  const angleStep = 360 / vrApps.length;
+  const radius = 3.5;
 
   return (
     <div className="fixed inset-0 bg-black text-white w-full h-full">
@@ -122,32 +146,79 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language }) => {
           <a-camera 
             id="camera" 
             look-controls-enabled="true"
-            orbit-controls="target: #skeleton-model; enableDamping: true; dampingFactor: 0.125; rotateSpeed:0.25; minDistance: 1; maxDistance: 10;"
+            orbit-controls="target: #grabbable-skeleton; enableDamping: true; dampingFactor: 0.125; rotateSpeed:0.25; minDistance: 1; maxDistance: 10;"
           >
-            <a-cursor color="#FFF"></a-cursor>
           </a-camera>
-          <a-entity oculus-touch-controls="hand: left"></a-entity>
+          <a-entity hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"></a-entity>
           <a-entity
-            oculus-touch-controls="hand: right"
+            hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc"
             laser-controls="hand: right"
-            raycaster="objects: .teleport-destination;"
-            teleport-controls="cameraRig: #cameraRig; teleportOrigin: #camera; button: trigger; collisionEntities: .teleport-destination;"
+            raycaster="objects: .teleport-destination, .clickable-app; far: 5"
+            teleport-controls="cameraRig: #cameraRig; teleportOrigin: #camera; button: trigger; collisionEntities: .teleport-destination; curveShootingSpeed: 8"
           ></a-entity>
         </a-entity>
         
-        {/* Sculpture Model */}
+        {/* Sculpture Model - Wrapped for grabbable interaction */}
         <a-entity
-          ref={modelEntityRef}
-          id="skeleton-model"
-          gltf-model={`url(${modelUrl})`}
-          crossorigin="anonymous"
-          position="0 0.8 0"
-          scale="1 1 1"
-          rotation="-90 0 0"
-          shadow="cast: true"
-          visible={modelStatus === 'loaded'}
+            id="grabbable-skeleton"
+            grabbable=""
+            position="0 0.8 0"
+            rotation="-90 0 0"
         >
-          <a-animation attribute="rotation" to="-90 360 0" dur="30000" easing="linear" repeat="indefinite"></a-animation>
+            <a-entity
+            ref={modelEntityRef}
+            id="skeleton-model"
+            gltf-model={`url(${modelUrl})`}
+            crossorigin="anonymous"
+            position="0 0 0"
+            scale="1 1 1"
+            rotation="0 0 0"
+            shadow="cast: true"
+            visible={modelStatus === 'loaded'}
+            >
+            <a-animation attribute="rotation" to="0 360 0" dur="30000" easing="linear" repeat="indefinite"></a-animation>
+            </a-entity>
+        </a-entity>
+        
+        {/* App Hub Panels */}
+        <a-entity id="app-hub-panels" position="0 1.6 0">
+           {vrApps.map((app, index) => {
+               const angleRad = (angleStep * index) * (Math.PI / 180);
+               const x = radius * Math.sin(angleRad);
+               const z = -radius * Math.cos(angleRad);
+               const rotationY = angleStep * index;
+               const title = t[app.titleKey as keyof typeof t] || app.id;
+               const description = t[`${app.titleKey.replace('Title', 'Desc')}` as keyof typeof t] || '';
+               return (
+                   <a-entity key={app.id} position={`${x} 0 ${z}`} rotation={`0 ${rotationY} 0`}>
+                       <a-plane
+                           class="clickable-app"
+                           data-appid={app.id}
+                           width="1" height="0.6"
+                           color="#1f2937"
+                           opacity="0.8"
+                           side="double"
+                       >
+                           <a-text
+                               value={title}
+                               align="center"
+                               color="#e5e7eb"
+                               width="0.9"
+                               position="0 0.1 0.01"
+                           ></a-text>
+                            <a-text
+                                value={description}
+                                align="center"
+                                color="#9ca3af"
+                                width="0.8"
+                                wrap-count="25"
+                                position="0 -0.15 0.01"
+                           ></a-text>
+                            <a-animation attribute="scale" begin="mouseenter" end="mouseleave" to="1.1 1.1 1.1" dur="200"></a-animation>
+                       </a-plane>
+                   </a-entity>
+               );
+           })}
         </a-entity>
         
         {/* Floor for teleportation and shadow */}

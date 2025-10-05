@@ -374,45 +374,4 @@ const CrazyVizModal: React.FC<CrazyVizModalProps> = ({ isOpen, onClose, language
                     <p className="font-title text-5xl text-white tracking-widest">{currentYear}</p>
                 </div>
 
-                {/* Controls Panel */}
-                <div className={`absolute top-0 left-0 h-full p-4 pointer-events-auto transition-transform duration-300 ${isControlsVisible ? 'translate-x-0' : '-translate-x-full'}`}>
-                    <div className="bg-gray-800/80 backdrop-blur-md p-6 rounded-lg border border-gray-700 space-y-4 w-64 h-full overflow-y-auto">
-                        <h3 className="text-lg font-bold text-cyan-400">{t.crazyVizControlsTitle}</h3>
-                        <Slider label={t.crazyVizControlsSpeed} value={speed} onChange={e => setSpeed(Number(e.target.value))} />
-                        <Slider label={t.crazyVizControlsParticles} value={particleCount} onChange={e => setParticleCount(Number(e.target.value))} min={100} max={2000} step={100} />
-                        <Slider label={t.crazyVizControlsTrail} value={trailLength} onChange={e => setTrailLength(Number(e.target.value))} />
-                        <Slider label={t.crazyVizControlsComplexity} value={complexity} onChange={e => setComplexity(Number(e.target.value))} />
-                        <Slider label={t.crazyVizControlsFlow} value={flowStrength} onChange={e => setFlowStrength(Number(e.target.value))} />
-                    </div>
-                </div>
-            </main>
-            
-            <p className="absolute bottom-5 right-5 text-xs text-gray-500 font-mono pointer-events-auto opacity-75">
-                Created with Tangible Data Technology
-            </p>
-            
-            <footer className="p-4 flex justify-between items-center text-white pointer-events-auto">
-                <ControlButton onClick={() => setIsControlsVisible(!isControlsVisible)} title={t.crazyVizControlsTitle}>
-                    <SlidersIcon className="h-6 w-6"/>
-                </ControlButton>
-
-                <div className="flex items-center gap-4">
-                    <ControlButton onClick={togglePlay} title={isPlaying ? t.crazyVizPause : t.crazyVizPlay}>
-                        {isPlaying ? <PauseIcon className="w-6 h-6"/> : <PlayIcon className="w-6 h-6"/>}
-                    </ControlButton>
-                    <ControlButton onClick={toggleRecording} title={isRecording ? t.crazyVizStopRecording : t.crazyVizRecord} active={isRecording} disabled={!!downloadingMessage}>
-                       {isRecording ? <StopIcon className="w-6 h-6 animate-pulse"/> : <RecordIcon className="w-6 h-6 text-red-500"/>}
-                    </ControlButton>
-                </div>
-                
-                <div className="w-24 text-right">
-                  {downloadingMessage && <p className="text-sm text-cyan-300 animate-pulse">{downloadingMessage}</p>}
-                </div>
-            </footer>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default CrazyVizModal;
+                {/* Controls

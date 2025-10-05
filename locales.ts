@@ -359,7 +359,7 @@ export const locales = {
     arModeInstruction: "Point your camera at a flat surface to visualize the data.",
 
     // VR Mode
-    vrModeInstruction: "Look around! Desktop: Click & drag to orbit. Scroll to zoom. VR: Use controller trigger to teleport.",
+    vrModeInstruction: "Desktop: Click & drag to orbit. Scroll to zoom. VR: Use grip to grab sculpture, trigger to click panels & teleport.",
     vrModeLoading: "Loading 3D model...",
     vrModeError: "Could not load 3D model. Please try again.",
     vrModeEnterVR: "Enter VR",
@@ -456,36 +456,33 @@ export const locales = {
     appHubDashboardTitle: "Dashboard Completo",
     appHubDashboardDesc: "Visualiza el gráfico completo de anomalías de temperatura de 1880-2024.",
     appHubCalendarTitle: "Calendario de Eventos",
-    appHubCalendarDesc: "Consulta los próximos eventos y exposiciones sobre el clima.",
+    appHubCalendarDesc: "Consulta los próximos eventos y exposiciones relacionados con el clima.",
     appHubInstructionsTitle: "Instrucciones",
     appHubInstructionsDesc: "Aprende a navegar y utilizar esta experiencia interactiva.",
-    appHubAboutTitle: "Sobre Este Proyecto",
+    appHubAboutTitle: "Acerca de este Proyecto",
     appHubAboutDesc: "Descubre la misión y los creadores detrás de esta visualización de datos.",
     appHubKnowledgeBaseTitle: "Base de Conocimiento",
     appHubKnowledgeBaseDesc: "Lee un informe detallado sobre la ciencia del cambio climático.",
     appHubJoinUsTitle: "Únete a Nosotros",
     appHubJoinUsDesc: "Descubre cómo colaborar o ponerte en contacto con Tangible Data.",
     appHubScenarioLabTitle: "Laboratorio de Escenarios",
-    appHubScenarioLabDesc: "Simula escenarios climáticos hipotéticos y observa su impacto.",
+    appHubScenarioLabDesc: "Simula escenarios climáticos 'qué pasaría si' y observa su impacto.",
     appHubGlossaryTitle: "Glosario Climático",
-    appHubGlossaryDesc: "Un diccionario interactivo de términos clave sobre cambio climático.",
-    appHubARTitle: "Modo RA",
+    appHubGlossaryDesc: "Un diccionario interactivo de términos clave sobre el cambio climático.",
+    appHubARTitle: "Modo AR",
     appHubARDesc: "Visualiza la escultura de datos en tu propio entorno.",
-    appHubVRTitle: "Experiencia RV",
+    appHubVRTitle: "Experiencia VR",
     appHubVRDesc: "Entra en un espacio virtual y observa la escultura de datos de cerca.",
-    appHubEducationalPackTitle: "Pack Educativo",
+    appHubEducationalPackTitle: "Paquete Educativo",
     appHubEducationalPackDesc: "Recursos para profesores y estudiantes para aprender sobre datos climáticos.",
     appHubNFTTitle: "Colección NFT",
     appHubNFTDesc: "Explora nuestra colección de arte basado en datos en la blockchain.",
     appHubCrazyVizTitle: "Arte Generativo",
     appHubCrazyVizDesc: "Una visualización creativa y reactiva al sonido de los datos de temperatura.",
-
-    appHubQuestTitle: 'Misión Climática',
-    appHubQuestDesc: 'Una aventura conversacional retro al futuro de los datos climáticos.',
-
-    appHubCreditsTitle: 'Créditos',
-    appHubCreditsDesc: 'Conoce al equipo y las tecnologías detrás de este proyecto.',
-
+    appHubQuestTitle: "Misión Climática",
+    appHubQuestDesc: "Una aventura de texto retro hacia el futuro de los datos climáticos.",
+    appHubCreditsTitle: "Créditos",
+    appHubCreditsDesc: "Conoce al equipo y las tecnologías detrás de este proyecto.",
     appHubComingSoon: "Próximamente",
     appHubAddYourAppTitle: "¡Añade tu App!",
     appHubAddYourAppDesc: "Contáctanos para integrar tu aplicación de datos climáticos.",
@@ -493,133 +490,133 @@ export const locales = {
     // Game Screen
     gameTitle: "Análisis de Datos",
     whatToDo: "¿Qué hacemos ahora?",
-    
+
     // Game Over
     gameOverTitle: "Análisis Completado",
     gameOverRestart: "Iniciar Nuevo Análisis",
-    
+
     // Dashboard
     dashboardTitle: "Anomalía de Temperatura Global (1880-2024)",
     dashboardDescription: "Este gráfico muestra la desviación de las temperaturas superficiales globales con respecto al promedio de 1951-1980. Los valores positivos indican calentamiento, mientras que los negativos indican enfriamiento.",
     dashboardBack: "Volver",
-    
+
     // Error
     errorTitle: "Ocurrió un Error",
     errorTryAgain: "Intentar de Nuevo",
-    
+
     // About Modal
-    aboutTitle: "Sobre Datos Climáticos Tangibles",
-    intro: "Esta experiencia interactiva es un complemento digital de la 'Escultura del Esqueleto del Cambio Climático', creada por Antonio Moneo Laín y David San Román Gomendio, por encargo del Museo Nacional de Ciencias Naturales (MNCN-CSIC) en Madrid.",
-    objective: "Nuestro objetivo es hacer que los datos climáticos complejos sean accesibles, atractivos y comprensibles para un público amplio. Al transformar datos brutos en una historia, esperamos fomentar una conexión más profunda con el urgente problema del cambio climático.",
+    aboutTitle: "Acerca de Datos Climáticos Tangibles",
+    intro: "Esta experiencia interactiva es un complemento digital de la 'Escultura Esqueleto del Cambio Climático', creada por Antonio Moneo Laín y David San Román Gomendio, y encargada por el Museo Nacional de Ciencias Naturales (MNCN-CSIC) en Madrid.",
+    objective: "Nuestro objetivo es hacer que los complejos datos climáticos sean accesibles, atractivos y comprensibles para un público amplio. Al transformar datos brutos en una historia, esperamos fomentar una conexión más profunda con el urgente problema del cambio climático.",
     aboutCredit: "Un proyecto de",
 
     // Chat
     chatTitle: "Pregúntale a AURA",
     chatPlaceholder: "Haz una pregunta sobre los datos...",
     chatSend: "Enviar",
-    chatError: "Lo siento, he encontrado un error. Por favor, inténtalo de nuevo.",
-    chatSystemInstruction: "Eres AURA, una asistente de IA para el proyecto Datos Climáticos Tangibles. Tu propósito es responder preguntas de los usuarios sobre el cambio climático, la visualización de datos que están viendo y la ciencia detrás de ello. Sé concisa, informativa y mantén un tono neutral y científico. El usuario está interactuando con una visualización de datos de anomalías de temperatura global de 1880-2024.",
-    chatSystemInstructionReport: "Eres AURA, una asistente experta de IA. El usuario está haciendo preguntas sobre el siguiente informe científico. Responde basándote *únicamente* en el texto proporcionado. Si la respuesta no está en el texto, di que la información no está disponible en el informe.",
-    chatExplainTermSystemInstruction: "Eres AURA, una asistente experta de IA. Un usuario ha pedido una explicación más detallada de un término del glosario. El término es '{term}' y su definición es '{definition}'. Proporciona una explicación un poco más detallada y fácil de entender de este concepto. Puedes añadir un ejemplo sencillo si ayuda.",
-    
+    chatError: "Lo siento, encontré un error. Por favor, inténtalo de nuevo.",
+    chatSystemInstruction: "Eres AURA, una asistente de IA servicial para el proyecto Datos Climáticos Tangibles. Tu propósito es responder a las preguntas de los usuarios sobre el cambio climático, la visualización de datos que están viendo y la ciencia detrás de ello. Sé concisa, informativa y mantén un tono neutral y científico. El usuario está interactuando actualmente con una visualización de datos de las anomalías de la temperatura global de 1880-2024.",
+    chatSystemInstructionReport: "Eres AURA, una asistente de IA experta. El usuario está haciendo preguntas sobre el siguiente informe científico. Responde basándote *únicamente* en el texto proporcionado. Si la respuesta no está en el texto, di que la información no está disponible en el informe.",
+    chatExplainTermSystemInstruction: "Eres AURA, una asistente de IA experta. Un usuario ha pedido una explicación más detallada de un término del glosario. El término es '{term}' y su definición es '{definition}'. Proporciona una explicación un poco más detallada y fácil de entender de este concepto. Puedes añadir un ejemplo sencillo si ayuda.",
+
     // Instructions
-    instructionsTitle: "Cómo Usar Esta Experiencia",
-    instructionsContent1: "Bienvenido a la experiencia de Datos Climáticos Tangibles. Usa el 'App Hub' para navegar entre los diferentes módulos interactivos.",
+    instructionsTitle: "Cómo Usar esta Experiencia",
+    instructionsContent1: "Bienvenido a la experiencia Datos Climáticos Tangibles. Usa el 'App Hub' para navegar entre los diferentes módulos interactivos.",
     instructionsContent2: "En el 'Explorador de Datos', serás guiado a través de un análisis narrativo de los datos de temperatura global. En cada paso, revisa el gráfico y el texto, y luego elige tu siguiente acción para proceder.",
     instructionsContent3: "En cualquier momento, puedes hacer clic en el icono de chat flotante para preguntarle a AURA, nuestra asistente de IA, sobre lo que estás viendo o sobre el cambio climático en general.",
 
     // Calendar
     calendarTitle: "Exposiciones y Eventos",
     calendarLoading: "Cargando calendario...",
-    calendarError: "No se pudieron cargar los datos del calendario. Por favor, inténtelo de nuevo más tarde.",
+    calendarError: "No se pudieron cargar los datos del calendario. Por favor, inténtalo de nuevo más tarde.",
     calendarNoEvents: "No hay eventos programados en este momento.",
 
     // Knowledge Base
     knowledgeBaseBack: "Volver al Hub",
-    knowledgeBaseAskReport: "Preguntar Sobre el Informe",
-    
+    knowledgeBaseAskReport: "Preguntar sobre este Informe",
+
     // Join Us
     joinUsModalTitle: "Colabora con Nosotros",
-    joinUsModalContent: "En Tangible Data nos dedicamos a crear experiencias de datos significativas. Si eres un artista, científico, desarrollador o una institución interesada en colaborar, nos encantaría saber de ti.",
+    joinUsModalContent: "En Tangible Data nos dedicamos a crear experiencias de datos significativas. Si eres un artista, científico, desarrollador o institución interesada en colaborar, nos encantaría saber de ti.",
     joinUsModalWebsiteButton: "Visita Nuestro Sitio Web",
-    joinUsModalEmailLink: "O escríbenos a:",
+    joinUsModalEmailLink: "O envíanos un email a:",
 
     // Scenario Lab
     scenarioLabTitle: "Laboratorio de Escenarios",
-    scenarioLabSelectPreset: "Selecciona un Escenario Predefinido",
+    scenarioLabSelectPreset: "Selecciona un Escenario Predeterminado",
     scenarioLabCustomAi: "Crear con IA",
     scenarioLabCustomAiDesc: "Describe un escenario y deja que la IA genere una proyección de datos plausible.",
-    scenarioLabCustomAiPlaceholder: "ej: '¿Qué pasaría si descubriéramos la energía de fusión limpia en 2030?'",
+    scenarioLabCustomAiPlaceholder: "Ej: '¿Qué pasaría si descubrimos la energía de fusión limpia en 2030?'",
     scenarioLabGenerateButton: "Generar Escenario con IA",
     scenarioLabGeneratingButton: "Generando...",
-    scenarioLabAiError: "La generación del escenario con IA ha fallado.",
+    scenarioLabAiError: "Falló la generación del escenario con IA.",
     scenarioLabChartTitle: "Datos Históricos vs. Escenario Simulado",
     scenarioLabChartYAxis: "Anomalía (°C)",
     scenarioLabChartReal: "Datos Reales",
-    scenarioLabAiLogic: "Lógica de la Simulación IA",
-    scenarioLabPresetLogic: "Lógica del Predefinido",
+    scenarioLabAiLogic: "Lógica de Simulación de IA",
+    scenarioLabPresetLogic: "Lógica del Predeterminado",
 
     // Glossary
     glossarySearchPlaceholder: "Buscar términos...",
     glossaryAllCategories: "Todas las Categorías",
-    glossarySeeAlso: "Ver también",
-    glossaryAskAura: "Pide a AURA una explicación más profunda",
+    glossarySeeAlso: "Ver También",
+    glossaryAskAura: "Pídele a AURA una explicación más profunda",
     glossaryNoResults: "No se encontraron términos.",
-    glossaryBackToList: "Volver a la lista",
+    glossaryBackToList: "Volver a la Lista",
     glossaryViewList: "Lista",
     glossaryViewMindMap: "Mapa Mental",
-    glossaryViewQuiz: "Test",
-    mindMapControls: "Rueda para zoom, arrastrar para mover.",
+    glossaryViewQuiz: "Cuestionario",
+    mindMapControls: "Usa la rueda para zoom, arrastra para mover.",
     mindMapResetView: "Reiniciar Vista",
     mindMapInstructions: "Selecciona un nodo en el mapa para ver su definición aquí.",
 
     // Quiz
-    quizCompletedTitle: "¡Test Completado!",
-    quizCompletedScore: "Has acertado {score} de {total} preguntas.",
+    quizCompletedTitle: "¡Cuestionario Completo!",
+    quizCompletedScore: "Obtuviste {score} de {total}.",
     quizRestart: "Intentar de Nuevo",
     quizClose: "Cerrar",
     quizQuestionLabel: "Pregunta {current} de {total}",
     quizNext: "Siguiente Pregunta",
-    quizFinish: "Finalizar",
-    
+    quizFinish: "Finalizar Cuestionario",
+
     // AR Mode
     arModeInstruction: "Apunta tu cámara a una superficie plana para visualizar los datos.",
-    
+
     // VR Mode
-    vrModeInstruction: "¡Explora! Escritorio: Clic y arrastra para orbitar. Rueda para zoom. RV: Usa el gatillo del mando para teletransportarte.",
+    vrModeInstruction: "Escritorio: Clic y arrastrar para orbitar. Rueda para zoom. VR: Usa el agarre para coger la escultura, gatillo para hacer clic en paneles y teleportar.",
     vrModeLoading: "Cargando modelo 3D...",
     vrModeError: "No se pudo cargar el modelo 3D. Por favor, inténtalo de nuevo.",
-    vrModeEnterVR: "Entrar en RV",
-    vrModeExitVR: "Salir de RV",
+    vrModeEnterVR: "Entrar en VR",
+    vrModeExitVR: "Salir de VR",
     vrModeBackToHub: "Volver al Hub",
     vrModeLoadSculpture: "Cargar Escultura",
 
     // Crazy Viz
-    crazyVizTitle: "Arte Generativo Viz",
+    crazyVizTitle: "Visualización de Arte Generativo",
     crazyVizDownloading: "Preparando descarga...",
-    crazyVizRecord: "Grabar Video",
+    crazyVizRecord: "Grabar Vídeo",
     crazyVizStopRecording: "Detener Grabación",
     crazyVizPlay: "Reproducir",
-    crazyVizPause: "Pausar",
+    crazyVizPause: "Pausa",
     crazyVizControlsTitle: "Moduladores",
     crazyVizControlsSpeed: "Velocidad",
     crazyVizControlsParticles: "Partículas",
     crazyVizControlsTrail: "Longitud de Estela",
     crazyVizControlsComplexity: "Complejidad",
     crazyVizControlsFlow: "Fuerza del Flujo",
-    
+
     // Educational Pack
-    educationalPackTitle: "Pack Educativo",
+    educationalPackTitle: "Paquete Educativo",
     educationalPackContent: `
         <p class="mb-4">El Programa Educativo de Tangible Data ofrece recursos para educadores y estudiantes para explorar la ciencia del clima a través de la visualización de datos y herramientas interactivas. Nuestro objetivo es hacer que la educación climática sea atractiva y accesible.</p>
-        <h4 class="text-xl font-bold text-cyan-400 mb-2">¿Qué incluye?</h4>
+        <h4 class="text-xl font-bold text-cyan-400 mb-2">Qué incluye:</h4>
         <ul class="list-disc list-inside space-y-2 mb-4">
             <li>Planes de lecciones alineados con los estándares curriculares.</li>
             <li>Hojas de trabajo para estudiantes y actividades guiadas.</li>
             <li>Una guía para usar esta aplicación web interactiva en el aula.</li>
-            <li>Gráficos y datos de alta resolución.</li>
+            <li>Gráficos y diagramas de datos en alta resolución.</li>
         </ul>
-        <p>Para acceder al pack educativo completo y aprender más sobre nuestros programas escolares, por favor visita nuestra página web.</p>
+        <p>Para acceder al paquete educativo completo y obtener más información sobre nuestros programas escolares, visita nuestro sitio web.</p>
         <div class="mt-6 text-center">
             <a href="https://tangibledata.xyz/tangible-data-educational-program/" target="_blank" rel="noopener noreferrer" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                 Ir al Programa Educativo
@@ -630,28 +627,27 @@ export const locales = {
     // Credits
     creditsModalContent: `
       <h3 class="text-xl font-bold text-cyan-400 mb-2">Equipo del Proyecto</h3>
-      <p><strong>Autores de la Escultura:</strong> Antonio Moneo Laín y David San Román Gomendio</p>
+      <p><strong>Autores de la Escultura:</strong> Antonio Moneo Laín & David San Román Gomendio</p>
       <p><strong>Diseño y Desarrollo de la App:</strong> Antonio Moneo Laín</p>
 
       <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Colaboración</h3>
       <p>Un proyecto de <a href="https://www.tangibledata.xyz" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline">Tangible Data</a> en colaboración con el <span class="font-semibold">Museo Nacional de Ciencias Naturales (MNCN-CSIC)</span>.</p>
       
-      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Fuentes y Tecnologías</h3>
+      <h3 class="text-xl font-bold text-cyan-400 mt-4 mb-2">Fuentes y Tecnología</h3>
       <p><strong>Datos de Temperatura:</strong> GISTEMP v4, NASA Goddard Institute for Space Studies</p>
       <p><strong>API de IA Generativa:</strong> Google Gemini</p>
       <p><strong>Stack Tecnológico:</strong> React, TypeScript, Tailwind CSS, Recharts</p>
     `,
 
     // Text Adventure Quest
-    textAdventureQuestTitle: "Tangible Climate Quest",
-    textAdventureQuestSubmit: "Intro",
+    textAdventureQuestTitle: "Misión Climática Tangible",
+    textAdventureQuestSubmit: "Enter",
     textAdventureQuestScore: "Puntuación",
     textAdventureQuestInventory: "Inventario",
     textAdventureQuestRestart: "Reiniciar Misión",
-    textAdventureQuestWin: "MISIÓN COMPLETADA",
+    textAdventureQuestWin: "MISIÓN CUMPLIDA",
     textAdventureQuestLose: "MISIÓN FALLIDA",
-    textAdventureQuestHint: "Pedir Pista a AURA",
+    textAdventureQuestHint: "Pedir una Pista a AURA",
     textAdventureQuestSkeletonReconstruction: "Reconstrucción del Esqueleto",
-    
   },
 };

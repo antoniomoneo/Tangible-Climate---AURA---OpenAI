@@ -14,6 +14,14 @@ export enum GameState {
   ERROR = 'ERROR',
 }
 
+export interface AppDefinition {
+  id: string;
+  titleKey: keyof typeof locales.en; // Use a key from locales for consistency
+  iconUrl: string; // Path to an image asset for VR
+  action: () => void;
+  enabled: boolean;
+}
+
 export interface Choice {
   text: string;
   nextSceneId: string;
@@ -83,3 +91,6 @@ export interface MindMapLink {
   target: string;
   type: 'category' | 'related';
 }
+// Note: Added a temporary import for locales to satisfy the type reference.
+// This might need adjustment depending on the final project structure.
+import { locales } from './locales';
