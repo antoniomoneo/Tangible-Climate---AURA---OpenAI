@@ -17,6 +17,7 @@ declare global {
       'a-cursor': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
       'a-plane': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
       'a-text': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
+      'a-animation': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
     }
   }
 }
@@ -116,14 +117,20 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language }) => {
         <a-entity light="type: point; intensity: 2; castShadow: true" position="2 4 4"></a-entity>
         <a-sky color="#111827"></a-sky>
 
-        {/* Camera Rig with Teleport */}
-        <a-entity id="cameraRig" position="0 1.6 3">
-          <a-camera id="camera" wasd-controls-enabled="true" look-controls-enabled="true">
+        {/* Camera Rig with Teleport and Orbit controls */}
+        <a-entity id="cameraRig" position="0 1.6 4">
+          <a-camera 
+            id="camera" 
+            look-controls-enabled="true"
+            orbit-controls="target: #skeleton-model; enableDamping: true; dampingFactor: 0.125; rotateSpeed:0.25; minDistance: 1; maxDistance: 10;"
+          >
             <a-cursor color="#FFF"></a-cursor>
           </a-camera>
           <a-entity oculus-touch-controls="hand: left"></a-entity>
           <a-entity
             oculus-touch-controls="hand: right"
+            laser-controls="hand: right"
+            raycaster="objects: .teleport-destination;"
             teleport-controls="cameraRig: #cameraRig; teleportOrigin: #camera; button: trigger; collisionEntities: .teleport-destination;"
           ></a-entity>
         </a-entity>
@@ -134,12 +141,14 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language }) => {
           id="skeleton-model"
           gltf-model={`url(${modelUrl})`}
           crossorigin="anonymous"
-          position="0 0 0"
-          scale="0.4 0.4 0.4"
+          position="0 0.8 0"
+          scale="1 1 1"
           rotation="-90 0 0"
           shadow="cast: true"
           visible={modelStatus === 'loaded'}
-        ></a-entity>
+        >
+          <a-animation attribute="rotation" to="-90 360 0" dur="30000" easing="linear" repeat="indefinite"></a-animation>
+        </a-entity>
         
         {/* Floor for teleportation and shadow */}
         <a-plane

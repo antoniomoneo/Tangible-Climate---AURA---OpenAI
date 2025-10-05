@@ -359,7 +359,7 @@ export const locales = {
     arModeInstruction: "Point your camera at a flat surface to visualize the data.",
 
     // VR Mode
-    vrModeInstruction: "Enter VR to immerse yourself with the data sculpture.",
+    vrModeInstruction: "Look around! Desktop: Click & drag to orbit. Scroll to zoom. VR: Use controller trigger to teleport.",
     vrModeLoading: "Loading 3D model...",
     vrModeError: "Could not load 3D model. Please try again.",
     vrModeEnterVR: "Enter VR",
@@ -586,7 +586,7 @@ export const locales = {
     arModeInstruction: "Apunta tu cámara a una superficie plana para visualizar los datos.",
     
     // VR Mode
-    vrModeInstruction: "Entra en RV para sumergirte con la escultura de datos.",
+    vrModeInstruction: "¡Explora! Escritorio: Clic y arrastra para orbitar. Rueda para zoom. RV: Usa el gatillo del mando para teletransportarte.",
     vrModeLoading: "Cargando modelo 3D...",
     vrModeError: "No se pudo cargar el modelo 3D. Por favor, inténtalo de nuevo.",
     vrModeEnterVR: "Entrar en RV",
