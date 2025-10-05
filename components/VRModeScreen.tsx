@@ -6,7 +6,7 @@ import { locales } from '../locales';
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      [elemName: string]: any;
+      [elemName:string]: any;
     }
   }
 }
@@ -16,187 +16,171 @@ interface VRModeScreenProps {
   language: Language;
 }
 
+type ModelStatus = 'idle' | 'loading' | 'loaded' | 'error';
+
 const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language }) => {
   const t = locales[language];
-  const [loading, setLoading] = useState(true);
+  const [modelStatus, setModelStatus] = useState<ModelStatus>('idle');
   const [error, setError] = useState<string | null>(null);
-  const [isInVR, setIsInVR] = useState(false);
-  const sceneRef = useRef<any>(null); // Use a ref to hold a reference to the a-scene element
+  const sceneRef = useRef<any>(null);
+  const modelEntityRef = useRef<any>(null);
 
+  // Auto-start loading the model when the component mounts
   useEffect(() => {
-    // A-Frame components register after React mounts, so we query for them in an effect.
-    const sceneEl = document.querySelector('a-scene');
-    if (!sceneEl) return;
-    sceneRef.current = sceneEl;
+    setModelStatus('loading');
+  }, []);
 
-    // VR mode state listener
-    const enterVR = () => setIsInVR(true);
-    const exitVR = () => setIsInVR(false);
-    sceneEl.addEventListener('enter-vr', enterVR);
-    sceneEl.addEventListener('exit-vr', exitVR);
+  // Effect for model-specific events (loaded/error)
+  useEffect(() => {
+    const modelEl = modelEntityRef.current;
+    if (!modelEl) return;
 
-    const modelEl = document.querySelector('#skeleton-model');
-    let handleLoaded: (() => void) | null = null;
-    let handleError: (() => void) | null = null;
-    if (modelEl) {
-      handleLoaded = () => setLoading(false);
-      handleError = () => {
-        setError(t.vrModeError);
-        setLoading(false);
-      };
-      modelEl.addEventListener('model-loaded', handleLoaded);
-      modelEl.addEventListener('model-error', handleError);
+    const handleLoaded = () => setModelStatus('loaded');
+    
+    const handleError = (evt: any) => {
+      console.error('A-Frame model error event detail:', evt.detail);
+      
+      let specificError = 'An unknown loading error occurred.';
+      const detail = evt.detail;
+      const errorSource = detail.error || detail;
+
+      if (errorSource instanceof Error) {
+          specificError = errorSource.message;
+      } else if (typeof errorSource === 'object' && errorSource !== null) {
+          if (errorSource.message) {
+              specificError = errorSource.message;
+          } else if (errorSource.statusText) {
+              specificError = `Network error: ${errorSource.status} ${errorSource.statusText}`;
+          } else {
+              try {
+                  const simpleDetails = Object.keys(errorSource).reduce((acc, key) => {
+                      const value = errorSource[key];
+                      if (typeof value !== 'object' && typeof value !== 'function') {
+                          (acc as any)[key] = value;
+                      }
+                      return acc;
+                  }, {} as Record<string, any>);
+                  
+                  if(Object.keys(simpleDetails).length > 0) {
+                      specificError = JSON.stringify(simpleDetails);
+                  } else {
+                      specificError = 'A complex, non-serializable error object was received.';
+                  }
+              } catch (e) {
+                  specificError = 'Could not process the error details.';
+              }
+          }
+      } else if (typeof errorSource !== 'undefined') {
+          specificError = String(errorSource);
+      }
+      
+      const userFriendlyError = `${t.vrModeError} (${specificError})`;
+      setError(userFriendlyError);
+      setModelStatus('error');
+    };
+    
+    if (modelEl.object3DMap.gltf) {
+      handleLoaded();
+    } else {
+      modelEl.addEventListener('model-loaded', handleLoaded, { once: true });
     }
+    modelEl.addEventListener('model-error', handleError, { once: true });
 
     return () => {
-      sceneEl.removeEventListener('enter-vr', enterVR);
-      sceneEl.removeEventListener('exit-vr', exitVR);
-      if (modelEl && handleLoaded && handleError) {
-        modelEl.removeEventListener('model-loaded', handleLoaded);
-        modelEl.removeEventListener('model-error', handleError);
-      }
+      modelEl.removeEventListener('model-loaded', handleLoaded);
+      modelEl.removeEventListener('model-error', handleError);
     };
   }, [t.vrModeError]);
   
   const handleBack = () => {
-    // If we are in VR mode, exit it gracefully before navigating back.
-    if (sceneRef.current && sceneRef.current.is('vr-mode')) {
-      sceneRef.current.exitVR();
+    const sceneEl = document.querySelector('a-scene') as any;
+    if (sceneEl && sceneEl.is('vr-mode')) {
+      sceneEl.exitVR();
     }
     onBack();
   };
+  
+  const modelUrl = "https://antoniomoneo.github.io/Datasets/objects/climate-skeleton.glb";
 
   return (
     <div className="fixed inset-0 bg-black text-white w-full h-full">
       <a-scene
         ref={sceneRef}
-        vr-mode-ui="enterVRButton: #customEnterVRButton; exitVRButton: #customExitVRButton;"
-        renderer="colorManagement: true; physicallyCorrectLights: true;"
+        vr-mode-ui="enabled: true;" 
+        renderer="colorManagement: true;"
+        background="color: #111827"
         shadow="type: pcfsoft"
       >
-        {/* Assets */}
-        <a-assets>
-          <a-asset-item id="skeleton-obj" src="https://raw.githubusercontent.com/antoniomoneo/Datasets/main/objects/Skeleton.obj" crossOrigin="anonymous"></a-asset-item>
-        </a-assets>
-
-        {/* Environment */}
+        {/* Environment & Lighting */}
+        <a-entity light="type: ambient; intensity: 0.7"></a-entity>
+        <a-entity light="type: point; intensity: 1; castShadow: true" position="2 4 4"></a-entity>
         <a-sky color="#111827"></a-sky>
-        <a-plane class="teleport-destination" position="0 0 -4" rotation="-90 0 0" width="20" height="20" color="#1f2937" shadow="receive: true"></a-plane>
 
-        {/* --- Enhanced Lighting Setup --- */}
-        {/* Ambient light for overall illumination */}
-        <a-light type="ambient" color="#666" intensity="0.6"></a-light>
-        {/* Key light (spotlight) to cast soft shadows */}
-        <a-light type="spot" position="-1 4 4" angle="40" penumbra="0.5" intensity="1.5" castShadow="true" color="#a5f3fc" shadow-camera-far="50"></a-light>
-        {/* Fill light (hemisphere) for soft, bounced lighting */}
-        <a-light type="hemisphere" groundColor="#1f2937" color="#60a5fa" intensity="0.8"></a-light>
-        {/* Rim light (backlight) to highlight edges */}
-        <a-light type="point" position="0 2 -6" intensity="1.2" color="#f472b6"></a-light>
-
-        {/* Sculpture Model */}
-        <a-entity
-          id="skeleton-model"
-          obj-model="obj: #skeleton-obj"
-          position="0 1.6 -3"
-          scale="0.01 0.01 0.01"
-          rotation="0 0 0"
-          material="color: #e0f2fe; metalness: 0.2; roughness: 0.8;"
-          shadow="cast: true"
-        >
-          <a-animation attribute="rotation"
-             dur="30000"
-             fill="forwards"
-             to="0 360 0"
-             repeat="indefinite"
-             easing="linear"
-          ></a-animation>
+        {/* Camera Rig with Teleport */}
+        <a-entity id="cameraRig" position="0 1.6 3">
+          <a-camera id="camera" wasd-controls-enabled="true" look-controls-enabled="true">
+            <a-cursor color="#FFF"></a-cursor>
+          </a-camera>
+          <a-entity oculus-touch-controls="hand: left"></a-entity>
+          <a-entity
+            oculus-touch-controls="hand: right"
+            teleport-controls="cameraRig: #cameraRig; teleportOrigin: #camera; button: trigger; collisionEntities: .teleport-destination;"
+          ></a-entity>
         </a-entity>
         
-        {/* Pulsating Base - only visible in VR mode */}
-        {isInVR && (
-          <a-ring
-            position="0 0.01 -3"
-            rotation="-90 0 0"
-            color="#a5f3fc"
-            radius-inner="0.5"
-            radius-outer="0.7"
-            material="opacity: 0.5; transparent: true;"
-          >
-            <a-animation
-              attribute="scale"
-              dur="2000"
-              from="1 1 1"
-              to="1.2 1.2 1.2"
-              direction="alternate"
-              repeat="indefinite"
-              easing="ease-in-out-sine"
-            ></a-animation>
-            <a-animation
-              attribute="material.opacity"
-              dur="2000"
-              from="0.5"
-              to="0.1"
-              direction="alternate"
-              repeat="indefinite"
-              easing="ease-in-out-sine"
-            ></a-animation>
-          </a-ring>
+        {/* Sculpture Model */}
+        <a-entity
+          ref={modelEntityRef}
+          id="skeleton-model"
+          gltf-model={`url(${modelUrl})`}
+          crossorigin="anonymous"
+          position="0 0 0"
+          scale="0.4 0.4 0.4"
+          rotation="-90 0 0"
+          shadow="cast: true"
+          visible={modelStatus === 'loaded'}
+        ></a-entity>
+        
+        {/* Floor for teleportation and shadow */}
+        <a-plane
+          className="teleport-destination"
+          rotation="-90 0 0"
+          width="20"
+          height="20"
+          color="#1f2937"
+          shadow="receive: true"
+        ></a-plane>
+
+        {/* Loading / Error Feedback in Scene */}
+        {(modelStatus === 'loading' || modelStatus === 'idle') && (
+          <a-entity position="0 1.5 -1">
+            <a-text value={t.vrModeLoading} align="center" color="white" width="4"></a-text>
+          </a-entity>
         )}
-
-        {/* Camera and Controls Rig */}
-        <a-entity id="rig" position="0 0 0" wasd-controls="fly: false; acceleration: 20">
-            <a-entity camera position="0 1.6 0" look-controls>
-                <a-entity cursor="rayOrigin: mouse"></a-entity>
-            </a-entity>
-            <a-entity id="leftHand" laser-controls="hand: left"></a-entity>
-            <a-entity 
-                id="rightHand" 
-                laser-controls="hand: right"
-                teleport-controls="
-                    cameraRig: #rig; 
-                    teleportOrigin: #rightHand; 
-                    type: parabolic; 
-                    collisionEntities: .teleport-destination;
-                    curveShootingSpeed: 8;
-                "
-            ></a-entity>
-        </a-entity>
+        
+        {modelStatus === 'error' && (
+          <a-entity position="0 1.5 -1">
+            <a-text value={error || ''} align="center" color="#f87171" width="4"></a-text>
+          </a-entity>
+        )}
       </a-scene>
-
-      {/* Improved HTML UI Overlay */}
-      <div className="absolute inset-0 z-10 pointer-events-none flex flex-col items-center justify-between p-4">
-        {/* Top panel for status and instructions */}
-        <div className="bg-gray-800/80 backdrop-blur-sm p-4 rounded-lg text-center pointer-events-auto max-w-lg">
-          <h2 className="font-title text-xl text-cyan-400 mb-2">{t.appHubVRTitle}</h2>
-          {loading && !error && (
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
-              <span>{t.vrModeLoading}</span>
-            </div>
-          )}
-          {error && <p className="text-red-400">{error}</p>}
-          {!loading && !error && <p>{t.vrModeInstruction}</p>}
+      
+      {/* HTML UI Overlay */}
+      <div className="absolute top-0 left-0 w-full p-4 z-10 flex justify-between items-start">
+        <button onClick={handleBack} className="bg-gray-800/50 hover:bg-gray-700/70 text-white font-bold py-2 px-4 rounded-lg transition-colors pointer-events-auto">
+          {t.vrModeBackToHub}
+        </button>
+        <div className="text-center pointer-events-none">
+          <h1 className="text-2xl font-bold font-title drop-shadow-lg">{t.appHubVRTitle}</h1>
+          <p className="text-sm opacity-90 drop-shadow-md">{t.vrModeInstruction}</p>
         </div>
-
-        {/* Bottom bar with action buttons */}
-        <div className="w-full flex justify-between items-center pointer-events-auto">
-          <button
-            onClick={handleBack}
-            className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg"
-          >
-            {t.vrModeBackToHub}
-          </button>
-          
-          <button 
-            id="customEnterVRButton"
-            className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={loading || !!error}
-          >
-            {t.vrModeEnterVR}
-          </button>
-          {/* This button is required by A-Frame's vr-mode-ui but we don't need to show it */}
-          <button id="customExitVRButton" style={{display: 'none'}}>{t.vrModeExitVR}</button>
-        </div>
+        <button 
+          onClick={() => sceneRef.current?.enterVR()}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed pointer-events-auto"
+          disabled={modelStatus !== 'loaded'}
+        >
+          {modelStatus === 'loaded' ? t.vrModeEnterVR : t.vrModeLoading}
+        </button>
       </div>
     </div>
   );

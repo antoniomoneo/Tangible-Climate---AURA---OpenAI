@@ -365,6 +365,7 @@ export const locales = {
     vrModeEnterVR: "Enter VR",
     vrModeExitVR: "Exit VR",
     vrModeBackToHub: "Back to Hub",
+    vrModeLoadSculpture: "Load Sculpture",
     
     // Crazy Viz
     crazyVizTitle: "Generative Art Viz",
@@ -591,6 +592,7 @@ export const locales = {
     vrModeEnterVR: "Entrar en RV",
     vrModeExitVR: "Salir de RV",
     vrModeBackToHub: "Volver al Hub",
+    vrModeLoadSculpture: "Cargar Escultura",
 
     // Crazy Viz
     crazyVizTitle: "Arte Generativo Viz",
