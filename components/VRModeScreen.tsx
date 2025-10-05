@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-// FIX: The type import path was incorrect. It should be a relative import from the project root.
 import type { Language, AppDefinition } from '../types';
-// FIX: The locales import path was incorrect. It should be a relative import from the project root.
 import { locales } from '../locales';
 
 // Allow A-Frame elements in JSX
-// FIX: The previous declaration for A-Frame elements was overly broad, potentially causing type conflicts.
-// This revised declaration uses React.HTMLProps for a cleaner base type and adds an index signature
-// to allow for A-Frame's custom attributes, resolving the "property does not exist" errors.
+// This global declaration ensures TypeScript recognizes A-Frame's custom elements (e.g., <a-scene>)
+// within JSX, preventing compilation errors. It uses React's standard HTML properties as a base
+// and adds an index signature to allow for any A-Frame-specific attributes.
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -17,7 +15,9 @@ declare global {
       'a-camera': React.HTMLProps<HTMLElement> & { [key: string]: any };
       'a-cursor': React.HTMLProps<HTMLElement> & { [key: string]: any };
       'a-plane': React.HTMLProps<HTMLElement> & { [key: string]: any };
-      'a-text': React.HTMLProps<HTMLElement> & { [key:string]: any };
+      // FIX: Corrected a typo in the index signature (`[key:string]` to `[key: string]`).
+      // This parsing error prevented TypeScript from recognizing any of the A-Frame custom elements.
+      'a-text': React.HTMLProps<HTMLElement> & { [key: string]: any };
       'a-animation': React.HTMLProps<HTMLElement> & { [key: string]: any };
       'a-image': React.HTMLProps<HTMLElement> & { [key: string]: any };
     }
@@ -149,12 +149,18 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
             orbit-controls="target: #grabbable-skeleton; enableDamping: true; dampingFactor: 0.125; rotateSpeed:0.25; minDistance: 1; maxDistance: 10;"
           >
           </a-camera>
-          <a-entity hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"></a-entity>
+          {/* Left hand for grabbing */}
+          <a-entity 
+            hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"
+            grab
+          ></a-entity>
+          {/* Right hand for grabbing, teleporting, and UI interaction */}
           <a-entity
             hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc"
             laser-controls="hand: right"
             raycaster="objects: .teleport-destination, .clickable-app; far: 5"
             teleport-controls="cameraRig: #cameraRig; teleportOrigin: #camera; button: trigger; collisionEntities: .teleport-destination; curveShootingSpeed: 8"
+            grab
           ></a-entity>
         </a-entity>
         

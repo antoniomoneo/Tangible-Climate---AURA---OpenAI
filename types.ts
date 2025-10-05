@@ -16,7 +16,7 @@ export enum GameState {
 
 export interface AppDefinition {
   id: string;
-  titleKey: keyof typeof locales.en; // Use a key from locales for consistency
+  titleKey: string; // Changed from keyof typeof locales.en to break circular dependency
   iconUrl: string; // Path to an image asset for VR
   action: () => void;
   enabled: boolean;
@@ -91,6 +91,3 @@ export interface MindMapLink {
   target: string;
   type: 'category' | 'related';
 }
-// Note: Added a temporary import for locales to satisfy the type reference.
-// This might need adjustment depending on the final project structure.
-import { locales } from './locales';

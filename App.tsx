@@ -22,7 +22,7 @@ import { knowledgeBaseContent } from './data/knowledgeBaseContent';
 import JoinUsModal from './components/JoinUsModal';
 import ScenarioLabModal from './components/ScenarioLabModal';
 // FIX: Fix import paths to be relative.
-import GlossaryModal from './components/GlossoryModal';
+import GlossaryModal from './components/GlossaryModal';
 import AuraChatButton from './components/AuraChatButton';
 import ARModeScreen from './components/ARModeScreen';
 import VRModeScreen from './components/VRModeScreen';

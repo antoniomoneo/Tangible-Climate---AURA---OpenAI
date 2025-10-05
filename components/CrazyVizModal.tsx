@@ -76,7 +76,6 @@ class Particle {
 const CrazyVizModal: React.FC<CrazyVizModalProps> = ({ isOpen, onClose, language }) => {
   const t = locales[language];
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // FIX: Pass an initial value to useRef to resolve the "Expected 1 arguments, but got 0" error.
   const animationFrameIdRef = useRef<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const isPlayingRef = useRef(isPlaying);
@@ -374,4 +373,42 @@ const CrazyVizModal: React.FC<CrazyVizModalProps> = ({ isOpen, onClose, language
                     <p className="font-title text-5xl text-white tracking-widest">{currentYear}</p>
                 </div>
 
-                {/* Controls
+                {/* Controls */}
+                <div 
+                    className={`absolute top-1/2 -translate-y-1/2 right-0 bg-gray-800/80 backdrop-blur-sm p-4 rounded-l-lg border-y border-l border-gray-700 transition-transform duration-300 pointer-events-auto ${isControlsVisible ? '' : 'translate-x-full'}`}
+                >
+                    <h3 className="font-bold text-lg text-cyan-300 mb-4">{t.crazyVizControlsTitle}</h3>
+                    <div className="space-y-4">
+                        <Slider label={t.crazyVizControlsSpeed} value={speed} onChange={e => setSpeed(parseFloat(e.target.value))} />
+                        <Slider label={t.crazyVizControlsParticles} value={particleCount} onChange={e => setParticleCount(parseInt(e.target.value))} min={100} max={2000} step={100} />
+                        <Slider label={t.crazyVizControlsTrail} value={trailLength} onChange={e => setTrailLength(parseFloat(e.target.value))} />
+                        <Slider label={t.crazyVizControlsComplexity} value={complexity} onChange={e => setComplexity(parseFloat(e.target.value))} />
+                        <Slider label={t.crazyVizControlsFlow} value={flowStrength} onChange={e => setFlowStrength(parseFloat(e.target.value))} />
+                    </div>
+                </div>
+                <button 
+                    onClick={() => setIsControlsVisible(!isControlsVisible)}
+                    className="absolute top-1/2 -translate-y-1/2 right-0 bg-gray-800 p-2 rounded-l-full border-y border-l border-gray-700 transition-transform duration-300 pointer-events-auto"
+                    style={{ transform: `translateX(${isControlsVisible ? '-100%' : '0'})` }}
+                >
+                    <SlidersIcon className={`h-5 w-5 text-white transition-transform duration-300 ${isControlsVisible ? 'rotate-90' : ''}`} />
+                </button>
+            </main>
+            
+            <footer className="p-4 pointer-events-auto">
+                <div className="flex justify-center items-center gap-6">
+                    <ControlButton onClick={togglePlay} title={isPlaying ? t.crazyVizPause : t.crazyVizPlay} active={isPlaying}>
+                        {isPlaying ? <PauseIcon className="h-6 w-6" /> : <PlayIcon className="h-6 w-6" />}
+                    </ControlButton>
+                    <ControlButton onClick={toggleRecording} title={isRecording ? t.crazyVizStopRecording : t.crazyVizRecord} active={isRecording}>
+                        {isRecording ? <StopIcon className="h-6 w-6" /> : <RecordIcon className="h-6 w-6" />}
+                    </ControlButton>
+                </div>
+            </footer>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CrazyVizModal;

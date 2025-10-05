@@ -76,7 +76,7 @@ const AppHubScreen: React.FC<AppHubScreenProps> = ({ apps, language }) => {
                 <div className="p-2 bg-gray-700 rounded-md mr-4 text-cyan-400">
                   {getIconByName(app.iconUrl)}
                 </div>
-                <h2 className="text-xl font-bold text-white">{t[app.titleKey]}</h2>
+                <h2 className="text-xl font-bold text-white">{t[app.titleKey as keyof typeof t]}</h2>
               </div>
               <p className="text-gray-400 text-sm">{t[`${app.titleKey.replace('Title', 'Desc')}` as keyof typeof t]}</p>
               {!app.enabled && (
