@@ -3,17 +3,20 @@ import type { Language } from '../types';
 import { locales } from '../locales';
 
 // Allow A-Frame elements in JSX
-// FIX: Replace wildcard declaration with explicit A-Frame element types to satisfy TypeScript's JSX checking.
+// FIX: The previous global declaration for A-Frame elements was not being correctly
+// interpreted by TypeScript. This more specific declaration extends React's base
+// HTML attributes and allows for any custom A-Frame component attributes,
+// resolving the "does not exist on type 'JSX.IntrinsicElements'" errors.
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'a-scene': any;
-      'a-entity': any;
-      'a-sky': any;
-      'a-camera': any;
-      'a-cursor': any;
-      'a-plane': any;
-      'a-text': any;
+      'a-scene': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
+      'a-entity': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
+      'a-sky': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
+      'a-camera': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
+      'a-cursor': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
+      'a-plane': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
+      'a-text': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { [key: string]: any };
     }
   }
 }
