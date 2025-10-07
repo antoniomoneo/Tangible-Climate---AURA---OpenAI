@@ -80,7 +80,9 @@ const AboutModal: React.FC<{
   );
 };
 
-const Game: React.FC = () => {
+type Route = 'game' | 'vr' | 'admin';
+
+const Game: React.FC<{ onNavigate: (route: Route) => void }> = ({ onNavigate }) => {
   const [gameState, setGameState] = useState<GameState>(GameState.LANGUAGE_SELECTION);
   const [gameStateBeforeDashboard, setGameStateBeforeDashboard] = useState<GameState>(GameState.START);
   const [currentStory, setCurrentStory] = useState<StorySegment | null>(null);
@@ -239,7 +241,7 @@ const Game: React.FC = () => {
 
   const handleOpenVRMode = () => {
     trackEvent('navigate_to_vr_mode', { from_state: gameState });
-    setGameState(GameState.VR_MODE);
+    onNavigate('vr');
   };
 
   const handleOpenCrazyViz = () => {
@@ -467,26 +469,87 @@ const Game: React.FC = () => {
   );
 };
 
+const VRApp: React.FC<{ onNavigate: (route: Route) => void }> = ({ onNavigate }) => {
+    const [language, setLanguage] = useState<Language | null>(null);
+
+    // Create a set of handlers for the VR App Hub that navigate back to the main app.
+    const vrAppHandlers = {
+      onStartGame: () => { onNavigate('game'); },
+      onOpenDashboard: () => { onNavigate('game'); },
+      onOpenCalendar: () => { onNavigate('game'); },
+      onOpenChat: () => { onNavigate('game'); },
+      onOpenInstructions: () => { onNavigate('game'); },
+      onOpenKnowledgeBase: () => { onNavigate('game'); },
+      onOpenJoinUs: () => { onNavigate('game'); },
+      onOpenScenarioLab: () => { onNavigate('game'); },
+      onOpenGlossary: () => { onNavigate('game'); },
+      onOpenARMode: () => { onNavigate('game'); },
+      onOpenVRMode: () => {}, // Already in VR mode
+      onOpenCrazyViz: () => { onNavigate('game'); },
+      onOpenClimateQuest: () => { onNavigate('game'); },
+      onOpenCredits: () => { onNavigate('game'); },
+    };
+
+    const appHubApps = getAppHubApps(vrAppHandlers);
+
+    if (!language) {
+      return <LanguageSelectionScreen onSelect={(lang) => setLanguage(lang)} />;
+    }
+    
+    return <VRModeScreen 
+      onBack={() => { onNavigate('game'); }} 
+      language={language} 
+      appHubApps={appHubApps} 
+    />;
+}
 
 const App: React.FC = () => {
-  const [route, setRoute] = useState(window.location.hash);
+  const getRouteFromHash = useCallback((): Route => {
+    const hash = window.location.hash.toLowerCase();
+    if (hash.startsWith('#/admin')) return 'admin';
+    if (hash.startsWith('#/vr')) return 'vr';
+    return 'game';
+  }, []);
+  
+  const [route, setRoute] = useState<Route>(getRouteFromHash());
+
+  const navigateTo = (newRoute: Route) => {
+      setRoute(newRoute);
+      const newHash = newRoute === 'game' ? '#/' : `#/${newRoute}`;
+      if (window.location.hash !== newHash) {
+          try {
+              // Use pushState to change the URL without a full reload or triggering hashchange.
+              // This is more robust in sandboxed environments where direct hash assignment is denied.
+              window.history.pushState(null, '', newHash);
+          } catch (e) {
+              console.warn("Could not set URL hash via pushState:", e);
+          }
+      }
+  };
 
   useEffect(() => {
-    const handleHashChange = () => {
-      setRoute(window.location.hash);
+    const handleRouteChange = () => {
+      setRoute(getRouteFromHash());
     };
 
-    window.addEventListener('hashchange', handleHashChange, false);
+    // Listen to both hashchange (for legacy compatibility) and popstate (for browser back/forward with pushState)
+    window.addEventListener('hashchange', handleRouteChange, false);
+    window.addEventListener('popstate', handleRouteChange, false);
     return () => {
-      window.removeEventListener('hashchange', handleHashChange, false);
+      window.removeEventListener('hashchange', handleRouteChange, false);
+      window.removeEventListener('popstate', handleRouteChange, false);
     };
-  }, []);
+  }, [getRouteFromHash]);
 
-  if (route.toLowerCase().startsWith('#/admin')) {
+  if (route === 'admin') {
     return <AdminScreen />;
   }
+  
+  if (route === 'vr') {
+    return <VRApp onNavigate={navigateTo} />;
+  }
 
-  return <Game />;
+  return <Game onNavigate={navigateTo} />;
 };
 
 export default App;

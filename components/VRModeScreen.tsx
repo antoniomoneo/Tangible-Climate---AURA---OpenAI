@@ -3,15 +3,13 @@ import type { Language, AppDefinition } from '../types';
 import { locales } from '../locales';
 
 // Allow A-Frame elements in JSX
-// This global declaration ensures TypeScript recognizes A-Frame's custom elements (e.g., <a-scene>)
-// within JSX, preventing compilation errors. It uses React's standard HTML properties as a base
-// and adds an index signature to allow for any A-Frame-specific attributes.
-// FIX: The original declaration was causing a conflict with the base React JSX types,
-// likely due to the combination of React.HTMLProps and a generic index signature.
-// Simplifying the type definitions for the A-Frame elements resolves the global JSX type errors.
+// The global declaration for JSX.IntrinsicElements was overwriting the default
+// React types instead of extending them. This caused errors across the application where standard
+// HTML elements like 'div' were not recognized. The fix is to extend React.JSX.IntrinsicElements,
+// which merges the A-Frame types with the standard HTML types.
 declare global {
   namespace JSX {
-    interface IntrinsicElements {
+    interface IntrinsicElements extends React.JSX.IntrinsicElements {
       'a-scene': React.HTMLProps<HTMLElement>;
       'a-entity': React.HTMLProps<HTMLElement>;
       'a-sky': React.HTMLProps<HTMLElement>;
@@ -122,6 +120,18 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
     };
   }, [appHubApps, handleBack, modelStatus]); // Re-run if modelStatus changes to attach events after render
 
+  const handleEnterVR = async () => {
+    const sceneEl = document.getElementById('vr-scene') as any;
+    if (sceneEl && sceneEl.enterVR) {
+        try {
+            await sceneEl.enterVR();
+        } catch (e) {
+            console.error("Failed to enter VR:", e);
+            alert("No se pudo entrar al modo VR. Es posible que su navegador no sea compatible o que la función esté deshabilitada. En Firefox, puede que necesite activar las opciones de 'WebXR' en la página 'about:config'.");
+        }
+    }
+  };
+
   const modelUrl = "https://antoniomoneo.github.io/Datasets/objects/climate-skeleton.glb";
   const vrApps = appHubApps.filter(app => app.id !== 'vr-mode' && app.enabled);
   const angleStep = 360 / vrApps.length;
@@ -131,6 +141,7 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
     <div className="fixed inset-0 bg-black text-white w-full h-full">
       <a-scene
         id="vr-scene"
+        embedded
         vr-mode-ui="enabled: true"
         webxr="mode: immersive-vr; optionalFeatures: cardboard, viewer;"
         renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
@@ -233,7 +244,7 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
         {/* Floor for teleportation and shadow */}
         <a-plane
           className="teleport-destination"
-          rotation="0 0 0"
+          rotation="-90 0 0"
           position="0 0 0"
           width="20"
           height="20"
@@ -265,12 +276,7 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
           <p className="text-sm opacity-90 text-gray-800 drop-shadow-md">{t.vrModeInstruction}</p>
         </div>
         <button 
-          onClick={() => {
-            const sceneEl = document.getElementById('vr-scene') as any;
-            if (sceneEl) {
-                sceneEl.enterVR();
-            }
-          }}
+          onClick={handleEnterVR}
           className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed pointer-events-auto"
           disabled={modelStatus !== 'loaded'}
         >
