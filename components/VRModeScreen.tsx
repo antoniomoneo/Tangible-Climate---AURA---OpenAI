@@ -6,18 +6,21 @@ import { locales } from '../locales';
 // This global declaration ensures TypeScript recognizes A-Frame's custom elements (e.g., <a-scene>)
 // within JSX, preventing compilation errors. It uses React's standard HTML properties as a base
 // and adds an index signature to allow for any A-Frame-specific attributes.
+// FIX: The original declaration was causing a conflict with the base React JSX types,
+// likely due to the combination of React.HTMLProps and a generic index signature.
+// Simplifying the type definitions for the A-Frame elements resolves the global JSX type errors.
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'a-scene': React.HTMLProps<HTMLElement> & { [key: string]: any };
-      'a-entity': React.HTMLProps<HTMLElement> & { [key: string]: any };
-      'a-sky': React.HTMLProps<HTMLElement> & { [key: string]: any };
-      'a-camera': React.HTMLProps<HTMLElement> & { [key: string]: any };
-      'a-cursor': React.HTMLProps<HTMLElement> & { [key: string]: any };
-      'a-plane': React.HTMLProps<HTMLElement> & { [key: string]: any };
-      'a-text': React.HTMLProps<HTMLElement> & { [key: string]: any };
-      'a-animation': React.HTMLProps<HTMLElement> & { [key: string]: any };
-      'a-image': React.HTMLProps<HTMLElement> & { [key: string]: any };
+      'a-scene': React.HTMLProps<HTMLElement>;
+      'a-entity': React.HTMLProps<HTMLElement>;
+      'a-sky': React.HTMLProps<HTMLElement>;
+      'a-camera': React.HTMLProps<HTMLElement>;
+      'a-cursor': React.HTMLProps<HTMLElement>;
+      'a-plane': React.HTMLProps<HTMLElement>;
+      'a-text': React.HTMLProps<HTMLElement>;
+      'a-animation': React.HTMLProps<HTMLElement>;
+      'a-image': React.HTMLProps<HTMLElement>;
     }
   }
 }
@@ -128,8 +131,9 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
     <div className="fixed inset-0 bg-black text-white w-full h-full">
       <a-scene
         id="vr-scene"
-        vr-mode-ui="enabled: true;" 
-        renderer="colorManagement: true; physicallyCorrectLights: true;"
+        vr-mode-ui="enabled: true"
+        webxr="mode: immersive-vr; optionalFeatures: cardboard, viewer;"
+        renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
         background="color: #ECECEC"
         shadow="type: pcfsoft"
       >
@@ -213,7 +217,7 @@ const VRModeScreen: React.FC<VRModeScreenProps> = ({ onBack, language, appHubApp
                            ></a-text>
                             <a-text
                                 value={description}
-                                align="center"
+                               align="center"
                                 color="#9ca3af"
                                 width="0.8"
                                 wrap-count="25"
