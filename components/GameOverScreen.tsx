@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as htmlToImage from 'html-to-image';
 // FIX: Fix import paths to be relative.
 import type { StorySegment, Language } from '../types';
@@ -52,6 +52,7 @@ const Diploma: React.FC<{ language: Language, t: any }> = ({ language, t }) => {
 
 const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalScene, onRestart, language, onOpenQuest }) => {
   const t = locales[language];
+  const [shareNotification, setShareNotification] = useState<string | null>(null);
 
   const handleDownload = () => {
     const node = document.getElementById('diploma-to-download');
@@ -74,29 +75,58 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalScene, onRestart, 
   };
 
   const handleShare = (platform: 'x' | 'linkedin' | 'facebook') => {
-    const appUrl = 'https://clima.tangibledata.xyz/';
-    let shareUrl = '';
-
-    switch (platform) {
-        case 'x':
-            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(t.shareMessageX)}&url=${encodeURIComponent(appUrl)}`;
-            break;
-        case 'linkedin':
-            shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(appUrl)}&title=${encodeURIComponent(t.diplomaTitle)}&summary=${encodeURIComponent(t.shareMessageLinkedIn)}`;
-            break;
-        case 'facebook':
-            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}`;
-            break;
+    const node = document.getElementById('diploma-to-download');
+    if (!node) {
+      console.error('Diploma element not found');
+      return;
     }
 
-    if (shareUrl) {
-      window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=400');
-    }
+    htmlToImage.toPng(node, {
+        quality: 0.95,
+        backgroundColor: '#ffffff',
+        pixelRatio: 2,
+    })
+    .then((dataUrl) => {
+        // Step 1: Trigger download
+        const link = document.createElement('a');
+        link.download = 'tangible-climate-diploma.png';
+        link.href = dataUrl;
+        link.click();
+        
+        // Step 2: Show notification
+        setShareNotification(t.shareNotificationDownload);
+        setTimeout(() => setShareNotification(null), 5000);
+
+        // Step 3: Open share URL
+        const appUrl = 'https://clima.tangibledata.xyz/';
+        let shareUrl = '';
+
+        switch (platform) {
+            case 'x':
+                shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(t.shareMessageX)}&url=${encodeURIComponent(appUrl)}`;
+                break;
+            case 'linkedin':
+                shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(appUrl)}&title=${encodeURIComponent(t.diplomaTitle)}&summary=${encodeURIComponent(t.shareMessageLinkedIn)}`;
+                break;
+            case 'facebook':
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}`;
+                break;
+        }
+
+        if (shareUrl) {
+          window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=400');
+        }
+    })
+    .catch((err) => {
+        console.error('oops, something went wrong!', err);
+        setShareNotification(t.shareError);
+        setTimeout(() => setShareNotification(null), 4000);
+    });
   };
 
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full text-center animate-fadeIn p-4">
+    <div className="flex flex-col items-center justify-center w-full h-full text-center animate-fadeIn p-4 relative">
         <h1 className="font-title text-4xl md:text-5xl text-cyan-400 mb-4">{t.gameOverTitle}</h1>
 
         <Diploma language={language} t={t} />
@@ -134,6 +164,11 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalScene, onRestart, 
                 </button>
             </div>
         </div>
+         {shareNotification && (
+            <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg z-50 animate-fadeIn">
+                {shareNotification}
+            </div>
+        )}
     </div>
   );
 };

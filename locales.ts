@@ -434,6 +434,8 @@ export const locales = {
     diplomaDate: "Issued on",
     diplomaDownload: "Download Diploma",
     diplomaShare: "Share on",
+    shareNotificationDownload: "Diploma downloaded! Please upload it to your post.",
+    shareError: "Could not generate diploma. Please try again.",
     shareMessageX: "I've completed the Tangible Climate Data analysis! A fascinating journey through 145 years of climate history. #ClimateChange #DataViz #TangibleData",
     shareMessageLinkedIn: "I'm proud to have completed the Tangible Climate Data analysis, an interactive experience exploring the history of global temperature anomalies. This project by Tangible Data and the MNCN-CSIC is a powerful tool for climate education. #ClimateScience #DataLiteracy #TangibleData #Sustainability",
 
@@ -669,6 +671,8 @@ export const locales = {
     diplomaDate: "Emitido el",
     diplomaDownload: "Descargar Diploma",
     diplomaShare: "Compartir en",
+    shareNotificationDownload: "¡Diploma descargado! Súbelo a tu publicación para compartirlo.",
+    shareError: "No se pudo generar el diploma. Por favor, inténtalo de nuevo.",
     shareMessageX: "¡He completado el análisis de Datos Climáticos Tangibles! Un fascinante viaje a través de 145 años de historia climática. #CambioClimatico #DataViz #TangibleData",
     shareMessageLinkedIn: "Me enorgullece haber completado el análisis de Datos Climáticos Tangibles, una experiencia interactiva que explora la historia de las anomalías de la temperatura global. Este proyecto de Tangible Data y el MNCN-CSIC es una poderosa herramienta para la educación climática. #CienciaClimatica #DataLiteracy #TangibleData #Sostenibilidad",
   },

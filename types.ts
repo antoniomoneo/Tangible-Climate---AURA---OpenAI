@@ -1,3 +1,25 @@
+// FIX: Changed import to bring React into scope for JSX type augmentation.
+import React from 'react';
+
+// FIX: Moved global JSX augmentation here to ensure it's applied project-wide,
+// resolving errors where standard HTML elements were not recognized by TypeScript.
+// This adds A-Frame element types without overwriting the default React types.
+declare global {
+  namespace JSX {
+    interface IntrinsicElements extends React.JSX.IntrinsicElements {
+      'a-scene': any;
+      'a-entity': any;
+      'a-sky': any;
+      'a-camera': any;
+      'a-cursor': any;
+      'a-plane': any;
+      'a-text': any;
+      'a-animation': any;
+      'a-image': any;
+    }
+  }
+}
+
 export type Language = 'en' | 'es';
 
 export enum GameState {

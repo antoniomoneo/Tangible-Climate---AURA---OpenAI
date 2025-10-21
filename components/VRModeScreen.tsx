@@ -2,26 +2,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { Language, AppDefinition } from '../types';
 import { locales } from '../locales';
 
-// FIX: The global declaration for JSX.IntrinsicElements was incorrectly overwriting the default
-// React types instead of augmenting them. This caused errors across the application where standard
-// HTML elements like 'div' were not recognized.
-// By removing the `extends React.JSX.IntrinsicElements` clause, we allow TypeScript's
-// declaration merging to correctly add A-Frame types to the global JSX namespace.
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'a-scene': any;
-      'a-entity': any;
-      'a-sky': any;
-      'a-camera': any;
-      'a-cursor': any;
-      'a-plane': any;
-      'a-text': any;
-      'a-animation': any;
-      'a-image': any;
-    }
-  }
-}
+// FIX: The global JSX intrinsic elements declaration has been moved to `types.ts`
+// to ensure it's applied project-wide and resolve widespread TypeScript errors
+// where standard HTML elements like 'div' were not recognized.
 
 interface VRModeScreenProps {
   onBack: () => void;
