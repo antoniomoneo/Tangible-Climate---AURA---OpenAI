@@ -1,4 +1,3 @@
-// FIX: This file was a placeholder. Populating with full content.
 import type { StorySegment } from './types';
 import { GRAPH_OVERVIEW_IMAGE, MUSEUM_EXTERIOR_IMAGE } from './assets';
 import { questGameData as questGameDataJS } from './data/questGameData.js';
@@ -430,10 +429,12 @@ export const locales = {
     diplomaTitle: "Certificate of Completion",
     diplomaAwardedTo: "Awarded to",
     diplomaRecipient: "Climate Data Analyst",
+    diplomaEnterNameLabel: "Your Name for the Diploma:",
     diplomaDescription: "For successfully completing the analysis of 145 years of global temperature data and demonstrating a commitment to understanding climate change.",
     diplomaDate: "Issued on",
     diplomaDownload: "Download Diploma",
     diplomaShare: "Share on",
+    shareNotificationGenerating: "Generating diploma...",
     shareNotificationDownload: "Diploma downloaded! Please upload it to your post.",
     shareError: "Could not generate diploma. Please try again.",
     shareMessageX: "I've completed the Tangible Climate Data analysis! A fascinating journey through 145 years of climate history. #ClimateChange #DataViz #TangibleData",
@@ -667,10 +668,12 @@ export const locales = {
     diplomaTitle: "Certificado de Finalización",
     diplomaAwardedTo: "Otorgado a",
     diplomaRecipient: "Analista de Datos Climáticos",
+    diplomaEnterNameLabel: "Tu Nombre para el Diploma:",
     diplomaDescription: "Por completar con éxito el análisis de 145 años de datos de temperatura global y demostrar un compromiso con la comprensión del cambio climático.",
     diplomaDate: "Emitido el",
     diplomaDownload: "Descargar Diploma",
     diplomaShare: "Compartir en",
+    shareNotificationGenerating: "Generando diploma...",
     shareNotificationDownload: "¡Diploma descargado! Súbelo a tu publicación para compartirlo.",
     shareError: "No se pudo generar el diploma. Por favor, inténtalo de nuevo.",
     shareMessageX: "¡He completado el análisis de Datos Climáticos Tangibles! Un fascinante viaje a través de 145 años de historia climática. #CambioClimatico #DataViz #TangibleData",

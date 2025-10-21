@@ -1,12 +1,14 @@
-// FIX: Changed import to bring React into scope for JSX type augmentation.
-import React from 'react';
+// FIX: Changed import to use a side-effect import of 'react' to ensure
+// TypeScript's declaration merging works correctly for the global JSX namespace.
+import 'react';
 
-// FIX: Moved global JSX augmentation here to ensure it's applied project-wide,
-// resolving errors where standard HTML elements were not recognized by TypeScript.
-// This adds A-Frame element types without overwriting the default React types.
+// FIX: Moved global JSX augmentation here to ensure it's applied project-wide.
+// This uses declaration merging to add A-Frame element types to React's
+// existing IntrinsicElements interface, resolving errors where standard HTML
+// elements were not recognized by TypeScript.
 declare global {
   namespace JSX {
-    interface IntrinsicElements extends React.JSX.IntrinsicElements {
+    interface IntrinsicElements {
       'a-scene': any;
       'a-entity': any;
       'a-sky': any;
@@ -16,6 +18,10 @@ declare global {
       'a-text': any;
       'a-animation': any;
       'a-image': any;
+      // FIX: Add a string index signature to allow any standard HTML/SVG tags.
+      // This resolves errors where TypeScript fails to recognize elements like 'div', 'p', etc.,
+      // because the original IntrinsicElements interface was being overwritten instead of extended.
+      [elemName: string]: any;
     }
   }
 }

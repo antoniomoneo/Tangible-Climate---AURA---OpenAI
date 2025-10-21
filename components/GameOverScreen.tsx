@@ -15,7 +15,7 @@ interface GameOverScreenProps {
   onOpenQuest: () => void;
 }
 
-const Diploma: React.FC<{ language: Language, t: any }> = ({ language, t }) => {
+const Diploma: React.FC<{ language: Language, t: any, recipientName: string }> = ({ language, t, recipientName }) => {
     const today = new Date();
     const formattedDate = today.toLocaleDateString(language, {
         year: 'numeric',
@@ -37,7 +37,9 @@ const Diploma: React.FC<{ language: Language, t: any }> = ({ language, t }) => {
             
             <div className="text-center z-10 my-8">
                 <p className="text-lg">{t.diplomaAwardedTo}</p>
-                <p className="font-title text-3xl font-semibold border-b-2 border-gray-400 inline-block px-8 pb-1 my-2">{t.diplomaRecipient}</p>
+                <p className="font-title text-3xl font-semibold border-b-2 border-gray-400 inline-block px-8 pb-1 my-2 min-h-[44px] break-all max-w-full">
+                    {recipientName}
+                </p>
                 <p className="text-base max-w-md mx-auto mt-4">{t.diplomaDescription}</p>
             </div>
             
@@ -53,6 +55,7 @@ const Diploma: React.FC<{ language: Language, t: any }> = ({ language, t }) => {
 const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalScene, onRestart, language, onOpenQuest }) => {
   const t = locales[language];
   const [shareNotification, setShareNotification] = useState<string | null>(null);
+  const [recipientName, setRecipientName] = useState<string>(t.diplomaRecipient);
 
   const handleDownload = () => {
     const node = document.getElementById('diploma-to-download');
@@ -74,54 +77,80 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalScene, onRestart, 
     }
   };
 
-  const handleShare = (platform: 'x' | 'linkedin' | 'facebook') => {
+  const handleShare = async (platform: 'x' | 'linkedin' | 'facebook') => {
     const node = document.getElementById('diploma-to-download');
     if (!node) {
       console.error('Diploma element not found');
+      setShareNotification(t.shareError);
+      setTimeout(() => setShareNotification(null), 4000);
       return;
     }
 
-    htmlToImage.toPng(node, {
+    setShareNotification(t.shareNotificationGenerating);
+    
+    // This is the font stylesheet linked in index.html
+    const FONT_STYLESHEET_URL = "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap";
+    const styleElement = document.createElement('style');
+
+    try {
+      // 1. Fetch the font stylesheet
+      const response = await fetch(FONT_STYLESHEET_URL);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch font stylesheet: ${response.statusText}`);
+      }
+      const cssText = await response.text();
+
+      // 2. Embed the stylesheet into the node to be rendered
+      styleElement.appendChild(document.createTextNode(cssText));
+      node.appendChild(styleElement);
+
+      // 3. Generate the image from the node with embedded fonts
+      const dataUrl = await htmlToImage.toPng(node, {
         quality: 0.95,
         backgroundColor: '#ffffff',
         pixelRatio: 2,
-    })
-    .then((dataUrl) => {
-        // Step 1: Trigger download
-        const link = document.createElement('a');
-        link.download = 'tangible-climate-diploma.png';
-        link.href = dataUrl;
-        link.click();
-        
-        // Step 2: Show notification
-        setShareNotification(t.shareNotificationDownload);
-        setTimeout(() => setShareNotification(null), 5000);
+        cacheBust: true, // Helps with fetching fresh resources if any are missed
+      });
 
-        // Step 3: Open share URL
-        const appUrl = 'https://clima.tangibledata.xyz/';
-        let shareUrl = '';
+      // 4. Trigger download
+      const link = document.createElement('a');
+      link.download = 'tangible-climate-diploma.png';
+      link.href = dataUrl;
+      link.click();
+      
+      // 5. Show success notification
+      setShareNotification(t.shareNotificationDownload);
+      setTimeout(() => setShareNotification(null), 5000);
 
-        switch (platform) {
-            case 'x':
-                shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(t.shareMessageX)}&url=${encodeURIComponent(appUrl)}`;
-                break;
-            case 'linkedin':
-                shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(appUrl)}&title=${encodeURIComponent(t.diplomaTitle)}&summary=${encodeURIComponent(t.shareMessageLinkedIn)}`;
-                break;
-            case 'facebook':
-                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}`;
-                break;
-        }
+      // 6. Open share URL
+      const appUrl = 'https://clima.tangibledata.xyz/';
+      let shareUrl = '';
 
-        if (shareUrl) {
-          window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=400');
-        }
-    })
-    .catch((err) => {
-        console.error('oops, something went wrong!', err);
-        setShareNotification(t.shareError);
-        setTimeout(() => setShareNotification(null), 4000);
-    });
+      switch (platform) {
+        case 'x':
+          shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(t.shareMessageX)}&url=${encodeURIComponent(appUrl)}`;
+          break;
+        case 'linkedin':
+          shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(appUrl)}&title=${encodeURIComponent(t.diplomaTitle)}&summary=${encodeURIComponent(t.shareMessageLinkedIn)}`;
+          break;
+        case 'facebook':
+          shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}`;
+          break;
+      }
+
+      if (shareUrl) {
+        window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=400');
+      }
+    } catch (err) {
+      console.error('Diploma generation failed:', err);
+      setShareNotification(t.shareError);
+      setTimeout(() => setShareNotification(null), 4000);
+    } finally {
+      // 7. Clean up the DOM by removing the added style element
+      if (node.contains(styleElement)) {
+        node.removeChild(styleElement);
+      }
+    }
   };
 
 
@@ -129,9 +158,23 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalScene, onRestart, 
     <div className="flex flex-col items-center justify-center w-full h-full text-center animate-fadeIn p-4 relative">
         <h1 className="font-title text-4xl md:text-5xl text-cyan-400 mb-4">{t.gameOverTitle}</h1>
 
-        <Diploma language={language} t={t} />
+        <Diploma language={language} t={t} recipientName={recipientName} />
 
-        <div className="mt-8 w-full max-w-3xl space-y-4">
+        <div className="mt-6 w-full max-w-lg">
+          <label htmlFor="recipientName" className="block text-sm font-medium text-gray-300 mb-2">
+            {t.diplomaEnterNameLabel}
+          </label>
+          <input
+            type="text"
+            id="recipientName"
+            value={recipientName}
+            onChange={(e) => setRecipientName(e.target.value)}
+            className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white text-center text-xl font-title focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            maxLength={30}
+          />
+        </div>
+
+        <div className="mt-4 w-full max-w-3xl space-y-4">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button 
                     onClick={handleDownload}
@@ -165,7 +208,7 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({ finalScene, onRestart, 
             </div>
         </div>
          {shareNotification && (
-            <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg z-50 animate-fadeIn">
+            <div className={`fixed bottom-24 left-1/2 -translate-x-1/2 text-white font-bold py-3 px-6 rounded-lg shadow-lg z-50 animate-fadeIn ${shareNotification === t.shareError ? 'bg-red-600' : 'bg-green-600'}`}>
                 {shareNotification}
             </div>
         )}
