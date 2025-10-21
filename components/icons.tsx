@@ -221,3 +221,15 @@ export const MenuIcon: React.FC<IconProps> = (props) => (
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
     </svg>
 );
+
+export const DownloadIcon: React.FC<IconProps> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+    </svg>
+);
+
+export const ShareIcon: React.FC<IconProps> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.195.025.39.042.586.042.22 0 .434-.02.642-.054m-1.228 0A2.25 2.25 0 0110.5 8.625v.162c0 .24.08.47.23.658m-1.5.088A2.25 2.25 0 019 10.5v2.25c0 .24.08.47.23.658m1.5.088a2.25 2.25 0 011.5 1.5v.162c0 .24-.08.47-.23.658m1.5-.088a2.25 2.25 0 01-1.5 1.5v-2.25c0-.24-.08-.47-.23-.658m-1.5-.088A2.25 2.25 0 0010.5 15v.162c0 .24.08.47.23.658m1.5.088a2.25 2.25 0 001.5 1.5v-2.25c0-.24.08-.47.23-.658m-1.5.088a2.25 2.25 0 00-1.5-1.5v2.25c0 .24.08.47.23.658m0-3.512a2.25 2.25 0 00-1.5-1.5v-2.25c0-.24.08-.47.23-.658m0 3.512a2.25 2.25 0 011.5 1.5v2.25c0 .24-.08.47-.23.658" />
+    </svg>
+);

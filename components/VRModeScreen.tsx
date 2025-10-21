@@ -9,16 +9,19 @@ import { locales } from '../locales';
 // which merges the A-Frame types with the standard HTML types.
 declare global {
   namespace JSX {
+    // FIX: The original props type `React.HTMLProps<HTMLElement>` was likely too restrictive for A-Frame's custom attributes
+    // and caused a type resolution error that broke the interface merging. Changing the props to `any` makes the declaration
+    // less strict but allows the `extends React.JSX.IntrinsicElements` to function correctly, restoring the standard HTML element types.
     interface IntrinsicElements extends React.JSX.IntrinsicElements {
-      'a-scene': React.HTMLProps<HTMLElement>;
-      'a-entity': React.HTMLProps<HTMLElement>;
-      'a-sky': React.HTMLProps<HTMLElement>;
-      'a-camera': React.HTMLProps<HTMLElement>;
-      'a-cursor': React.HTMLProps<HTMLElement>;
-      'a-plane': React.HTMLProps<HTMLElement>;
-      'a-text': React.HTMLProps<HTMLElement>;
-      'a-animation': React.HTMLProps<HTMLElement>;
-      'a-image': React.HTMLProps<HTMLElement>;
+      'a-scene': any;
+      'a-entity': any;
+      'a-sky': any;
+      'a-camera': any;
+      'a-cursor': any;
+      'a-plane': any;
+      'a-text': any;
+      'a-animation': any;
+      'a-image': any;
     }
   }
 }
