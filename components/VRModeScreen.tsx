@@ -2,17 +2,14 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { Language, AppDefinition } from '../types';
 import { locales } from '../locales';
 
-// Allow A-Frame elements in JSX
-// The global declaration for JSX.IntrinsicElements was overwriting the default
-// React types instead of extending them. This caused errors across the application where standard
-// HTML elements like 'div' were not recognized. The fix is to extend React.JSX.IntrinsicElements,
-// which merges the A-Frame types with the standard HTML types.
+// FIX: The global declaration for JSX.IntrinsicElements was incorrectly overwriting the default
+// React types instead of augmenting them. This caused errors across the application where standard
+// HTML elements like 'div' were not recognized.
+// By removing the `extends React.JSX.IntrinsicElements` clause, we allow TypeScript's
+// declaration merging to correctly add A-Frame types to the global JSX namespace.
 declare global {
   namespace JSX {
-    // FIX: The original props type `React.HTMLProps<HTMLElement>` was likely too restrictive for A-Frame's custom attributes
-    // and caused a type resolution error that broke the interface merging. Changing the props to `any` makes the declaration
-    // less strict but allows the `extends React.JSX.IntrinsicElements` to function correctly, restoring the standard HTML element types.
-    interface IntrinsicElements extends React.JSX.IntrinsicElements {
+    interface IntrinsicElements {
       'a-scene': any;
       'a-entity': any;
       'a-sky': any;
